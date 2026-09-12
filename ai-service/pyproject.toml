@@ -1,0 +1,23 @@
+[project]
+name = "repscan-ai-service"
+version = "1.0.0"
+description = "RepScan — AI service for ChromaDB, embeddings, and intelligent analysis"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.111.0",
+    "uvicorn[standard]>=0.30.0",
+    "pydantic-settings>=2.3.0",
+    "python-dotenv>=1.0.1",
+    "chromadb>=0.5.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "httpx>=0.27",
+]
+
+[tool.uv]
+dev-dependencies = []
