@@ -11,6 +11,7 @@ import { logger } from "./config/logger";
 import { errorHandler } from "./middleware/errorHandler";
 import { v1Router } from "./routes/v1";
 import { runMigrations } from "./services/migrations";
+import { schedulerService } from "./services/schedulerService";
 
 const app = express();
 
@@ -30,9 +31,24 @@ app.use(errorHandler);
 async function start() {
   try {
     await runMigrations();
-    app.listen(config.port, () => {
+    const server = app.listen(config.port, () => {
       logger.info(`RepScan Backend v1.0.0 started on port ${config.port} (${config.nodeEnv})`);
+      if (config.enableScheduler) {
+        schedulerService.start();
+      }
     });
+
+    const shutdown = () => {
+      logger.info("Shutting down gracefully...");
+      schedulerService.stop();
+      server.close(() => {
+        logger.info("HTTP server closed");
+        process.exit(0);
+      });
+    };
+
+    process.on("SIGINT", shutdown);
+    process.on("SIGTERM", shutdown);
   } catch (err) {
     logger.error("Failed to start server:", err);
     process.exit(1);
@@ -42,3 +58,4 @@ async function start() {
 start();
 
 export default app;
+

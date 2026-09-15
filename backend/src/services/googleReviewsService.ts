@@ -9,6 +9,9 @@ import { processFeedback } from "./aiService";
 
 type ApifyReview = Record<string, unknown>;
 
+// In-memory mutex per connectionId to prevent concurrent scrape calls in the same process
+const activeConnectionScrapes = new Set<string>();
+
 function firstString(item: ApifyReview, keys: string[]): string | null {
   for (const key of keys) {
     const value = item[key];
@@ -17,26 +20,37 @@ function firstString(item: ApifyReview, keys: string[]): string | null {
   return null;
 }
 
-function numberValue(item: ApifyReview, keys: string[]): number | null {
+function parseRating(item: ApifyReview, keys: string[]): number | null {
   for (const key of keys) {
     const value = item[key];
     const number = typeof value === "number" ? value : Number(value);
-    if (Number.isFinite(number)) return number;
+    if (Number.isFinite(number) && number >= 0 && number <= 5) {
+      return Math.round(number * 10) / 10;
+    }
   }
   return null;
+}
+
+function parseDate(item: ApifyReview, keys: string[]): string | null {
+  const rawDate = firstString(item, keys);
+  if (!rawDate) return null;
+  const timestamp = Date.parse(rawDate);
+  if (Number.isNaN(timestamp)) return null;
+  return new Date(timestamp).toISOString();
 }
 
 export function normalizeGoogleReview(item: ApifyReview, sourceUrl: string) {
   const content = firstString(item, ["text", "reviewText", "review", "content", "comment"]);
   if (!content) return null;
   const author = firstString(item, ["authorName", "reviewerName", "author", "name"]);
-  const publishedAt = firstString(item, ["publishedAt", "published_at", "date", "reviewDate", "dateOfReview"]);
+  const publishedAt = parseDate(item, ["publishedAt", "published_at", "date", "reviewDate", "dateOfReview"]);
   const externalId = firstString(item, ["reviewId", "review_id", "id"]);
   const source = firstString(item, ["reviewUrl", "url", "sourceUrl"]) || sourceUrl;
+  const rating = parseRating(item, ["rating", "stars", "score"]);
   const hash = crypto.createHash("sha256")
     .update([author || "", publishedAt || "", content].join("\u0000"))
     .digest("hex");
-  return { content, author, publishedAt, externalId, source, rating: numberValue(item, ["rating", "stars", "score"]), hash };
+  return { content, author, publishedAt, externalId, source, rating, hash };
 }
 
 async function fetchApifyReviews(sourceUrl: string): Promise<ApifyReview[]> {
@@ -67,21 +81,49 @@ export async function scrapeGoogleReviews(businessId: string, connectionId: stri
   if (connection.platform !== "google") throw new AppError("Only Google Reviews ingestion is available", 400);
   if (!connection.is_active) throw new AppError("Platform connection is inactive", 409);
 
+  // Prevent overlapping scrapes: in-memory check
+  if (activeConnectionScrapes.has(connectionId)) {
+    throw new AppError("A scrape job is already in progress for this platform connection", 409);
+  }
+
+  // Prevent overlapping scrapes: database check (and timeout cleanup)
+  const activeRun = await scrapeRunRepo.findActiveByConnectionId(connectionId);
+  if (activeRun) {
+    throw new AppError("A scrape job is already in progress for this platform connection", 409);
+  }
+
+  activeConnectionScrapes.add(connectionId);
+
   const runId = await scrapeRunRepo.create({ businessId, connectionId, platform: connection.platform });
+  let fetchedCount = 0;
+  let inserted = 0;
+  let skipped = 0;
+
   try {
     const records = await fetchApifyReviews(connection.source_url);
-    let inserted = 0;
-    let skipped = 0;
+    fetchedCount = records.length;
+
     for (const record of records) {
       const review = normalizeGoogleReview(record, connection.source_url);
-      if (!review) { skipped++; continue; }
+      if (!review) {
+        skipped++;
+        continue;
+      }
       const id = await feedbackRepo.insertIfNew({
-        business_id: businessId, platform_connection_id: connectionId, platform: "google",
-        external_id: review.externalId, author: review.author, content: review.content,
-        content_hash: review.hash, rating: review.rating, published_at: review.publishedAt,
-        source_url: review.source, raw_payload: record,
+        business_id: businessId,
+        platform_connection_id: connectionId,
+        platform: "google",
+        external_id: review.externalId,
+        author: review.author,
+        content: review.content,
+        content_hash: review.hash,
+        rating: review.rating,
+        published_at: review.publishedAt,
+        source_url: review.source,
+        raw_payload: record,
       });
-      if (id) inserted++; else skipped++;
+      if (id) inserted++;
+      else skipped++;
     }
 
     const pending = await feedbackRepo.findPendingByConnection(connectionId);
@@ -90,12 +132,63 @@ export async function scrapeGoogleReviews(businessId: string, connectionId: stri
       for (const item of processed) await feedbackRepo.saveProcessed(item);
     }
 
-    await scrapeRunRepo.succeed(runId, { fetched: records.length, inserted, skipped });
+    await scrapeRunRepo.succeed(runId, { fetched: fetchedCount, inserted, skipped });
     await platformRepo.markScraped(connectionId);
-    return { run_id: runId, records_fetched: records.length, records_inserted: inserted, records_skipped: skipped };
+    return { run_id: runId, records_fetched: fetchedCount, records_inserted: inserted, records_skipped: skipped };
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown scrape error";
-    await scrapeRunRepo.fail(runId, message);
+    await scrapeRunRepo.fail(runId, message, { fetched: fetchedCount, inserted, skipped });
     throw error;
+  } finally {
+    activeConnectionScrapes.delete(connectionId);
   }
 }
+
+export async function getScrapeRunsForConnection(businessId: string, connectionId: string, limit?: number) {
+  const business = await businessRepo.findById(businessId);
+  if (!business) throw new AppError("Business not found", 404);
+  const connection = await platformRepo.findById(connectionId);
+  if (!connection || connection.business_id !== businessId) throw new AppError("Platform connection not found", 404);
+
+  return scrapeRunRepo.findByConnectionId(connectionId, limit);
+}
+
+export async function getScrapeRunById(businessId: string, connectionId: string, runId: string) {
+  const business = await businessRepo.findById(businessId);
+  if (!business) throw new AppError("Business not found", 404);
+  const connection = await platformRepo.findById(connectionId);
+  if (!connection || connection.business_id !== businessId) throw new AppError("Platform connection not found", 404);
+
+  const run = await scrapeRunRepo.findById(runId);
+  if (!run || run.platform_connection_id !== connectionId) {
+    throw new AppError("Scrape run not found", 404);
+  }
+  return run;
+}
+
+export async function getIngestionStatusForConnection(businessId: string, connectionId: string) {
+  const business = await businessRepo.findById(businessId);
+  if (!business) throw new AppError("Business not found", 404);
+  const connection = await platformRepo.findById(connectionId);
+  if (!connection || connection.business_id !== businessId) throw new AppError("Platform connection not found", 404);
+
+  const [stats, recentRuns, activeRun] = await Promise.all([
+    scrapeRunRepo.getIngestionStats(connectionId),
+    scrapeRunRepo.findByConnectionId(connectionId, 1),
+    scrapeRunRepo.findActiveByConnectionId(connectionId),
+  ]);
+
+  return {
+    connection: {
+      id: connection.id,
+      platform: connection.platform,
+      source_url: connection.source_url,
+      is_active: connection.is_active,
+      last_scraped_at: connection.last_scraped_at,
+    },
+    is_running: Boolean(activeRun || activeConnectionScrapes.has(connectionId)),
+    items_count: stats,
+    latest_scrape: recentRuns[0] || null,
+  };
+}
+

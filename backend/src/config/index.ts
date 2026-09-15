@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 export const config = {
   nodeEnv: process.env.NODE_ENV || "development",
   port: parseInt(process.env.PORT || "3000", 10),
@@ -6,4 +9,7 @@ export const config = {
   corsOrigins: process.env.CORS_ORIGINS?.split(",") || ["http://localhost:5173"],
   apifyToken: process.env.APIFY_API_TOKEN || "",
   googleReviewsActorId: process.env.APIFY_GOOGLE_REVIEWS_ACTOR_ID || "",
+  scrapeIntervalMinutes: parseInt(process.env.SCRAPE_INTERVAL_MINUTES || "60", 10),
+  enableScheduler: process.env.ENABLE_SCHEDULED_SCRAPING === "true",
 };
+

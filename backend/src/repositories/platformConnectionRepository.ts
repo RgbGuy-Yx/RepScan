@@ -112,3 +112,15 @@ export async function update(
 export async function markScraped(id: string): Promise<void> {
   await pool.query("UPDATE platform_connections SET last_scraped_at = NOW() WHERE id = $1", [id]);
 }
+
+export async function findAllActiveByPlatform(platform: Platform): Promise<PlatformConnection[]> {
+  const result = await pool.query<PlatformConnection>(
+    `SELECT id, business_id, platform, source_url, external_id, is_active, last_scraped_at, created_at, updated_at
+     FROM platform_connections
+     WHERE platform = $1 AND is_active = true
+     ORDER BY created_at ASC`,
+    [platform]
+  );
+  return result.rows;
+}
+

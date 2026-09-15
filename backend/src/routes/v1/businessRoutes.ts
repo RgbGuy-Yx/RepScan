@@ -17,7 +17,12 @@ import {
   listPlatforms,
   updatePlatformConnection,
 } from "../../controllers/platformConnectionController";
-import { scrapeGoogleReviewsForConnection } from "../../controllers/googleReviewsController";
+import {
+  scrapeGoogleReviewsForConnection,
+  listScrapeRunsForConnection,
+  getScrapeRunForConnection,
+  getIngestionStatusForConnection,
+} from "../../controllers/googleReviewsController";
 
 const router = Router();
 
@@ -39,6 +44,12 @@ router.patch(
   validate(updatePlatformConnectionSchema),
   updatePlatformConnection
 );
+
+// ── Scrape and Ingestion routes ──────────────────────────────
 router.post("/v1/businesses/:id/platforms/:platformId/scrape", scrapeGoogleReviewsForConnection);
+router.get("/v1/businesses/:id/platforms/:platformId/scrapes", listScrapeRunsForConnection);
+router.get("/v1/businesses/:id/platforms/:platformId/scrapes/:runId", getScrapeRunForConnection);
+router.get("/v1/businesses/:id/platforms/:platformId/ingestion-status", getIngestionStatusForConnection);
 
 export { router as businessRouter };
+
