@@ -33,12 +33,15 @@ class Settings(BaseSettings):
     # ── ChromaDB ──────────────────────────────────────────────────
     CHROMA_PATH: str = "./chroma_db"
 
-    # ── AI Keys (Phase 2) ────────────────────────────────────────
+    # ── AI Keys ──────────────────────────────────────────────────
     MISTRAL_API_KEY: str = ""
     VOYAGE_API_KEY: str = ""
+    SARVAM_API_KEY: str = ""
     APIFY_API_TOKEN: str = ""
     MISTRAL_MODEL: str = "mistral-small-latest"
     VOYAGE_MODEL: str = "voyage-3.5-lite"
+    SARVAM_BASE_URL: str = "https://api.sarvam.ai"
+    SARVAM_TRANSLATION_MODEL: str = "mayura:v1"
 
     # ── OpenAPI ──────────────────────────────────────────────────
     DOCS_URL: str = "/docs"

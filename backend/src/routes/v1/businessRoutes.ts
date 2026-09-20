@@ -6,6 +6,12 @@ import {
   createPlatformConnectionSchema,
   updatePlatformConnectionSchema,
 } from "../../schemas/businessSchemas";
+import { weeklyAnalyticsQuerySchema } from "../../schemas/analyticsSchemas";
+import {
+  generateBriefBodySchema,
+  listBriefsQuerySchema,
+} from "../../schemas/briefSchemas";
+import { ragChatBodySchema } from "../../schemas/ragSchemas";
 import {
   createBusiness,
   getBusiness,
@@ -23,6 +29,14 @@ import {
   getScrapeRunForConnection,
   getIngestionStatusForConnection,
 } from "../../controllers/googleReviewsController";
+import { getWeeklyAnalytics } from "../../controllers/analyticsController";
+import {
+  createWeeklyBrief,
+  getLatestBriefHandler,
+  getBriefByIdHandler,
+  listBriefsHandler,
+} from "../../controllers/briefController";
+import { handleRagChat } from "../../controllers/ragChatController";
 
 const router = Router();
 
@@ -51,5 +65,30 @@ router.get("/v1/businesses/:id/platforms/:platformId/scrapes", listScrapeRunsFor
 router.get("/v1/businesses/:id/platforms/:platformId/scrapes/:runId", getScrapeRunForConnection);
 router.get("/v1/businesses/:id/platforms/:platformId/ingestion-status", getIngestionStatusForConnection);
 
-export { router as businessRouter };
+// ── Phase 3: Analytics & Brief routes ─────────────────────────
+router.get(
+  "/v1/businesses/:id/analytics/weekly",
+  validate(weeklyAnalyticsQuerySchema),
+  getWeeklyAnalytics
+);
+router.post(
+  "/v1/businesses/:id/briefs/generate",
+  validate(generateBriefBodySchema),
+  createWeeklyBrief
+);
+router.get("/v1/businesses/:id/briefs/latest", getLatestBriefHandler);
+router.get("/v1/businesses/:id/briefs/:briefId", getBriefByIdHandler);
+router.get(
+  "/v1/businesses/:id/briefs",
+  validate(listBriefsQuerySchema),
+  listBriefsHandler
+);
 
+// ── Phase 4: RAG Chat & Evidence route ───────────────────────
+router.post(
+  "/v1/businesses/:id/chat",
+  validate(ragChatBodySchema),
+  handleRagChat
+);
+
+export { router as businessRouter };

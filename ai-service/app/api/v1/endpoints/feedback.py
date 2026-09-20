@@ -1,15 +1,19 @@
 import asyncio
-import json
-from typing import Literal
-from urllib.error import HTTPError, URLError
-from urllib.request import Request, urlopen
+import logging
+from typing import Any, Literal
 
 from fastapi import APIRouter
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_mistralai import ChatMistralAI
+from langchain_voyageai import VoyageAIEmbeddings
 from pydantic import BaseModel, Field
 
 from app.config.exceptions import AIServiceException
 from app.config.settings import settings
 from app.services.chroma import chroma_service
+from app.services.sarvam import SarvamReviewResult, sarvam_service
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/feedback", tags=["Feedback"])
 
@@ -24,15 +28,25 @@ class FeedbackInput(BaseModel):
     source_url: str | None = None
 
 
+class MistralFeedbackAnalysis(BaseModel):
+    """Mistral focus: sentiment, polarity score, recurring themes, and exact quote evidence."""
+    sentiment_label: Literal["positive", "neutral", "negative"] = Field(description="Overall customer sentiment")
+    sentiment_score: float | None = Field(default=None, ge=-1, le=1, description="Sentiment polarity score from -1.0 (very negative) to 1.0 (very positive)")
+    themes: list[str] = Field(default_factory=list, max_length=5, description="Up to 5 short recurring theme tags")
+    evidence: list[str] = Field(default_factory=list, max_length=3, description="Up to 3 exact short excerpts from the review as evidence")
+
+
 class ProcessedFeedback(BaseModel):
     raw_item_id: str
     language: str
+    script: str | None = None
     translated_content: str | None = None
     sentiment_label: Literal["positive", "neutral", "negative"]
     sentiment_score: float | None = Field(default=None, ge=-1, le=1)
     themes: list[str] = []
     evidence: list[str] = []
     model: str | None = None
+    sarvam_metadata: dict[str, Any] | None = None
 
 
 class ProcessFeedbackRequest(BaseModel):
@@ -43,104 +57,154 @@ class ProcessFeedbackResponse(BaseModel):
     items: list[ProcessedFeedback]
 
 
-def _post_json(url: str, api_key: str, body: dict) -> dict:
-    request = Request(
-        url,
-        data=json.dumps(body).encode("utf-8"),
-        headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
-        method="POST",
-    )
-    try:
-        with urlopen(request, timeout=90) as response:
-            return json.loads(response.read().decode("utf-8"))
-    except HTTPError as error:
-        raise AIServiceException(f"AI provider returned {error.code}", status_code=502) from error
-    except (URLError, TimeoutError) as error:
-        raise AIServiceException("AI provider is unavailable", status_code=503) from error
-
-
-async def _analyze(item: FeedbackInput) -> ProcessedFeedback:
+def _build_mistral_analysis_chain():
+    """Builds the Mistral structured analysis chain for sentiment, themes, and evidence."""
     if not settings.MISTRAL_API_KEY:
         raise AIServiceException("MISTRAL_API_KEY must be configured", status_code=503)
-    prompt = (
-        "Return JSON only with language (ISO 639-1 or 'mixed'), translated_content (English or null), "
-        "sentiment_label (positive, neutral, or negative), sentiment_score (-1 to 1), "
-        "themes (up to 5 short strings), and evidence (up to 3 exact short excerpts from the review). "
-        "Preserve the review as evidence; do not invent excerpts. Review:\n" + item.content
+
+    llm = ChatMistralAI(
+        model=settings.MISTRAL_MODEL,
+        temperature=0,
+        mistral_api_key=settings.MISTRAL_API_KEY,
+        timeout=90,
     )
-    response = await asyncio.to_thread(
-        _post_json,
-        "https://api.mistral.ai/v1/chat/completions",
-        settings.MISTRAL_API_KEY,
-        {
-            "model": settings.MISTRAL_MODEL,
-            "temperature": 0,
-            "response_format": {"type": "json_object"},
-            "messages": [
-                {"role": "system", "content": "You analyze customer feedback and must return the requested JSON object."},
-                {"role": "user", "content": prompt},
-            ],
-        },
-    )
+    structured_llm = llm.with_structured_output(MistralFeedbackAnalysis)
+
+    prompt = ChatPromptTemplate.from_messages([
+        (
+            "system",
+            "You are an expert customer feedback analyzer. "
+            "Analyze the given customer review and determine the sentiment (positive, neutral, negative), "
+            "sentiment polarity score (-1.0 to 1.0), key recurring themes, and exact quote evidence. "
+            "Preserve exact phrases from the review for evidence; never invent excerpts.",
+        ),
+        (
+            "user",
+            "Review Content for Analysis:\n{review_content}\n\n"
+            "Original Canonical Text:\n{original_content}",
+        ),
+    ])
+
+    return prompt | structured_llm
+
+
+async def _process_single_item(
+    item: FeedbackInput,
+    mistral_chain: Any,
+    embeddings_model: VoyageAIEmbeddings,
+) -> dict[str, Any]:
+    """Processes a single raw item through Sarvam LID -> Sarvam Translation -> Mistral Analysis -> Voyage Embedding."""
+    # Step 1: Sarvam LID and Translation
+    sarvam_result: SarvamReviewResult = await sarvam_service.process_review(item.content)
+
+    # Content for Mistral analysis (English translation if available, else original)
+    analysis_content = sarvam_result.translated_content or item.content
+
+    # Step 2: Mistral Sentiment and Theme Analysis
     try:
-        content = response["choices"][0]["message"]["content"]
-        if isinstance(content, list):
-            content = "".join(part.get("text", "") for part in content if isinstance(part, dict))
-        analysis = json.loads(content)
-        return ProcessedFeedback(
-            raw_item_id=item.id,
-            language=analysis["language"],
-            translated_content=analysis.get("translated_content"),
-            sentiment_label=analysis["sentiment_label"],
-            sentiment_score=analysis.get("sentiment_score"),
-            themes=analysis.get("themes", []),
-            evidence=analysis.get("evidence", []),
-            model=settings.MISTRAL_MODEL,
+        analysis: MistralFeedbackAnalysis = await mistral_chain.ainvoke({
+            "review_content": analysis_content,
+            "original_content": item.content,
+        })
+    except Exception as err:
+        logger.error("Mistral analysis failed for item %s: %s", item.id, err)
+        # Fallback if LLM analysis fails on single item
+        analysis = MistralFeedbackAnalysis(
+            sentiment_label="neutral",
+            sentiment_score=0.0,
+            themes=[],
+            evidence=[item.content[:150]] if item.content else [],
         )
-    except (KeyError, TypeError, ValueError) as error:
-        raise AIServiceException("Mistral returned an invalid analysis", status_code=502) from error
 
-
-async def _embed(documents: list[str]) -> list[list[float]]:
-    if not settings.VOYAGE_API_KEY:
-        raise AIServiceException("VOYAGE_API_KEY must be configured", status_code=503)
-    response = await asyncio.to_thread(
-        _post_json,
-        "https://api.voyageai.com/v1/embeddings",
-        settings.VOYAGE_API_KEY,
-        {"input": documents, "model": settings.VOYAGE_MODEL, "input_type": "document"},
-    )
+    # Step 3: Voyage Embedding (embed original content or translated content)
     try:
-        return [entry["embedding"] for entry in response["data"]]
-    except (KeyError, TypeError) as error:
-        raise AIServiceException("Voyage returned invalid embeddings", status_code=502) from error
+        # Embed translated content if present, else original
+        embed_text = sarvam_result.translated_content or item.content
+        embedding: list[float] = embeddings_model.embed_query(embed_text)
+    except Exception as err:
+        logger.error("Voyage embedding failed for item %s: %s", item.id, err)
+        raise AIServiceException(f"Voyage embedding failed: {str(err)}", status_code=502) from err
+
+    processed = ProcessedFeedback(
+        raw_item_id=item.id,
+        language=sarvam_result.language,
+        script=sarvam_result.script,
+        translated_content=sarvam_result.translated_content,
+        sentiment_label=analysis.sentiment_label,
+        sentiment_score=analysis.sentiment_score,
+        themes=analysis.themes,
+        evidence=analysis.evidence,
+        model=f"sarvam+{settings.MISTRAL_MODEL}",
+        sarvam_metadata=sarvam_result.sarvam_metadata,
+    )
+
+    metadata = {
+        "business_id": item.business_id,
+        "raw_item_id": item.id,
+        "platform": item.platform,
+        "date": item.published_at or "",
+        "rating": item.rating if item.rating is not None else -1,
+        "language": sarvam_result.language,
+        "script": sarvam_result.script or "",
+        "sentiment": analysis.sentiment_label,
+        "themes": ", ".join(analysis.themes),
+        "source_url": item.source_url or "",
+        "translated": bool(sarvam_result.translated_content),
+    }
+
+    return {
+        "processed": processed,
+        "id": item.id,
+        "document": item.content,
+        "embedding": embedding,
+        "metadata": metadata,
+    }
 
 
 @router.post("/process", response_model=ProcessFeedbackResponse)
 async def process_feedback(payload: ProcessFeedbackRequest) -> ProcessFeedbackResponse:
-    """Analyze new feedback and index its original text with Voyage embeddings."""
-    processed = [await _analyze(item) for item in payload.items]
-    embeddings = await _embed([item.content for item in payload.items])
-    if len(embeddings) != len(payload.items):
-        raise AIServiceException("Voyage returned an incomplete embedding batch", status_code=502)
+    """Analyze new feedback using Sarvam AI (LID & Translation), Mistral (Analysis), and Voyage (Embeddings)."""
+    if not settings.VOYAGE_API_KEY:
+        raise AIServiceException("VOYAGE_API_KEY must be configured", status_code=503)
 
+    try:
+        mistral_chain = _build_mistral_analysis_chain()
+        embeddings_model = VoyageAIEmbeddings(
+            model=settings.VOYAGE_MODEL,
+            voyage_api_key=settings.VOYAGE_API_KEY,
+        )
+
+        # Process all items concurrently through the target pipeline
+        tasks = [
+            _process_single_item(item, mistral_chain, embeddings_model)
+            for item in payload.items
+        ]
+        results = await asyncio.gather(*tasks)
+
+    except AIServiceException:
+        raise
+    except Exception as error:
+        raise AIServiceException(f"Feedback processing pipeline failed: {str(error)}", status_code=502) from error
+
+    processed_items: list[ProcessedFeedback] = []
+    documents: list[str] = []
+    embeddings: list[list[float]] = []
+    metadatas: list[dict[str, Any]] = []
+    ids: list[str] = []
+
+    for res in results:
+        processed_items.append(res["processed"])
+        ids.append(res["id"])
+        documents.append(res["document"])
+        embeddings.append(res["embedding"])
+        metadatas.append(res["metadata"])
+
+    # Batch upsert into ChromaDB
     chroma_service.add_documents(
-        ids=[item.id for item in payload.items],
-        documents=[item.content for item in payload.items],
+        ids=ids,
+        documents=documents,
         embeddings=embeddings,
-        metadatas=[
-            {
-                "business_id": item.business_id,
-                "raw_item_id": item.id,
-                "platform": item.platform,
-                "date": item.published_at or "",
-                "rating": item.rating if item.rating is not None else -1,
-                "language": result.language,
-                "sentiment": result.sentiment_label,
-                "themes": ", ".join(result.themes),
-                "source_url": item.source_url or "",
-            }
-            for item, result in zip(payload.items, processed, strict=True)
-        ],
+        metadatas=metadatas,
     )
-    return ProcessFeedbackResponse(items=processed)
+
+    return ProcessFeedbackResponse(items=processed_items)

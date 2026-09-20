@@ -73,6 +73,12 @@ npm run dev
 | POST | `/api/v1/businesses/:id/platforms` | Connect a platform to a business |
 | PATCH | `/api/v1/businesses/:id/platforms/:platformId` | Update a platform connection |
 | POST | `/api/v1/businesses/:id/platforms/:platformId/scrape` | Ingest Google Reviews and process new feedback |
+| GET | `/api/v1/businesses/:id/analytics/weekly` | Weekly analytics comparison & meaningful changes |
+| POST | `/api/v1/businesses/:id/briefs/generate` | Generate weekly intelligence brief |
+| GET | `/api/v1/businesses/:id/briefs/latest` | Get latest weekly brief |
+| GET | `/api/v1/businesses/:id/briefs/:briefId` | Get brief by ID |
+| GET | `/api/v1/businesses/:id/briefs` | List weekly briefs with pagination |
+| POST | `/api/v1/businesses/:id/chat` | Hybrid RAG chat with Show Proof evidence & strict grounding |
 
 #### Supported Platforms
 
@@ -220,6 +226,8 @@ Response (200):
 |--------|------|-------------|
 | GET | `/api/v1/health` | Health check (ChromaDB + AI config) |
 | POST | `/api/v1/feedback/process` | Analyze and Voyage-index a batch of saved feedback |
+| POST | `/api/v1/briefs/summarize` | Generate grounded weekly brief summary with Mistral |
+| POST | `/api/v1/chat` | LangGraph hybrid RAG chat with ChromaDB & Mistral |
 | GET | `/docs` | OpenAPI documentation |
 
 ## Development
