@@ -1,0 +1,205 @@
+@import "tailwindcss";
+
+/* ─────────────────────────────────────────────────────────────
+   LINEAR DESIGN SYSTEM TOKENS (linear.app/DESIGN.md)
+   Near-black canvas #010102, 4-step surface ladder, hairline borders,
+   and signature Linear lavender-blue #5e6ad2 accent.
+   ───────────────────────────────────────────────────────────── */
+:root {
+  --canvas: #010102;
+  --surface-1: #0f1011;
+  --surface-2: #141516;
+  --surface-3: #18191a;
+  --surface-4: #191a1b;
+
+  --hairline: #23252a;
+  --hairline-strong: #34343a;
+  --hairline-tertiary: #3e3e44;
+
+  --primary: #5e6ad2;
+  --primary-hover: #828fff;
+  --primary-focus: #5e69d1;
+  --on-primary: #ffffff;
+
+  --ink: #f7f8f8;
+  --ink-muted: #d0d6e0;
+  --ink-subtle: #8a8f98;
+  --ink-tertiary: #62666d;
+
+  --semantic-success: #27a644;
+  --semantic-overlay: #000000;
+  --brand-secure: #7a7fad;
+}
+
+/* Base resets & typography */
+html {
+  scroll-behavior: smooth;
+  color-scheme: dark;
+  background-color: var(--canvas);
+}
+
+body {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: var(--ink);
+  background-color: var(--canvas);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+  letter-spacing: -0.011em;
+}
+
+/* Custom Selection in Linear signature lavender */
+::selection {
+  background-color: #5e6ad2;
+  color: #ffffff;
+}
+
+/* Custom Linear Dark Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #23252a;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #34343a;
+}
+
+/* Headings with Linear measured negative tracking */
+h1, h2, h3, h4 {
+  text-wrap: balance;
+  letter-spacing: -0.03em;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* Tabular numbers for metrics and stats */
+.tabular-numbers {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Eyebrow / Taxonomy text */
+.linear-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-subtle);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   LINEAR COMPONENT UTILITIES
+   ───────────────────────────────────────────────────────────── */
+
+/* Primary CTA Button (Linear Lavender #5e6ad2) */
+.linear-btn-primary,
+.cal-button-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 8px;
+  padding: 8px 14px;
+  background-color: #5e6ad2;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+  cursor: pointer;
+}
+.linear-btn-primary:hover,
+.cal-button-primary:hover {
+  background-color: #828fff;
+  box-shadow: 0 2px 8px rgba(94, 106, 210, 0.35);
+}
+.linear-btn-primary:active,
+.cal-button-primary:active {
+  background-color: #5e69d1;
+  transform: scale(0.98);
+}
+
+/* Secondary Charcoal Button (Surface-1 / Surface-2) */
+.linear-btn-secondary,
+.cal-button-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 8px;
+  padding: 8px 14px;
+  background-color: #141516;
+  color: #d0d6e0;
+  border: 1px solid #23252a;
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.04);
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  cursor: pointer;
+}
+.linear-btn-secondary:hover,
+.cal-button-secondary:hover {
+  background-color: #18191a;
+  border-color: #34343a;
+  color: #f7f8f8;
+}
+.linear-btn-secondary:active,
+.cal-button-secondary:active {
+  transform: scale(0.98);
+}
+
+/* Linear Card Base (Surface 1 with subtle top highlight and hairline border) */
+.linear-card {
+  background-color: #0f1011;
+  border: 1px solid #23252a;
+  border-radius: 12px;
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.04);
+}
+
+/* Linear Card Lifted (Surface 2) */
+.linear-card-lifted {
+  background-color: #141516;
+  border: 1px solid #34343a;
+  border-radius: 12px;
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
+}
+
+/* Text Input Styling (Linear Spec) */
+.linear-input {
+  background-color: #141516;
+  border: 1px solid #23252a;
+  color: #f7f8f8;
+  border-radius: 8px;
+  font-size: 13px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.linear-input:focus,
+.linear-input:focus-visible {
+  outline: none;
+  border-color: #5e6ad2;
+  box-shadow: 0 0 0 2px rgba(94, 106, 210, 0.25);
+}
+.linear-input::placeholder {
+  color: #62666d;
+}
+
+/* Accessible focus visible states */
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #010102, 0 0 0 3px #5e6ad2;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
