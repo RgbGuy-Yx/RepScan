@@ -3,13 +3,21 @@ import { z } from "zod";
 const PLATFORM_ENUM = z.enum(["google", "instagram", "linkedin"]);
 
 export const createBusinessSchema = z.object({
-  name: z.string().min(1, "Business name is required").max(255),
-  description: z.string().optional(),
+  name: z.string().trim().min(1, "Business name is required").max(255),
+  description: z.string().max(2000).optional().nullable(),
+  workspace_id: z.string().uuid().optional().nullable(),
+  industry: z.string().max(255).optional().nullable(),
+  website: z.string().url("website must be a valid URL").optional().nullable().or(z.literal("")),
+  location: z.string().max(255).optional().nullable(),
 });
 
 export const updateBusinessSchema = z.object({
-  name: z.string().min(1, "Business name is required").max(255).optional(),
-  description: z.string().optional(),
+  name: z.string().trim().min(1, "Business name is required").max(255).optional(),
+  description: z.string().max(2000).optional().nullable(),
+  workspace_id: z.string().uuid().optional().nullable(),
+  industry: z.string().max(255).optional().nullable(),
+  website: z.string().url("website must be a valid URL").optional().nullable().or(z.literal("")),
+  location: z.string().max(255).optional().nullable(),
 });
 
 export const createPlatformConnectionSchema = z.object({

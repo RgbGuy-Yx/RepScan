@@ -11,5 +11,6 @@ export const config = {
   googleReviewsActorId: process.env.APIFY_GOOGLE_REVIEWS_ACTOR_ID || "",
   scrapeIntervalMinutes: parseInt(process.env.SCRAPE_INTERVAL_MINUTES || "60", 10),
   enableScheduler: process.env.ENABLE_SCHEDULED_SCRAPING === "true",
+  clerkSecretKey: process.env.CLERK_SECRET_KEY || "",
+  clerkPublishableKey: process.env.CLERK_PUBLISHABLE_KEY || "",
 };
-

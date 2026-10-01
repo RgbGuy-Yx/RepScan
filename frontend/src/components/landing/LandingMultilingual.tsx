@@ -1,4 +1,4 @@
-import { Languages, Check, ArrowRight } from 'lucide-react';
+import { Languages, Check } from 'lucide-react';
 
 export default function LandingMultilingual() {
   const languageCards = [

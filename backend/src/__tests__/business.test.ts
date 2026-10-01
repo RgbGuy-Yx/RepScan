@@ -56,7 +56,7 @@ describe("Business Service", () => {
       expect(result).toEqual(row);
       expect(mockPool.query).toHaveBeenCalledWith(
         expect.stringContaining("INSERT INTO businesses"),
-        ["Acme Corp", "A test company"]
+        ["Acme Corp", "A test company", null, null, null, null]
       );
     });
   });
@@ -97,6 +97,13 @@ describe("Business Service", () => {
 
   describe("updateBusiness", () => {
     it("should update a business", async () => {
+      const existingRow = {
+        id: businessId,
+        name: "Acme Corp",
+        description: null,
+        created_at: new Date(),
+        updated_at: new Date(),
+      };
       const row = {
         id: businessId,
         name: "Updated Corp",
@@ -105,6 +112,7 @@ describe("Business Service", () => {
         updated_at: new Date(),
       };
 
+      mockQuery([existingRow]);
       mockQuery([row]);
       const result = await updateBusiness(businessId, { name: "Updated Corp" });
 

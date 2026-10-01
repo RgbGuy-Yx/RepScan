@@ -2,7 +2,7 @@ interface LandingFooterProps {
   onLaunchApp?: () => void;
 }
 
-export default function LandingFooter({ onLaunchApp }: LandingFooterProps) {
+export default function LandingFooter({ onLaunchApp: _onLaunchApp }: LandingFooterProps) {
   return (
     <footer className="bg-[#010102] text-[#8a8f98] py-16 px-6 lg:px-8 border-t border-[#23252a] text-xs">
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-5 gap-10">

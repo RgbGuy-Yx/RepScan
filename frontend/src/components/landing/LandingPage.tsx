@@ -10,7 +10,7 @@ import LandingFooter from './LandingFooter';
 import type { ProofItem } from '../../types';
 
 interface LandingPageProps {
-  onLaunchApp: () => void;
+  onLaunchApp: (target?: 'app' | 'sign-in' | 'sign-up') => void;
   onOpenProof: (proof: ProofItem) => void;
 }
 

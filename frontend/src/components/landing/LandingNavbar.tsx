@@ -1,27 +1,38 @@
 import { useState } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Menu, X, LogOut } from 'lucide-react';
+import { useBusiness } from '../../context/BusinessContext';
+import UserProfileMenu from '../UserProfileMenu';
 
 interface LandingNavbarProps {
-  onLaunchApp?: () => void;
+  onLaunchApp?: (target?: 'app' | 'sign-in' | 'sign-up') => void;
 }
 
-export default function LandingNavbar({ onLaunchApp }: LandingNavbarProps) {
+export default function LandingNavbar(_props: LandingNavbarProps = {}) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { isAuthenticated, logout, userProfile } = useBusiness();
+
+  const handleMobileLogout = async () => {
+    setMobileMenuOpen(false);
+    if (logout) {
+      await logout();
+    }
+  };
 
   return (
     <header className="sticky top-0 z-40 w-full h-14 bg-[#010102]/85 backdrop-blur-md border-b border-[#23252a] px-6 lg:px-8 flex items-center justify-between">
       {/* Brand Wordmark & Glyph */}
       <div className="flex items-center gap-6">
-        <a href="#" className="inline-flex items-center gap-2.5 group">
+        <Link to="/" className="inline-flex items-center gap-2.5 group">
           <span className="w-6 h-6 rounded-md bg-[#5e6ad2] flex items-center justify-center text-white font-bold text-xs tracking-tight shadow-[0_1px_4px_rgba(94,106,210,0.4)]">
-            <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <path d="M4 6h16M4 12h10M4 18h14" strokeLinecap="round" />
             </svg>
           </span>
           <span className="font-semibold text-sm tracking-[-0.03em] text-[#f7f8f8]">
             Rep<span className="text-[#8a8f98] font-normal">Scan</span>
           </span>
-        </a>
+        </Link>
 
         {/* Primary Nav Links */}
         <nav className="hidden md:flex items-center gap-5 text-[13px] text-[#8a8f98] font-medium" aria-label="Main Navigation">
@@ -45,21 +56,34 @@ export default function LandingNavbar({ onLaunchApp }: LandingNavbarProps) {
 
       {/* Right Action Pair */}
       <div className="flex items-center gap-2.5">
-        <button
-          type="button"
-          onClick={onLaunchApp}
-          className="hidden sm:inline-flex text-[13px] font-medium text-[#d0d6e0] hover:text-[#f7f8f8] px-3 py-1.5 rounded-md hover:bg-[#141516] transition-colors cursor-pointer"
-        >
-          Sign In
-        </button>
+        {isAuthenticated ? (
+          <div className="flex items-center gap-2.5">
+            <Link
+              to="/dashboard"
+              className="linear-btn-primary text-xs h-8 px-3.5 font-medium cursor-pointer inline-flex items-center gap-1.5"
+            >
+              <span>Dashboard</span>
+              <span>→</span>
+            </Link>
+            <UserProfileMenu align="right" />
+          </div>
+        ) : (
+          <>
+            <Link
+              to="/sign-in"
+              className="hidden sm:inline-flex text-[13px] font-medium text-[#d0d6e0] hover:text-[#f7f8f8] px-3 py-1.5 rounded-md hover:bg-[#141516] transition-colors cursor-pointer"
+            >
+              Sign In
+            </Link>
 
-        <button
-          type="button"
-          onClick={onLaunchApp}
-          className="linear-btn-primary text-xs h-8 px-3.5 font-medium cursor-pointer"
-        >
-          Explore RepScan
-        </button>
+            <Link
+              to="/sign-up"
+              className="linear-btn-primary text-xs h-8 px-3.5 font-medium cursor-pointer inline-flex items-center"
+            >
+              Create Account
+            </Link>
+          </>
+        )}
 
         {/* Mobile menu button */}
         <button
@@ -113,17 +137,38 @@ export default function LandingNavbar({ onLaunchApp }: LandingNavbarProps) {
             </a>
           </nav>
 
-          <div className="pt-6">
-            <button
-              type="button"
-              onClick={() => {
-                setMobileMenuOpen(false);
-                onLaunchApp?.();
-              }}
-              className="linear-btn-primary w-full h-10 text-xs font-medium justify-center"
-            >
-              Launch Dashboard App
-            </button>
+          <div className="pt-6 space-y-2">
+            {isAuthenticated ? (
+              <>
+                <div className="p-3 rounded-lg bg-[#141516] border border-[#23252a] text-xs text-[#8a8f98]">
+                  <span className="text-[#f7f8f8] font-medium block">{userProfile?.name || 'Operator'}</span>
+                  <span className="text-[11px] truncate font-mono">{userProfile?.email}</span>
+                </div>
+                <Link
+                  to="/dashboard"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="linear-btn-primary w-full h-10 text-xs font-medium justify-center flex items-center"
+                >
+                  Open Dashboard
+                </Link>
+                <button
+                  type="button"
+                  onClick={handleMobileLogout}
+                  className="w-full h-10 rounded-lg border border-rose-500/30 bg-rose-500/10 text-rose-400 hover:text-rose-300 hover:bg-rose-500/20 text-xs font-medium flex items-center justify-center gap-2 cursor-pointer transition-colors"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span>Log Out</span>
+                </button>
+              </>
+            ) : (
+              <Link
+                to="/sign-in"
+                onClick={() => setMobileMenuOpen(false)}
+                className="linear-btn-primary w-full h-10 text-xs font-medium justify-center flex items-center"
+              >
+                Sign In / Register
+              </Link>
+            )}
           </div>
         </div>
       )}

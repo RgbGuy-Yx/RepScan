@@ -93,3 +93,60 @@ export async function markProcessingFailed(ids: string[], error: string): Promis
     [ids, error.slice(0, 2000)]
   );
 }
+
+export interface ReviewWithAnalysis {
+  id: string;
+  business_id: string;
+  platform: Platform;
+  author: string | null;
+  content: string;
+  rating: number | null;
+  published_at: Date | null;
+  source_url: string | null;
+  language: string | null;
+  sentiment_label: "positive" | "neutral" | "negative" | null;
+  sentiment_score: number | null;
+  themes: string[];
+  evidence: string[];
+}
+
+export async function findReviewsByBusinessId(
+  businessId: string,
+  limit = 50,
+  offset = 0
+): Promise<ReviewWithAnalysis[]> {
+  const result = await pool.query<{
+    id: string;
+    business_id: string;
+    platform: Platform;
+    author: string | null;
+    content: string;
+    rating: number | null;
+    published_at: Date | null;
+    source_url: string | null;
+    language: string | null;
+    sentiment_label: "positive" | "neutral" | "negative" | null;
+    sentiment_score: number | null;
+    themes: any;
+    evidence: any;
+  }>(
+    `SELECT r.id, r.business_id, r.platform, r.author, r.content, r.rating,
+            r.published_at, r.source_url, r.language,
+            fa.sentiment_label, fa.sentiment_score,
+            COALESCE(fa.themes, '[]'::jsonb) as themes,
+            COALESCE(fa.evidence, '[]'::jsonb) as evidence
+     FROM raw_items r
+     LEFT JOIN feedback_analyses fa ON fa.raw_item_id = r.id
+     WHERE r.business_id = $1
+     ORDER BY r.published_at DESC NULLS LAST, r.created_at DESC
+     LIMIT $2 OFFSET $3`,
+    [businessId, limit, offset]
+  );
+
+  return result.rows.map((row) => ({
+    ...row,
+    themes: Array.isArray(row.themes) ? row.themes : typeof row.themes === 'string' ? JSON.parse(row.themes) : [],
+    evidence: Array.isArray(row.evidence) ? row.evidence : typeof row.evidence === 'string' ? JSON.parse(row.evidence) : [],
+  }));
+}
+

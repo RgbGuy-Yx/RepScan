@@ -1,7 +1,8 @@
-import { useState } from 'react';
-import { Search, Plus } from 'lucide-react';
-import { MOCK_REVIEWS } from '../mock/dashboardData';
+import { useState, useEffect } from 'react';
+import { Search, Plus, Loader2, FileText } from 'lucide-react';
 import type { ReviewItem, PlatformType, SentimentType } from '../types/dashboard';
+import { useBusiness } from '../context/BusinessContext';
+import { businessApi } from '../api/businessApi';
 
 interface ReviewsViewProps {
   onOpenProof: (review: ReviewItem) => void;
@@ -9,11 +10,62 @@ interface ReviewsViewProps {
 }
 
 export default function ReviewsView({ onOpenProof, onCreateTask }: ReviewsViewProps) {
+  const { activeBusiness } = useBusiness();
+  const [reviews, setReviews] = useState<ReviewItem[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [platformFilter, setPlatformFilter] = useState<'all' | PlatformType>('all');
   const [sentimentFilter, setSentimentFilter] = useState<'all' | SentimentType>('all');
 
-  const filteredReviews = MOCK_REVIEWS.filter((rev) => {
+  useEffect(() => {
+    if (!activeBusiness?.id) {
+      setReviews([]);
+      return;
+    }
+
+    let isMounted = true;
+    const fetchReviews = async () => {
+      setIsLoading(true);
+      try {
+        const rawReviews = await businessApi.listReviews(activeBusiness.id);
+        if (isMounted) {
+          const mapped: ReviewItem[] = rawReviews.map((r) => {
+            const platformStr = r.platform.toLowerCase();
+            const platform: PlatformType = platformStr.includes('google')
+              ? 'google'
+              : platformStr.includes('instagram')
+              ? 'instagram'
+              : 'linkedin';
+
+            return {
+              id: r.id,
+              author: r.author || 'Anonymous Guest',
+              rating: r.rating || 5,
+              date: r.published_at ? new Date(r.published_at).toLocaleDateString() : 'Recent',
+              platform,
+              content: r.content,
+              sentiment: (r.sentiment_label as SentimentType) || 'neutral',
+              themes: r.themes || [],
+              originalLanguage: r.language || 'English',
+            };
+          });
+          setReviews(mapped);
+        }
+      } catch (err) {
+        console.warn('Could not fetch reviews:', err);
+        if (isMounted) setReviews([]);
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
+    };
+
+    fetchReviews();
+    return () => {
+      isMounted = false;
+    };
+  }, [activeBusiness?.id]);
+
+  const filteredReviews = reviews.filter((rev) => {
     const matchesSearch =
       rev.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
       rev.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -48,28 +100,28 @@ export default function ReviewsView({ onOpenProof, onCreateTask }: ReviewsViewPr
               key={p}
               type="button"
               onClick={() => setPlatformFilter(p)}
-              className={`px-2.5 py-1 rounded text-xs capitalize transition-colors ${
+              className={`px-2.5 py-1 rounded capitalize transition-all cursor-pointer ${
                 platformFilter === p
-                  ? 'bg-[#1f2023] text-[#f7f8f8] border border-[#34343a] shadow-xs font-medium'
-                  : 'text-[#8a8f98] hover:text-[#f7f8f8]'
+                  ? 'bg-[#1e2024] text-[#f7f8f8] shadow-sm'
+                  : 'text-[#8a8f98] hover:text-[#d0d6e0]'
               }`}
             >
-              {p === 'all' ? 'All Platforms' : p}
+              {p}
             </button>
           ))}
         </div>
 
-        {/* Sentiment Filter Dropdown */}
+        {/* Sentiment Filter Buttons */}
         <div className="flex items-center gap-1 p-1 rounded-md bg-[#141516] border border-[#23252a] text-xs font-medium">
           {(['all', 'positive', 'neutral', 'negative'] as const).map((s) => (
             <button
               key={s}
               type="button"
               onClick={() => setSentimentFilter(s)}
-              className={`px-2.5 py-1 rounded text-xs capitalize transition-colors ${
+              className={`px-2.5 py-1 rounded capitalize transition-all cursor-pointer ${
                 sentimentFilter === s
-                  ? 'bg-[#1f2023] text-[#f7f8f8] border border-[#34343a] shadow-xs font-medium'
-                  : 'text-[#8a8f98] hover:text-[#f7f8f8]'
+                  ? 'bg-[#1e2024] text-[#f7f8f8] shadow-sm'
+                  : 'text-[#8a8f98] hover:text-[#d0d6e0]'
               }`}
             >
               {s}
@@ -78,108 +130,119 @@ export default function ReviewsView({ onOpenProof, onCreateTask }: ReviewsViewPr
         </div>
       </div>
 
-      {/* Review List */}
-      <div className="space-y-3.5">
-        {filteredReviews.length === 0 ? (
-          <div className="p-12 text-center bg-[#0f1011] rounded-xl border border-[#23252a] text-[#8a8f98] text-xs">
-            No customer reviews found matching your search and filter criteria.
+      {/* Reviews List */}
+      {isLoading ? (
+        <div className="p-16 flex flex-col items-center justify-center text-center space-y-3">
+          <Loader2 className="w-6 h-6 text-[#5e6ad2] animate-spin" />
+          <p className="text-xs text-[#8a8f98]">Loading reviews from PostgreSQL...</p>
+        </div>
+      ) : filteredReviews.length === 0 ? (
+        <div className="p-16 rounded-xl bg-[#0f1011] border border-[#23252a] text-center space-y-3">
+          <div className="w-10 h-10 rounded-xl bg-[#141516] border border-[#23252a] flex items-center justify-center mx-auto text-[#62666d]">
+            <FileText className="w-5 h-5" />
           </div>
-        ) : (
-          filteredReviews.map((rev) => (
+          <h3 className="text-sm font-semibold text-[#f7f8f8]">No Customer Reviews Found</h3>
+          <p className="text-xs text-[#8a8f98] max-w-sm mx-auto">
+            {reviews.length === 0
+              ? `No reviews have been ingested yet for ${activeBusiness?.name || 'this business'}. Connect Google Reviews in Settings to run a crawl.`
+              : 'No reviews match your current search and filter criteria.'}
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {filteredReviews.map((rev) => (
             <div
               key={rev.id}
-              className="p-5 rounded-xl bg-[#0f1011] border border-[#23252a] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.04)] hover:border-[#34343a] transition-all flex flex-col justify-between"
+              className="p-5 rounded-xl bg-[#0f1011] border border-[#23252a] hover:border-[#34343a] transition-all space-y-3 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.02)]"
             >
               <div className="flex items-start justify-between gap-4">
-                <div className="flex items-start gap-3">
-                  {/* Platform Indicator */}
-                  <div className="w-8 h-8 rounded-md flex items-center justify-center shrink-0 text-xs font-bold mt-0.5">
-                    {rev.platform === 'google' ? (
-                      <span className="text-red-400 bg-red-950/40 w-full h-full rounded-md flex items-center justify-center border border-red-900/30">
-                        G
-                      </span>
-                    ) : rev.platform === 'instagram' ? (
-                      <span className="text-pink-400 bg-pink-950/40 w-full h-full rounded-md flex items-center justify-center border border-pink-900/30 text-[10px]">
-                        IG
-                      </span>
-                    ) : (
-                      <span className="text-blue-400 bg-blue-950/40 w-full h-full rounded-md flex items-center justify-center border border-blue-900/30 text-xs">
-                        in
-                      </span>
-                    )}
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-semibold text-[#f7f8f8]">{rev.author}</span>
+                    <span className="text-[11px] text-[#62666d]">·</span>
+                    <span className="text-[11px] text-[#8a8f98]">{rev.date}</span>
+                    <span className="text-[11px] text-[#62666d]">·</span>
+                    <span
+                      className={`text-[10px] px-1.5 py-0.2 rounded font-mono uppercase border ${
+                        rev.platform === 'google'
+                          ? 'bg-red-950/40 text-red-300 border-red-900/30'
+                          : rev.platform === 'instagram'
+                          ? 'bg-pink-950/40 text-pink-300 border-pink-900/30'
+                          : 'bg-blue-950/40 text-blue-300 border-blue-900/30'
+                      }`}
+                    >
+                      {rev.platform}
+                    </span>
                   </div>
 
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-semibold text-[#f7f8f8]">{rev.author}</span>
-                      <span className="text-xs text-[#62666d]">·</span>
-                      <span className="text-xs text-[#8a8f98]">{rev.date}</span>
-                    </div>
-
-                    <div className="flex items-center gap-1.5 mt-1 text-xs">
-                      <div className="flex text-amber-400">
-                        {'★'.repeat(rev.rating)}
-                        <span className="text-[#23252a]">{'★'.repeat(5 - rev.rating)}</span>
-                      </div>
-                      <span className="text-[#8a8f98] font-medium">({rev.rating}.0)</span>
+                  {/* Star Rating */}
+                  <div className="flex items-center gap-1">
+                    {[1, 2, 3, 4, 5].map((star) => (
                       <span
-                        className={`ml-2 text-[10px] px-2 py-0.5 rounded font-medium uppercase ${
-                          rev.sentiment === 'positive'
-                            ? 'bg-[#27a644]/15 text-[#4ade80] border border-[#27a644]/30'
-                            : rev.sentiment === 'negative'
-                            ? 'bg-rose-500/15 text-rose-400 border border-rose-500/30'
-                            : 'bg-[#18191a] text-[#8a8f98] border border-[#23252a]'
+                        key={star}
+                        className={`text-xs ${
+                          star <= rev.rating ? 'text-amber-400' : 'text-[#23252a]'
                         }`}
                       >
-                        {rev.sentiment}
+                        ★
                       </span>
-                    </div>
+                    ))}
+                    <span className="text-[11px] font-mono text-[#8a8f98] ml-1">
+                      {rev.rating}.0
+                    </span>
                   </div>
                 </div>
 
-                {/* Right Quick Actions */}
+                {/* Sentiment Badge & Actions */}
                 <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => onOpenProof(rev)}
-                    className="linear-btn-secondary text-xs h-8 px-3"
+                  <span
+                    className={`text-[11px] px-2 py-0.5 rounded font-medium border ${
+                      rev.sentiment === 'positive'
+                        ? 'bg-emerald-950/40 text-emerald-300 border-emerald-900/30'
+                        : rev.sentiment === 'negative'
+                        ? 'bg-rose-950/40 text-rose-300 border-rose-900/30'
+                        : 'bg-amber-950/40 text-amber-300 border-amber-900/30'
+                    }`}
                   >
-                    View Proof
-                  </button>
+                    {rev.sentiment}
+                  </span>
+
                   <button
                     type="button"
                     onClick={() => onCreateTask(rev)}
-                    className="linear-btn-primary text-xs h-8 px-3 flex items-center gap-1.5"
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-[#141516] hover:bg-[#18191a] border border-[#23252a] text-[11px] font-medium text-[#d0d6e0] transition-colors cursor-pointer"
                   >
-                    <Plus className="w-3.5 h-3.5" />
-                    <span>Create Action</span>
+                    <Plus className="w-3 h-3 text-[#5e6ad2]" />
+                    <span>Create Task</span>
                   </button>
                 </div>
               </div>
 
-              {/* Review Text Content */}
-              <p className="mt-3 text-xs sm:text-sm text-[#d0d6e0] leading-relaxed pl-11">
-                “{rev.content}”
+              {/* Review Text */}
+              <p
+                onClick={() => onOpenProof(rev)}
+                className="text-xs text-[#d0d6e0] leading-relaxed cursor-pointer hover:text-[#f7f8f8] transition-colors"
+              >
+                {rev.content}
               </p>
 
-              {/* Extracted Theme Tags */}
-              <div className="mt-3 pt-3 border-t border-[#23252a] pl-11 flex flex-wrap gap-2 text-xs">
-                {rev.themes.map((t) => (
-                  <span
-                    key={t}
-                    className="px-2 py-0.5 rounded bg-[#141516] border border-[#23252a] text-[#8a8f98] text-[11px] font-medium"
-                  >
-                    #{t}
-                  </span>
-                ))}
-                <span className="font-mono text-[10px] text-[#62666d] ml-auto self-center">
-                  id:{rev.id}
-                </span>
-              </div>
+              {/* Theme Tags */}
+              {rev.themes.length > 0 && (
+                <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                  {rev.themes.map((t) => (
+                    <span
+                      key={t}
+                      className="text-[10px] px-2 py-0.5 rounded bg-[#141516] border border-[#23252a] text-[#8a8f98]"
+                    >
+                      #{t}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
-          ))
-        )}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
