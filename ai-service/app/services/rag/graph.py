@@ -1,4 +1,5 @@
 import logging
+import re
 from typing import Any, Literal
 
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
@@ -14,7 +15,7 @@ from app.services.rag.guardrails import (
     assess_confidence_and_limitations,
     validate_and_format_sources,
 )
-from app.services.rag.retriever import hybrid_retriever
+from app.services.rag.retriever import hybrid_retriever, retriever_runnable
 from app.services.rag.state import RagChatResponse, RagChatState, SourceProof
 
 logger = logging.getLogger(__name__)
@@ -68,9 +69,9 @@ def _format_context_for_prompt(
             plat = rev.get("platform", "unknown")
             rating = rev.get("rating", "N/A")
             dt = rev.get("date", "N/A")
-            author = rev.get("author", "Anonymous")
-            content = rev.get("content", "").replace("\n", " ")
-            reviews_str += f"[{i}] RAW_ITEM_ID: {raw_id} | Platform: {plat} | Rating: {rating} | Date: {dt} | Author: {author}\n"
+            author = rev.get("author") or "Verified Customer"
+            content = rev.get("content") or rev.get("text") or ""
+            reviews_str += f"[Review {i}] (Reference ID: {raw_id}) | Platform: {plat} | Rating: {rating}/5 | Date: {dt} | Author: {author}\n"
             reviews_str += f"    Content: \"{content}\"\n\n"
         sections.append(reviews_str)
     else:
@@ -97,57 +98,80 @@ async def prepare_query_node(state: RagChatState) -> dict[str, Any]:
 
 # ── Node 2: Retrieve Context ──────────────────────────────────────
 async def retrieve_context_node(state: RagChatState) -> dict[str, Any]:
-    """Performs hybrid retrieval using ChromaDB and PostgreSQL structured context."""
-    business_id = state.get("business_id", "")
-    query = state.get("query", "")
-    filters = state.get("filters")
-    structured = state.get("structured_context") or {}
-
-    # Semantic vector retrieval from ChromaDB with metadata filters
-    semantic_docs = hybrid_retriever.retrieve_semantic_docs(
-        query=query,
-        business_id=business_id,
-        filters=filters,
-        k=8,
-    )
-
-    # Combine with structured PostgreSQL sample reviews if any
-    all_docs = hybrid_retriever.combine_with_structured(semantic_docs, structured)
-
+    """Performs hybrid retrieval using ChromaDB and PostgreSQL structured context via LangChain Runnable."""
+    all_docs = await retriever_runnable.ainvoke({
+        "query": state.get("query", ""),
+        "business_id": state.get("business_id", ""),
+        "filters": state.get("filters"),
+        "structured_context": state.get("structured_context") or {},
+        "k": 8,
+    })
     return {"retrieved_docs": all_docs}
 
 
 # ── Node 3: Generate Grounded Answer ──────────────────────────────
 async def generate_grounded_answer_node(state: RagChatState) -> dict[str, Any]:
-    """Calls Mistral LLM with strict grounding constraints."""
-    if not settings.MISTRAL_API_KEY:
-        raise AIServiceException("MISTRAL_API_KEY is not configured", status_code=503)
-
-    query = state.get("query", "")
+    """Calls Mistral LLM with strict grounding constraints and structured formatting."""
+    query = state.get("query", "").strip()
     filters = state.get("filters")
     structured = state.get("structured_context") or {}
     retrieved_docs = state.get("retrieved_docs") or []
     history = state.get("conversation_history") or []
 
+    # 1. Zero-Review Guardrail Fast Path
+    total_reviews = structured.get("total_reviews", 0)
+    if not retrieved_docs and total_reviews == 0:
+        logger.info("Zero reviews available for query '%s' - returning friendly grounded empty-state response", query)
+        return {
+            "draft_answer": (
+                "Hello! It looks like no customer reviews or feedback entries have been synced yet for this business.\n\n"
+                "I'd love to help you analyze customer sentiment, ratings, and common themes once your feedback is connected! "
+                "You can link your Google Maps or other review profiles anytime in **Settings** to get started."
+            ),
+            "sources": [],
+            "confidence": "Low",
+            "limitation_note": "No customer reviews currently synced for this business.",
+        }
+
+    if not settings.MISTRAL_API_KEY:
+        raise AIServiceException("AI chat service is currently undergoing maintenance. Please try again shortly.", status_code=503)
+
     context_text = _format_context_for_prompt(structured, retrieved_docs, filters)
 
     llm = ChatMistralAI(
         model=settings.MISTRAL_MODEL,
-        temperature=0,
+        temperature=0.1,
         mistral_api_key=settings.MISTRAL_API_KEY,
         timeout=90,
+        max_retries=3,
     )
     structured_llm = llm.with_structured_output(LLMRagOutput)
 
     system_prompt = (
-        "You are RepScan's intelligence & RAG evidence engine. Your role is to answer user queries "
-        "about business reputation, customer reviews, ratings, sentiment, and themes with strict grounding.\n\n"
-        "CRITICAL RULES:\n"
+        "You are RepScan Assistant, a warm, executive-grade AI intelligence partner dedicated to helping "
+        "business owners, clinic teams, and executives understand and delight their customers.\n\n"
+        "YOUR PERSONALITY & TONE:\n"
+        "- Professional, warm, respectful, and constructive. Greet the user naturally when they say hi or hello.\n"
+        "- Objective, data-driven, and supportive: celebrate positive customer praise enthusiastically, and frame critical "
+        "feedback constructively as clear, actionable opportunities for operational excellence.\n"
+        "- Clear, structured, and easy to read: avoid robotic or messy stream-of-consciousness text.\n"
+        "- End with a warm, open-ended offer to help further (e.g. 'Let me know if you would like me to check any specific treatment, doctor, or timeframe!').\n\n"
+        "RESPONSE STRUCTURE & FORMATTING (EXECUTIVE BRIEFING STYLE):\n"
+        "- Format answers like an executive intelligence brief: structured, clear, and high-impact.\n"
+        "- When analyzing feedback, complaints, or themes, structure your answer into clean sections:\n"
+        "  1. **Executive Overview**: 1-2 sentences summarizing overall sentiment, volume, and date range.\n"
+        "  2. **Core Themes / Issues**: Group feedback into distinct numbered themes (e.g. `### 1. Wait Times & Scheduling (2 mentions)`).\n"
+        "     - **The Issue**: A concise explanation of the patient/customer friction point.\n"
+        "     - **Evidence**: Direct quotes using clean markdown blockquotes: `> \"...\"` followed on the next line by `— Verified Customer (2.0★, Google)`.\n"
+        "     - **Impact**: Brief note on how this affects patient satisfaction or repeat visits.\n"
+        "  3. **Recommended Action Steps**: 2-3 specific, actionable operational improvements the business can take immediately.\n"
+        "- BANNED CONTENT: NEVER print raw database UUIDs or strings like `(RAW_ITEM_ID: ...)` in the text of `answer`. Review IDs belong exclusively in the `sources` field. User-facing text must remain completely human-readable, executive-grade, and free of technical database artifacts.\n\n"
+        "CRITICAL GROUNDING RULES:\n"
         "1. STRICT GROUNDING: Answer ONLY using the provided PostgreSQL structured metrics and customer reviews.\n"
-        "2. NO HALLUCINATION: Never invent reviews, fake statistics, fake ratings, or nonexistent themes.\n"
-        "3. NO FAKE QUOTES: When quoting evidence, use EXACT short excerpts from the provided reviews.\n"
+        "2. NO HALLUCINATION: Never invent reviews, fake statistics, fake ratings, or nonexistent customer quotes.\n"
+        "3. NO FAKE QUOTES: When quoting evidence, use EXACT short excerpts from the real reviews.\n"
         "4. SOURCE CITATIONS: In `sources`, include the real `raw_item_id` and the exact `excerpt` for each review referenced.\n"
-        "5. INSUFFICIENT DATA: If there are no reviews or insufficient data to answer with certainty, clearly explain this limitation in `limitation_note` and lower your confidence.\n"
+        "5. INSUFFICIENT DATA: If there are no reviews or insufficient data for a specific question, kindly and honestly explain this limitation in `limitation_note` and lower your confidence.\n"
         "6. Return the required structured output schema."
     )
 
@@ -178,8 +202,11 @@ async def generate_grounded_answer_node(state: RagChatState) -> dict[str, Any]:
             "limitation_note": output.limitation_note,
         }
     except Exception as err:
-        logger.error("Mistral generation failed: %s", err)
-        raise AIServiceException(f"Mistral generation failed: {str(err)}", status_code=502) from err
+        logger.error("Mistral generation error: %s", err, exc_info=True)
+        raise AIServiceException(
+            "The AI service is currently undergoing maintenance. Please try again shortly.",
+            status_code=503,
+        ) from err
 
 
 # ── Node 4: Verify and Format Proof ───────────────────────────────
@@ -192,6 +219,22 @@ async def verify_and_format_proof_node(state: RagChatState) -> dict[str, Any]:
     structured = state.get("structured_context") or {}
     total_in_context = structured.get("total_reviews", len(retrieved_docs))
     explicit_limitation = state.get("limitation_note")
+
+    # 0. Clean and sanitize any leaked raw IDs or technical artifacts from user-facing answer
+    cleaned_answer = re.sub(
+        r'\(?\s*RAW_ITEM_ID:\s*[a-f0-9\-]+(?:,\s*Rating:[^)]*)?\s*\)?',
+        '',
+        draft_answer,
+        flags=re.IGNORECASE,
+    )
+    cleaned_answer = re.sub(
+        r'\(\s*[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\s*(?:,\s*Rating:[^)]*)?\)',
+        '',
+        cleaned_answer,
+        flags=re.IGNORECASE,
+    )
+    cleaned_answer = re.sub(r'\(\s*Rating:\s*[\d\.\*\/]+\s*\)', '', cleaned_answer, flags=re.IGNORECASE)
+    cleaned_answer = re.sub(r'\n{3,}', '\n\n', cleaned_answer).strip()
 
     # 1. Validate sources (authentic raw_item_ids and exact excerpts)
     validated_sources: list[SourceProof] = validate_and_format_sources(
@@ -208,7 +251,7 @@ async def verify_and_format_proof_node(state: RagChatState) -> dict[str, Any]:
     )
 
     final_response = RagChatResponse(
-        answer=draft_answer,
+        answer=cleaned_answer,
         confidence=final_confidence,  # type: ignore
         limitation_note=final_limitation,
         sources=validated_sources,

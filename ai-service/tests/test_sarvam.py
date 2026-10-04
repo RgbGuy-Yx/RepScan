@@ -3,6 +3,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 from httpx import ASGITransport, AsyncClient
 
 from app.main import create_app
+from app.config.settings import settings
 from app.api.v1.endpoints.feedback import (
     FeedbackInput,
     MistralFeedbackAnalysis,
@@ -269,7 +270,7 @@ async def test_process_feedback_pipeline_end_to_end():
             assert item["sentiment_label"] == "positive"
             assert item["sentiment_score"] == 0.9
             assert item["themes"] == ["Food Quality", "Service"]
-            assert item["model"] == "sarvam+mistral-small-latest"
+            assert item["model"] == f"sarvam+{settings.MISTRAL_MODEL}"
 
             # Verify ChromaDB add_documents was called with correct metadata
             mock_chroma_add.assert_called_once()
@@ -279,3 +280,45 @@ async def test_process_feedback_pipeline_end_to_end():
             assert call_kwargs["metadatas"][0]["language"] == "hi-IN"
             assert call_kwargs["metadatas"][0]["script"] == "Deva"
             assert call_kwargs["metadatas"][0]["translated"] is True
+
+
+# ── LangChain Tool & Runnable Tests ────────────────────────────────
+@pytest.mark.asyncio
+async def test_sarvam_langchain_tools():
+    from app.services.sarvam import detect_language_tool, translate_review_tool, sarvam_process_review_runnable
+
+    with patch("app.services.sarvam.sarvam_service.detect_language", new_callable=AsyncMock) as mock_lid:
+        mock_lid.return_value = SarvamLIDResult(
+            language_code="hi-IN",
+            script_code="Deva",
+            confidence=0.99,
+        )
+
+        res = await detect_language_tool.ainvoke({"text": "खाना बहुत अच्छा था"})
+        assert res["language_code"] == "hi-IN"
+        assert res["script_code"] == "Deva"
+
+    with patch("app.services.sarvam.sarvam_service.translate_to_english", new_callable=AsyncMock) as mock_trans:
+        mock_trans.return_value = SarvamTranslationResult(
+            translated_text="The food was very good",
+            source_language_code="hi-IN",
+        )
+
+        trans_res = await translate_review_tool.ainvoke({
+            "text": "खाना बहुत अच्छा था",
+            "source_language_code": "hi-IN",
+        })
+        assert trans_res == "The food was very good"
+
+    with patch("app.services.sarvam.sarvam_service.process_review", new_callable=AsyncMock) as mock_proc:
+        mock_proc.return_value = SarvamReviewResult(
+            language="en-IN",
+            script="Latn",
+            translated_content=None,
+            is_translated=False,
+        )
+
+        runnable_res = await sarvam_process_review_runnable.ainvoke("Great staff and prompt service!")
+        assert runnable_res.language == "en-IN"
+        assert runnable_res.is_translated is False
+

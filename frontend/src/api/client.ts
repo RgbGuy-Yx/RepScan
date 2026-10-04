@@ -106,6 +106,33 @@ class ApiClient {
   public delete<T>(endpoint: string, options?: ApiRequestOptions): Promise<T> {
     return this.request<T>(endpoint, { ...options, method: 'DELETE' });
   }
+
+  public async downloadBlob(endpoint: string, options: ApiRequestOptions = {}): Promise<Blob> {
+    const url = endpoint.startsWith('http') ? endpoint : `${this.baseUrl}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+    const headers = new Headers(options.headers || {});
+
+    if (this.tokenProvider) {
+      try {
+        const token = await this.tokenProvider();
+        if (token) {
+          headers.set('Authorization', `Bearer ${token}`);
+        }
+      } catch (err) {
+        console.warn('Failed to retrieve auth token for download:', err);
+      }
+    }
+
+    const workspaceId = options.workspaceId || this.currentWorkspaceId;
+    if (workspaceId && !headers.has('x-workspace-id')) {
+      headers.set('x-workspace-id', workspaceId);
+    }
+
+    const response = await fetch(url, { ...options, headers, method: 'GET' });
+    if (!response.ok) {
+      throw new Error(`Download failed with status ${response.status}`);
+    }
+    return response.blob();
+  }
 }
 
 export const apiClient = new ApiClient();

@@ -113,7 +113,7 @@ export default function LandingPricing({ onLaunchApp }: LandingPricingProps) {
               <span className="text-xs text-[#62666d]">/ month</span>
             </div>
             <p className="mt-2 text-xs text-[#d0d6e0]">
-              Full multi-channel pipeline with Grounded AI Assistant and Action Board.
+              Full multi-channel pipeline with Grounded AI Assistant and Executive Reports.
             </p>
 
             <ul className="mt-6 space-y-2.5 text-xs text-[#f7f8f8] pt-6 border-t border-[#23252a]">
@@ -127,7 +127,7 @@ export default function LandingPricing({ onLaunchApp }: LandingPricingProps) {
               </li>
               <li className="flex items-center gap-2">
                 <Check className="w-3.5 h-3.5 text-[#27a644]" />
-                <span>Operational Action Board with assigned task routing</span>
+                <span>Executive Intelligence Reports with one-click PDF export</span>
               </li>
               <li className="flex items-center gap-2">
                 <Check className="w-3.5 h-3.5 text-[#27a644]" />

@@ -3,9 +3,9 @@ export default function LandingChangelog() {
     {
       version: 'v2.4.0',
       date: 'September 24, 2026',
-      title: 'Action Board Kanban & Automated Anomaly Detection',
+      title: 'Executive Intelligence Reports & Automated Anomaly Detection',
       description:
-        'Introduced the Operational Action Board allowing customer experience leads to assign tasks directly from verified negative reviews. Added automatic 2σ p-value shift notifications for kitchen and service delays.',
+        'Introduced the Executive Reports engine with one-click formal PDF compilation, deterministic KPI deltas, and automated 2σ p-value shift notifications for service and operational quality.',
       badge: 'Latest',
     },
     {

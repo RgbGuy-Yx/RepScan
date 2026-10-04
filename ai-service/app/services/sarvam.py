@@ -301,3 +301,39 @@ class SarvamService:
 
 
 sarvam_service = SarvamService()
+
+
+# ── LangChain Tools & Runnables ──────────────────────────────────────────────
+from langchain_core.runnables import RunnableLambda
+from langchain_core.tools import tool
+
+
+@tool
+async def detect_language_tool(text: str) -> dict[str, Any]:
+    """Identify the language and script of customer review text using Sarvam AI."""
+    res = await sarvam_service.detect_language(text)
+    return {
+        "language_code": res.language_code,
+        "script_code": res.script_code,
+        "confidence": res.confidence,
+    }
+
+
+@tool
+async def translate_review_tool(
+    text: str,
+    source_language_code: str,
+    script_code: str | None = None,
+) -> str:
+    """Translate regional Indian languages or code-mixed reviews (Hinglish/Tenglish) into English."""
+    res = await sarvam_service.translate_to_english(
+        text=text,
+        source_language_code=source_language_code,
+        script_code=script_code,
+    )
+    return res.translated_text or text
+
+
+# Declarative LangChain Runnable for the complete multilingual review pipeline
+sarvam_process_review_runnable = RunnableLambda(sarvam_service.process_review)
+

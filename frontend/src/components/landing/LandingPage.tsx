@@ -4,7 +4,6 @@ import LandingFeatures from './LandingFeatures';
 import LandingHowItWorks from './LandingHowItWorks';
 import LandingProof from './LandingProof';
 import LandingMultilingual from './LandingMultilingual';
-import LandingAction from './LandingAction';
 import LandingCta from './LandingCta';
 import LandingFooter from './LandingFooter';
 import type { ProofItem } from '../../types';
@@ -16,8 +15,8 @@ interface LandingPageProps {
 
 export default function LandingPage({ onLaunchApp, onOpenProof }: LandingPageProps) {
   return (
-    <div className="min-h-screen bg-[#010102] text-[#f7f8f8] selection:bg-[#5e6ad2] selection:text-white">
-      {/* Sticky Linear Top Nav */}
+    <div className="min-h-screen bg-zinc-950 text-zinc-100 selection:bg-zinc-800 selection:text-zinc-100">
+      {/* Sticky Top Nav */}
       <LandingNavbar onLaunchApp={onLaunchApp} />
 
       {/* Main Content */}
@@ -37,10 +36,7 @@ export default function LandingPage({ onLaunchApp, onOpenProof }: LandingPagePro
         {/* 5. Built for Real Customer Feedback */}
         <LandingMultilingual />
 
-        {/* 6. From Insight to Action */}
-        <LandingAction onLaunchApp={onLaunchApp} />
-
-        {/* 7. Final CTA */}
+        {/* 6. Final CTA */}
         <LandingCta onLaunchApp={onLaunchApp} />
       </main>
 

@@ -38,7 +38,7 @@ class Settings(BaseSettings):
     VOYAGE_API_KEY: str = ""
     SARVAM_API_KEY: str = ""
     APIFY_API_TOKEN: str = ""
-    MISTRAL_MODEL: str = "mistral-small-latest"
+    MISTRAL_MODEL: str = "open-mistral-nemo"
     VOYAGE_MODEL: str = "voyage-3.5-lite"
     SARVAM_BASE_URL: str = "https://api.sarvam.ai"
     SARVAM_TRANSLATION_MODEL: str = "mayura:v1"

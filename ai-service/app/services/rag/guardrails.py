@@ -47,18 +47,34 @@ def validate_and_format_sources(
     doc_map: dict[str, dict[str, Any]] = {
         str(doc["raw_item_id"]): doc for doc in retrieved_docs if doc.get("raw_item_id")
     }
+    index_map: dict[str, dict[str, Any]] = {
+        str(i + 1): doc for i, doc in enumerate(retrieved_docs) if doc.get("raw_item_id")
+    }
 
     validated: list[SourceProof] = []
     seen_ids: set[str] = set()
 
     for src in raw_sources:
-        raw_id = str(src.get("raw_item_id", ""))
-        if not raw_id or raw_id not in doc_map or raw_id in seen_ids:
+        candidate_id = str(src.get("raw_item_id") or src.get("id") or src.get("doc_id") or "").strip()
+        candidate_clean = re.sub(r"[^\w-]", "", candidate_id)
+
+        doc = None
+        if candidate_id in doc_map:
+            doc = doc_map[candidate_id]
+        elif candidate_clean in doc_map:
+            doc = doc_map[candidate_clean]
+        elif candidate_clean in index_map:
+            doc = index_map[candidate_clean]
+
+        if not doc:
             continue
 
-        doc = doc_map[raw_id]
+        real_raw_id = str(doc.get("raw_item_id", ""))
+        if not real_raw_id or real_raw_id in seen_ids:
+            continue
+
         content = doc.get("content", "")
-        claimed_excerpt = src.get("excerpt", "")
+        claimed_excerpt = src.get("excerpt") or src.get("quote") or src.get("content") or ""
 
         exact_excerpt = extract_exact_excerpt(claimed_excerpt, content)
         if not exact_excerpt:
@@ -66,7 +82,7 @@ def validate_and_format_sources(
 
         validated.append(
             SourceProof(
-                raw_item_id=raw_id,
+                raw_item_id=real_raw_id,
                 platform=doc.get("platform") or src.get("platform") or "google",
                 author=doc.get("author") or src.get("author"),
                 rating=doc.get("rating") if doc.get("rating") is not None else src.get("rating"),
@@ -75,7 +91,7 @@ def validate_and_format_sources(
                 excerpt=exact_excerpt,
             )
         )
-        seen_ids.add(raw_id)
+        seen_ids.add(real_raw_id)
 
     # If no valid sources were formatted by the LLM output but we have retrieved docs, populate with top docs
     if not validated and retrieved_docs:

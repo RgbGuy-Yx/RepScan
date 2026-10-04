@@ -6,6 +6,12 @@ from pydantic import BaseModel, Field
 
 from app.config.exceptions import AIServiceException
 from app.config.settings import settings
+from app.services.cache import (
+    PROMPT_VERSION_BRIEF,
+    ai_cache,
+    compute_data_fingerprint,
+    generate_cache_key,
+)
 
 router = APIRouter(prefix="/briefs", tags=["Briefs"])
 
@@ -42,6 +48,11 @@ class GenerateBriefSummaryRequest(BaseModel):
     confidence: str
     limitations: list[str] = Field(default_factory=list)
     sample_reviews: list[str] = Field(default_factory=list)
+    business_id: str | None = None
+    data_version: str | None = None
+    prompt_version: str | None = None
+    force_refresh: bool = False
+    language: str = "en"
 
 
 class GroundedThemeItem(BaseModel):
@@ -61,6 +72,8 @@ class GenerateBriefSummaryResponse(BaseModel):
     top_complaints: list[GroundedThemeItem] = Field(default_factory=list)
     top_praises: list[GroundedThemeItem] = Field(default_factory=list)
     model: str | None = None
+    cached: bool = False
+    cache_key: str | None = None
 
 
 def _format_brief_input(payload: GenerateBriefSummaryRequest) -> dict:
@@ -97,6 +110,7 @@ def _build_brief_runnable():
         temperature=0,
         mistral_api_key=settings.MISTRAL_API_KEY,
         timeout=90,
+        max_retries=3,
     )
     structured_llm = llm.with_structured_output(BriefSummaryOutput)
 
@@ -124,21 +138,64 @@ def _build_brief_runnable():
 
 @router.post("/summarize", response_model=GenerateBriefSummaryResponse)
 async def summarize_weekly_brief(payload: GenerateBriefSummaryRequest) -> GenerateBriefSummaryResponse:
-    """Generate a strictly grounded weekly brief summary using LangChain Runnable pipeline."""
-    try:
-        pipeline = _build_brief_runnable()
-        result: BriefSummaryOutput = await pipeline.ainvoke(payload)
+    """Generate a strictly grounded weekly brief summary using LangChain Runnable pipeline, guarded by AI cache."""
+    biz_id = payload.business_id or payload.business_name.lower().replace(" ", "-")
+    data_ver = payload.data_version or compute_data_fingerprint({
+        "total_reviews": payload.total_reviews,
+        "previous_total_reviews": payload.previous_total_reviews,
+        "average_rating": payload.average_rating,
+        "previous_average_rating": payload.previous_average_rating,
+        "sentiment_distribution": payload.sentiment_distribution,
+        "top_praises": [p.model_dump() for p in payload.top_praises],
+        "top_complaints": [c.model_dump() for c in payload.top_complaints],
+        "meaningful_changes": [ch.model_dump() for ch in payload.meaningful_changes],
+        "sample_reviews": payload.sample_reviews[:10],
+    })
 
-        if not result.summary_text or not result.summary_text.strip():
-            raise AIServiceException("Mistral response missing valid 'summary_text'", status_code=502)
+    cache_key = generate_cache_key(
+        business_id=biz_id,
+        analysis_type="weekly_brief",
+        date_range={"start": payload.period_start, "end": payload.period_end},
+        data_version=data_ver,
+        prompt_version=payload.prompt_version or PROMPT_VERSION_BRIEF,
+        model=settings.MISTRAL_MODEL,
+        language=payload.language,
+    )
 
-        return GenerateBriefSummaryResponse(
-            summary_text=result.summary_text.strip(),
-            top_complaints=result.top_complaints,
-            top_praises=result.top_praises,
-            model=settings.MISTRAL_MODEL,
-        )
-    except AIServiceException:
-        raise
-    except Exception as error:
-        raise AIServiceException(f"Mistral brief generation failed: {str(error)}", status_code=502) from error
+    async def _compute() -> GenerateBriefSummaryResponse:
+        try:
+            pipeline = _build_brief_runnable()
+            result: BriefSummaryOutput = await pipeline.ainvoke(payload)
+
+            if not result.summary_text or not result.summary_text.strip():
+                raise AIServiceException("Mistral response missing valid 'summary_text'", status_code=502)
+
+            return GenerateBriefSummaryResponse(
+                summary_text=result.summary_text.strip(),
+                top_complaints=result.top_complaints,
+                top_praises=result.top_praises,
+                model=settings.MISTRAL_MODEL,
+            )
+        except AIServiceException:
+            raise
+        except Exception as error:
+            raise AIServiceException(f"Mistral brief generation failed: {str(error)}", status_code=502) from error
+
+    def _validate(res: GenerateBriefSummaryResponse) -> bool:
+        return bool(res and res.summary_text and res.summary_text.strip())
+
+    cached_res, was_hit = await ai_cache.get_or_compute(
+        key=cache_key,
+        compute_func=_compute,
+        validator=_validate,
+        business_id=biz_id,
+        analysis_type="weekly_brief",
+        metadata={
+            "business_name": payload.business_name,
+            "period": f"{payload.period_start} to {payload.period_end}",
+            "total_reviews": payload.total_reviews,
+        },
+        bypass_cache=payload.force_refresh,
+    )
+
+    return cached_res.model_copy(update={"cached": was_hit, "cache_key": cache_key})

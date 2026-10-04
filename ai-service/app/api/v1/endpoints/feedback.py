@@ -67,6 +67,7 @@ def _build_mistral_analysis_chain():
         temperature=0,
         mistral_api_key=settings.MISTRAL_API_KEY,
         timeout=90,
+        max_retries=3,
     )
     structured_llm = llm.with_structured_output(MistralFeedbackAnalysis)
 
@@ -108,13 +109,10 @@ async def _process_single_item(
         })
     except Exception as err:
         logger.error("Mistral analysis failed for item %s: %s", item.id, err)
-        # Fallback if LLM analysis fails on single item
-        analysis = MistralFeedbackAnalysis(
-            sentiment_label="neutral",
-            sentiment_score=0.0,
-            themes=[],
-            evidence=[item.content[:150]] if item.content else [],
-        )
+        raise AIServiceException(
+            "The AI service is currently undergoing maintenance. Please try again shortly.",
+            status_code=503,
+        ) from err
 
     # Step 3: Voyage Embedding (embed original content or translated content)
     try:
@@ -174,11 +172,14 @@ async def process_feedback(payload: ProcessFeedbackRequest) -> ProcessFeedbackRe
             voyage_api_key=settings.VOYAGE_API_KEY,
         )
 
-        # Process all items concurrently through the target pipeline
-        tasks = [
-            _process_single_item(item, mistral_chain, embeddings_model)
-            for item in payload.items
-        ]
+        # Process items with bounded concurrency to protect external APIs from rate limits
+        semaphore = asyncio.Semaphore(10)
+
+        async def _bounded_process(item: FeedbackInput):
+            async with semaphore:
+                return await _process_single_item(item, mistral_chain, embeddings_model)
+
+        tasks = [_bounded_process(item) for item in payload.items]
         results = await asyncio.gather(*tasks)
 
     except AIServiceException:

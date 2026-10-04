@@ -3,8 +3,8 @@ export type PageId =
   | 'ask-ai'
   | 'reviews'
   | 'themes'
-  | 'action-board'
   | 'reports'
+  | 'competitors'
   | 'settings';
 
 export type PlatformType = 'google' | 'instagram' | 'linkedin';
@@ -20,8 +20,10 @@ export interface ReviewItem {
   content: string;
   sentiment: SentimentType;
   themes: string[];
+  publishedAt?: string;
   originalLanguage?: string;
   englishTranslation?: string;
+  sourceUrl?: string;
 }
 
 export interface ThemeMetric {
@@ -43,18 +45,6 @@ export interface MetricShiftItem {
   direction: 'up' | 'down';
   color: 'rose' | 'emerald' | 'amber';
   reviewId?: string;
-}
-
-export interface ActionTask {
-  id: string;
-  title: string;
-  description: string;
-  priority: 'High' | 'Medium' | 'Low';
-  status: 'open' | 'in_progress' | 'resolved';
-  assignee: string;
-  linkedTheme: string;
-  linkedReviewId?: string;
-  createdAt: string;
 }
 
 export interface PlatformConnection {

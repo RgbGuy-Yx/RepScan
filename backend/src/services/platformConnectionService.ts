@@ -63,3 +63,29 @@ export async function updatePlatformConnection(
 
   return updated;
 }
+
+export async function deletePlatformConnection(
+  businessId: string,
+  platformId: string
+) {
+  const business = await businessRepo.findById(businessId);
+  if (!business) {
+    throw new AppError("Business not found", 404);
+  }
+
+  const connection = await platformRepo.findById(platformId);
+  if (!connection) {
+    throw new AppError("Platform connection not found", 404);
+  }
+
+  if (connection.business_id !== businessId) {
+    throw new AppError("Platform connection does not belong to this business", 403);
+  }
+
+  const deleted = await platformRepo.deleteConnection(platformId);
+  if (!deleted) {
+    throw new AppError("Failed to delete platform connection", 500);
+  }
+
+  return { success: true };
+}

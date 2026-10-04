@@ -6,6 +6,7 @@ import * as businessRepo from "../repositories/businessRepository";
 import * as platformRepo from "../repositories/platformConnectionRepository";
 import * as scrapeRunRepo from "../repositories/scrapeRunRepository";
 import { processFeedback } from "./aiService";
+import { logger } from "../config/logger";
 
 type ApifyReview = Record<string, unknown>;
 
@@ -23,6 +24,7 @@ function firstString(item: ApifyReview, keys: string[]): string | null {
 function parseRating(item: ApifyReview, keys: string[]): number | null {
   for (const key of keys) {
     const value = item[key];
+    if (value === null || value === undefined || value === "") continue;
     const number = typeof value === "number" ? value : Number(value);
     if (Number.isFinite(number) && number >= 0 && number <= 5) {
       return Math.round(number * 10) / 10;
@@ -32,23 +34,47 @@ function parseRating(item: ApifyReview, keys: string[]): number | null {
 }
 
 function parseDate(item: ApifyReview, keys: string[]): string | null {
-  const rawDate = firstString(item, keys);
-  if (!rawDate) return null;
-  const timestamp = Date.parse(rawDate);
-  if (Number.isNaN(timestamp)) return null;
-  return new Date(timestamp).toISOString();
+  for (const key of keys) {
+    const value = item[key];
+    if (value === null || value === undefined || value === "") continue;
+    if (typeof value === "string") {
+      const trimmed = value.trim();
+      if (!trimmed) continue;
+      const timestamp = Date.parse(trimmed);
+      if (!Number.isNaN(timestamp)) {
+        return new Date(timestamp).toISOString();
+      }
+    } else if (typeof value === "number" && Number.isFinite(value) && value > 0) {
+      const ms = value < 1e11 ? value * 1000 : value;
+      return new Date(ms).toISOString();
+    } else if (value instanceof Date && !Number.isNaN(value.getTime())) {
+      return value.toISOString();
+    }
+  }
+  return null;
 }
 
 export function normalizeGoogleReview(item: ApifyReview, sourceUrl: string) {
   const content = firstString(item, ["text", "reviewText", "review", "content", "comment"]);
   if (!content) return null;
-  const author = firstString(item, ["authorName", "reviewerName", "author", "name"]);
-  const publishedAt = parseDate(item, ["publishedAt", "published_at", "date", "reviewDate", "dateOfReview"]);
-  const externalId = firstString(item, ["reviewId", "review_id", "id"]);
+  const author = firstString(item, ["authorName", "reviewerName", "author", "name", "author_name", "reviewer_name"]);
+  const publishedAt = parseDate(item, [
+    "publishedAtDate",
+    "publishedDate",
+    "publishDate",
+    "publishedAt",
+    "published_at",
+    "date",
+    "reviewDate",
+    "dateOfReview",
+    "isoDate",
+    "timestamp",
+  ]);
+  const externalId = firstString(item, ["reviewId", "review_id", "id", "review_token"]);
   const source = firstString(item, ["reviewUrl", "url", "sourceUrl"]) || sourceUrl;
-  const rating = parseRating(item, ["rating", "stars", "score"]);
+  const rating = parseRating(item, ["stars", "starsCount", "rating", "score", "ratingScore"]);
   const hash = crypto.createHash("sha256")
-    .update([author || "", publishedAt || "", content].join("\u0000"))
+    .update([author || "", publishedAt || "", content].join("\0"))
     .digest("hex");
   return { content, author, publishedAt, externalId, source, rating, hash };
 }
@@ -63,8 +89,8 @@ async function fetchApifyReviews(sourceUrl: string): Promise<ApifyReview[]> {
     {
       method: "POST",
       headers: { Authorization: `Bearer ${config.apifyToken}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ startUrls: [{ url: sourceUrl }], maxReviews: 500 }),
-      signal: AbortSignal.timeout(300_000),
+      body: JSON.stringify({ startUrls: [{ url: sourceUrl }], maxReviews: 1000 }),
+      signal: AbortSignal.timeout(600_000),
     }
   );
   if (!response.ok) throw new Error(`Apify request failed (${response.status}): ${await response.text()}`);
@@ -128,8 +154,19 @@ export async function scrapeGoogleReviews(businessId: string, connectionId: stri
 
     const pending = await feedbackRepo.findPendingByConnection(connectionId);
     if (pending.length) {
-      const processed = await processFeedback(pending);
-      for (const item of processed) await feedbackRepo.saveProcessed(item);
+      const BATCH_SIZE = 50;
+      logger.info(`Processing ${pending.length} pending reviews for connection ${connectionId} in batches of ${BATCH_SIZE}...`);
+      for (let i = 0; i < pending.length; i += BATCH_SIZE) {
+        const chunk = pending.slice(i, i + BATCH_SIZE);
+        const batchNum = Math.floor(i / BATCH_SIZE) + 1;
+        const totalBatches = Math.ceil(pending.length / BATCH_SIZE);
+        logger.info(`Processing batch ${batchNum}/${totalBatches} (${chunk.length} reviews)...`);
+        const processed = await processFeedback(chunk);
+        for (const item of processed) {
+          await feedbackRepo.saveProcessed(item);
+        }
+        logger.info(`Successfully processed and saved batch ${batchNum}/${totalBatches}`);
+      }
     }
 
     await scrapeRunRepo.succeed(runId, { fetched: fetchedCount, inserted, skipped });

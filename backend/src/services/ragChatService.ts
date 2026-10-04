@@ -56,6 +56,11 @@ export async function processRagChat(params: RagChatRequestParams): Promise<RagC
   };
 
   // 4. Invoke Python AI Service LangGraph RAG execution
+  const dataVersion = [
+    metrics.total_reviews,
+    metrics.max_date ? metrics.max_date.toISOString() : "no-date",
+  ].join(":");
+
   const aiResult = await executeRagChat({
     business_id: businessId,
     query,
@@ -63,6 +68,7 @@ export async function processRagChat(params: RagChatRequestParams): Promise<RagC
     conversation_history: conversationHistory,
     structured_context: structuredContext,
     thread_id: threadId || sessionId,
+    data_version: dataVersion,
   });
 
   // 5. Source Traceability & Proof Verification against PostgreSQL (Source of Truth)
@@ -91,20 +97,6 @@ export async function processRagChat(params: RagChatRequestParams): Promise<RagC
       date: dbReview.published_at ? dbReview.published_at.toISOString() : dbReview.created_at.toISOString(),
       source_url: dbReview.source_url,
       excerpt: src.excerpt || dbReview.content.slice(0, 200),
-    });
-  }
-
-  // If no cited sources survived validation but sample reviews exist and total reviews > 0
-  if (verifiedSources.length === 0 && sampleReviews.length > 0) {
-    const topSample = sampleReviews[0];
-    verifiedSources.push({
-      raw_item_id: topSample.id,
-      platform: topSample.platform,
-      author: topSample.author,
-      rating: topSample.rating,
-      date: topSample.published_at ? topSample.published_at.toISOString() : topSample.created_at.toISOString(),
-      source_url: topSample.source_url,
-      excerpt: topSample.content.slice(0, 200),
     });
   }
 

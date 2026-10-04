@@ -6,8 +6,16 @@ export async function createBusiness(
   data: businessRepo.CreateBusinessData,
   userId?: string
 ) {
-  if (userId && data.workspace_id) {
-    const member = await workspaceRepo.getMember(data.workspace_id, userId);
+  let targetWorkspaceId = data.workspace_id;
+  if (userId && !targetWorkspaceId) {
+    const userWorkspaces = await workspaceRepo.findWorkspacesByUserId(userId);
+    if (userWorkspaces.length > 0) {
+      targetWorkspaceId = userWorkspaces[0].id;
+    }
+  }
+
+  if (userId && targetWorkspaceId) {
+    const member = await workspaceRepo.getMember(targetWorkspaceId, userId);
     if (!member) {
       throw new AppError("Forbidden: You are not a member of this workspace", 403);
     }
@@ -15,7 +23,7 @@ export async function createBusiness(
       throw new AppError("Forbidden: Insufficient role permissions to create a business", 403);
     }
   }
-  return businessRepo.create(data);
+  return businessRepo.create({ ...data, workspace_id: targetWorkspaceId });
 }
 
 export async function getBusiness(id: string, userId?: string) {

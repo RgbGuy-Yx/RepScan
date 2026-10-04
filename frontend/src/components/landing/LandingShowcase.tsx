@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowUp, ArrowDown, ExternalLink, ShieldCheck, CheckSquare } from 'lucide-react';
+import { ArrowUp, ArrowDown, ExternalLink, ShieldCheck, Download } from 'lucide-react';
 import type { ProofItem } from '../../types';
 
 interface LandingShowcaseProps {
@@ -7,7 +7,7 @@ interface LandingShowcaseProps {
 }
 
 export default function LandingShowcase({ onOpenProof }: LandingShowcaseProps) {
-  const [activeTab, setActiveTab] = useState<'what-changed' | 'grounding' | 'action-board'>('what-changed');
+  const [activeTab, setActiveTab] = useState<'what-changed' | 'grounding' | 'executive-reports'>('what-changed');
 
   const sampleProof: ProofItem = {
     theme: 'Staff Behaviour (Peak-Hour Table Queueing)',
@@ -63,14 +63,14 @@ export default function LandingShowcase({ onOpenProof }: LandingShowcaseProps) {
             </button>
             <button
               type="button"
-              onClick={() => setActiveTab('action-board')}
+              onClick={() => setActiveTab('executive-reports')}
               className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all ${
-                activeTab === 'action-board'
+                activeTab === 'executive-reports'
                   ? 'bg-[#18191a] text-[#f7f8f8] border border-[#34343a] shadow-xs'
                   : 'text-[#8a8f98] hover:text-[#f7f8f8]'
               }`}
             >
-              Action Board
+              Executive Reports
             </button>
           </div>
         </div>
@@ -202,63 +202,63 @@ export default function LandingShowcase({ onOpenProof }: LandingShowcaseProps) {
             </div>
           )}
 
-          {activeTab === 'action-board' && (
+          {activeTab === 'executive-reports' && (
             <div className="space-y-6">
               <div className="flex items-center justify-between pb-3 border-b border-[#23252a]">
                 <div>
                   <h3 className="text-sm font-semibold text-[#f7f8f8]">
-                    Operational Action Board
+                    Weekly Executive Intelligence Reports
                   </h3>
                   <p className="text-xs text-[#8a8f98] mt-0.5">
-                    Assign corrective tasks with automated SLA tracking
+                    Concise reputation briefs with deterministic deltas and one-click PDF export
                   </p>
                 </div>
-                <span className="text-xs px-2.5 py-1 rounded-md bg-[#141516] border border-[#23252a] text-[#d0d6e0] flex items-center gap-1">
-                  <CheckSquare className="w-3.5 h-3.5 text-[#5e6ad2]" />
-                  <span>3 Active Actions</span>
+                <span className="text-xs px-2.5 py-1 rounded-md bg-[#141516] border border-[#23252a] text-[#d0d6e0] flex items-center gap-1.5">
+                  <Download className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>PDF Export Ready</span>
                 </span>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="p-4 rounded-xl bg-[#141516] border border-[#23252a] space-y-2">
                   <div className="flex items-center justify-between text-[11px]">
-                    <span className="px-1.5 py-0.5 rounded font-medium bg-rose-500/15 text-rose-400 border border-rose-500/30 text-[10px]">
-                      HIGH PRIORITY
+                    <span className="px-1.5 py-0.5 rounded font-medium bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-[10px]">
+                      KPI VELOCITY
                     </span>
-                    <span className="text-[#62666d]">Open</span>
+                    <span className="text-[#62666d] font-mono">Trailing 7d</span>
                   </div>
-                  <h4 className="text-xs font-semibold text-[#f7f8f8]">Recalibrate Kitchen Holding Units</h4>
-                  <p className="text-[11.5px] text-[#8a8f98]">Assignee: Head Chef Arvind</p>
+                  <h4 className="text-xs font-semibold text-[#f7f8f8]">4.6★ Average Rating (+0.3★ Shift)</h4>
+                  <p className="text-[11.5px] text-[#8a8f98]">Calculated deterministically in PostgreSQL with 0 hallucination</p>
+                  <div className="text-[10px] text-emerald-400 pt-1 border-t border-[#23252a]">
+                    Sample Size: 142 Verified Reviews
+                  </div>
+                </div>
+
+                <div className="p-4 rounded-xl bg-[#141516] border border-[#23252a] space-y-2">
+                  <div className="flex items-center justify-between text-[11px]">
+                    <span className="px-1.5 py-0.5 rounded font-medium bg-[#5e6ad2]/15 text-[#828fff] border border-[#5e6ad2]/30 text-[10px]">
+                      AI BRIEF SYNOPSIS
+                    </span>
+                    <span className="text-[#828fff]">Mistral-7B</span>
+                  </div>
+                  <h4 className="text-xs font-semibold text-[#f7f8f8]">Staff Professionalism Momentum</h4>
+                  <p className="text-[11.5px] text-[#8a8f98]">Care quality praise surged by 18% week-over-week across Google Reviews</p>
                   <div className="text-[10px] text-[#62666d] pt-1 border-t border-[#23252a]">
-                    Linked: #Food Quality
+                    Grounded with 3 Direct Quotes
                   </div>
                 </div>
 
                 <div className="p-4 rounded-xl bg-[#141516] border border-[#23252a] space-y-2">
                   <div className="flex items-center justify-between text-[11px]">
                     <span className="px-1.5 py-0.5 rounded font-medium bg-amber-500/15 text-amber-400 border border-amber-500/30 text-[10px]">
-                      MEDIUM PRIORITY
+                      OPERATIONAL FOCUS
                     </span>
-                    <span className="text-amber-400">In Progress</span>
+                    <span className="text-amber-400 font-mono">Priority 1</span>
                   </div>
-                  <h4 className="text-xs font-semibold text-[#f7f8f8]">Hostess Reservation Buffer Policy</h4>
-                  <p className="text-[11.5px] text-[#8a8f98]">Assignee: Manager Rohit</p>
-                  <div className="text-[10px] text-[#62666d] pt-1 border-t border-[#23252a]">
-                    Linked: #Staff Behaviour
-                  </div>
-                </div>
-
-                <div className="p-4 rounded-xl bg-[#141516] border border-[#23252a] space-y-2">
-                  <div className="flex items-center justify-between text-[11px]">
-                    <span className="px-1.5 py-0.5 rounded font-medium bg-blue-500/15 text-blue-400 border border-blue-500/30 text-[10px]">
-                      RESOLVED
-                    </span>
-                    <span className="text-[#4ade80]">Done ✓</span>
-                  </div>
-                  <h4 className="text-xs font-semibold text-[#f7f8f8]">Update Printed Menu Pricing</h4>
-                  <p className="text-[11.5px] text-[#8a8f98]">Assignee: Operations Lead</p>
-                  <div className="text-[10px] text-[#4ade80] pt-1 border-t border-[#23252a]">
-                    Result: 0 billing disputes
+                  <h4 className="text-xs font-semibold text-[#f7f8f8]">Weekend Wait Times Buffer</h4>
+                  <p className="text-[11.5px] text-[#8a8f98]">1 complaint identified regarding peak Saturday arrival bottlenecks</p>
+                  <div className="text-[10px] text-amber-400 pt-1 border-t border-[#23252a]">
+                    Automated Root-Cause Flagged
                   </div>
                 </div>
               </div>

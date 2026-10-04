@@ -37,6 +37,9 @@ def _error_response(status_code: int, message: str, errors: Any = None) -> dict[
     return body
 
 
+from fastapi.encoders import jsonable_encoder
+
+
 def register_exception_handlers(app: FastAPI) -> None:
     """Attach global exception handlers to the FastAPI app."""
 
@@ -50,7 +53,7 @@ def register_exception_handlers(app: FastAPI) -> None:
 
     @app.exception_handler(RequestValidationError)
     async def validation_exception_handler(request: Request, exc: RequestValidationError) -> JSONResponse:
-        errors = exc.errors()
+        errors = jsonable_encoder(exc.errors())
         logger.warning("Validation error: %s — %s %s", errors, request.method, request.url.path)
         return JSONResponse(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,

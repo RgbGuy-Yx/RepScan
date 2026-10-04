@@ -124,3 +124,11 @@ export async function findAllActiveByPlatform(platform: Platform): Promise<Platf
   return result.rows;
 }
 
+export async function deleteConnection(id: string): Promise<boolean> {
+  const result = await pool.query(
+    "DELETE FROM platform_connections WHERE id = $1 RETURNING id",
+    [id]
+  );
+  return (result.rowCount ?? 0) > 0;
+}
+

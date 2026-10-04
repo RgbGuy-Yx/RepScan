@@ -1,10 +1,30 @@
 import { X, CheckCircle2 } from 'lucide-react';
 import type { ReviewItem } from '../types/dashboard';
 import type { ProofItem } from '../types';
+import googleIcon from '../assets/Google-modern-3D-icon-on-Premium-vector-PNG.avif';
 
 interface ProofModalProps {
   item: ReviewItem | ProofItem | null;
   onClose: () => void;
+}
+
+function StarRating({ rating }: { rating: number }) {
+  const safeRating = Math.max(0, Math.min(5, Number(rating) || 0));
+  return (
+    <div className="flex items-center gap-0.5">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <svg
+          key={star}
+          className={`w-3 h-3 ${
+            star <= Math.round(safeRating) ? 'text-amber-400 fill-amber-400' : 'text-zinc-750 fill-zinc-800'
+          }`}
+          viewBox="0 0 24 24"
+        >
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+        </svg>
+      ))}
+    </div>
+  );
 }
 
 export default function ProofModal({ item, onClose }: ProofModalProps) {
@@ -31,21 +51,21 @@ export default function ProofModal({ item, onClose }: ProofModalProps) {
       aria-labelledby="proof-title"
     >
       <div
-        className="bg-[#0f1011] rounded-xl max-w-lg w-full p-6 shadow-[0_24px_50px_rgba(0,0,0,0.95),inset_0_1px_0_0_rgba(255,255,255,0.06)] border border-[#23252a] relative animate-in fade-in zoom-in-95 duration-150"
+        className="bg-zinc-950 rounded-lg max-w-lg w-full p-6 shadow-2xl border border-zinc-800 relative animate-in fade-in zoom-in-95 duration-100"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between pb-3.5 border-b border-[#23252a]">
+        <div className="flex items-center justify-between pb-3.5 border-b border-zinc-800/80">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-[#27a644]" aria-hidden="true" />
-            <h3 id="proof-title" className="text-sm font-semibold text-[#f7f8f8] tracking-tight">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" aria-hidden="true" />
+            <h3 id="proof-title" className="text-xs font-semibold text-zinc-100 tracking-tight">
               Grounded Proof Verification
             </h3>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="w-6 h-6 rounded-md bg-[#18191a] border border-[#23252a] flex items-center justify-center text-[#8a8f98] hover:text-[#f7f8f8] hover:bg-[#23252a] transition-colors"
+            className="w-6 h-6 rounded-md bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition-colors cursor-pointer"
             aria-label="Close dialog"
           >
             <X className="w-3.5 h-3.5" />
@@ -55,58 +75,68 @@ export default function ProofModal({ item, onClose }: ProofModalProps) {
         {/* Content */}
         <div className="mt-4 space-y-4">
           <div>
-            <span className="text-[10px] font-semibold text-[#8a8f98] uppercase tracking-[0.05em] block">
-              Identified Theme
+            <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500 block">
+              Identified Theme Cluster
             </span>
-            <p className="text-sm font-semibold text-[#f7f8f8] mt-0.5">
+            <p className="text-xs font-medium text-zinc-200 mt-0.5">
               {theme}
             </p>
           </div>
 
-          <div className="p-4 rounded-lg bg-[#141516] border border-[#23252a] space-y-2.5 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.02)]">
-            <div className="flex items-center justify-between text-xs text-[#8a8f98]">
-              <span className="font-medium text-[#f7f8f8]">{author}</span>
-              <span>{date}</span>
+          <div className="p-4 rounded-md bg-zinc-900/60 border border-zinc-800/80 space-y-2.5">
+            <div className="flex items-center justify-between text-xs text-zinc-400">
+              <span className="font-medium text-zinc-200">{author}</span>
+              <span className="font-mono text-[11px] text-zinc-500">{date}</span>
             </div>
-            <div className="text-amber-400 text-xs flex items-center gap-1.5">
-              <span>{'★'.repeat(Math.floor(rating))}</span>
-              <span className="text-[#62666d]">({rating} stars)</span>
+            <div className="flex items-center gap-2">
+              <StarRating rating={rating} />
+              <span className="text-zinc-400 font-mono text-[11px] font-medium">{Number(rating).toFixed(1)} / 5.0</span>
             </div>
-            <p className="text-xs text-[#d0d6e0] leading-relaxed pt-1">
-              “{content}”
+            <p className="text-xs text-zinc-300 leading-relaxed pt-1 font-sans">
+              "{content}"
             </p>
 
             {originalLanguage && (
-              <div className="mt-2.5 pt-2.5 border-t border-dashed border-[#23252a] text-[11px] text-[#8a8f98]">
-                <span className="font-medium text-[#d0d6e0]">Original ({originalLanguage}): </span>
+              <div className="mt-2.5 pt-2.5 border-t border-dashed border-zinc-800 text-[11px] text-zinc-400">
+                <span className="font-medium text-zinc-300">Original ({originalLanguage}): </span>
                 <span className="italic">{content}</span>
                 {englishTranslation && (
-                  <p className="mt-1 text-[#d0d6e0] font-sans">
-                    <span className="font-medium text-[#d0d6e0]">English Translation: </span>
+                  <p className="mt-1 text-zinc-300 font-sans">
+                    <span className="font-medium text-zinc-200">English Translation: </span>
                     {englishTranslation}
                   </p>
                 )}
               </div>
             )}
 
-            <div className="mt-2.5 pt-2.5 border-t border-[#23252a] flex items-center justify-between text-[11px] text-[#62666d]">
-              <span>Channel: <strong className="text-[#8a8f98] font-medium">{platform}</strong></span>
-              <span className="font-mono text-[#8a8f98]">UUID: {rawId}</span>
+            <div className="mt-2.5 pt-2.5 border-t border-zinc-800/80 flex items-center justify-between text-[11px] text-zinc-500 font-mono">
+              <span className="flex items-center gap-1.5">
+                <span>Channel:</span>
+                {String(platform).toLowerCase().includes('google') ? (
+                  <strong className="text-zinc-200 font-medium inline-flex items-center gap-1">
+                    <img src={googleIcon} alt="Google" className="w-3.5 h-3.5 object-contain" />
+                    <span>Google</span>
+                  </strong>
+                ) : (
+                  <strong className="text-zinc-300 font-medium">{platform}</strong>
+                )}
+              </span>
+              <span>UUID: {rawId ? String(rawId).slice(0, 12) + '...' : 'N/A'}</span>
             </div>
           </div>
 
-          <div className="p-2.5 rounded-md bg-[#27a644]/10 border border-[#27a644]/25 text-xs text-[#4ade80] flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 shrink-0 text-[#27a644]" />
+          <div className="p-2.5 rounded-md bg-emerald-950/20 border border-emerald-800/30 text-xs text-emerald-400 flex items-center gap-2 font-mono text-[11px]">
+            <CheckCircle2 className="w-3.5 h-3.5 shrink-0 text-emerald-400" />
             <span>Cryptographically verified against PostgreSQL source records.</span>
           </div>
         </div>
 
         {/* Action */}
-        <div className="mt-6 flex justify-end">
+        <div className="mt-5 flex justify-end">
           <button
             type="button"
             onClick={onClose}
-            className="linear-btn-primary text-xs h-8 px-4 font-medium"
+            className="px-3.5 py-1.5 rounded-md text-xs font-medium bg-zinc-100 hover:bg-white text-zinc-950 transition-colors active:scale-[0.98] cursor-pointer"
           >
             Dismiss
           </button>

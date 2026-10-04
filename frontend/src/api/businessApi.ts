@@ -132,8 +132,10 @@ export interface RagChatResponse {
     content: string;
     published_at: string;
     platform: string;
+    source_url?: string | null;
   }>;
   confidence: number;
+  limitation_note?: string | null;
 }
 
 export const businessApi = {
@@ -160,15 +162,26 @@ export const businessApi = {
 
   async connectPlatform(
     businessId: string,
-    platform: 'google_maps' | 'instagram' | 'linkedin',
+    platform: 'google' | 'google_maps' | 'instagram' | 'linkedin',
     config: { placeId?: string; placeName?: string; sourceUrl?: string }
   ): Promise<PlatformConnection> {
+    const normalizedPlatform = platform === 'google_maps' ? 'google' : platform;
+    const cleanUrl = config.sourceUrl?.trim()
+      ? config.sourceUrl.trim().startsWith('http')
+        ? config.sourceUrl.trim()
+        : `https://${config.sourceUrl.trim()}`
+      : undefined;
+
     return apiClient.post<PlatformConnection>(`/v1/businesses/${businessId}/platforms`, {
-      platform,
+      platform: normalizedPlatform,
       place_id: config.placeId,
       place_name: config.placeName,
-      source_url: config.sourceUrl,
+      source_url: cleanUrl,
     });
+  },
+
+  async deletePlatform(businessId: string, platformId: string): Promise<void> {
+    return apiClient.delete<void>(`/v1/businesses/${businessId}/platforms/${platformId}`);
   },
 
   async triggerScrape(businessId: string, platformId: string): Promise<{ runId: string; status: string }> {
@@ -177,12 +190,25 @@ export const businessApi = {
     );
   },
 
-  async listReviews(businessId: string, limit = 100, offset = 0): Promise<ReviewItemData[]> {
+  async listReviews(businessId: string, limit = 1000, offset = 0): Promise<ReviewItemData[]> {
     return apiClient.get<ReviewItemData[]>(`/v1/businesses/${businessId}/reviews?limit=${limit}&offset=${offset}`);
   },
 
   async getWeeklyAnalytics(businessId: string): Promise<WeeklyAnalyticsData> {
-    return apiClient.get<WeeklyAnalyticsData>(`/v1/businesses/${businessId}/analytics/weekly`);
+    const raw = await apiClient.get<any>(`/v1/businesses/${businessId}/analytics/weekly`);
+    const currentMetrics = raw?.currentMetrics || raw?.current_week || null;
+    const previousMetrics = raw?.previousMetrics || raw?.previous_week || null;
+    const meaningfulChanges = raw?.meaningfulChanges || raw?.meaningful_changes || [];
+
+    return {
+      ...raw,
+      currentMetrics,
+      previousMetrics,
+      meaningfulChanges,
+      current_week: currentMetrics,
+      previous_week: previousMetrics,
+      meaningful_changes: meaningfulChanges,
+    };
   },
 
   async getLatestBrief(businessId: string): Promise<WeeklyBriefData | null> {
@@ -202,9 +228,179 @@ export const businessApi = {
     message: string,
     history: Array<{ role: 'user' | 'assistant'; content: string }> = []
   ): Promise<RagChatResponse> {
-    return apiClient.post<RagChatResponse>(`/v1/businesses/${businessId}/chat`, {
+    const data = await apiClient.post<any>(`/v1/businesses/${businessId}/chat`, {
+      query: message,
       message,
+      conversation_history: history,
       history,
     });
+
+    const rawCitations = data.citations || data.sources || [];
+    const citations = rawCitations.map((c: any) => ({
+      id: c.raw_item_id || c.id || `cit_${Math.random()}`,
+      author: c.author || 'Verified Customer',
+      rating: c.rating ?? 5,
+      content: c.excerpt || c.content || '',
+      published_at: c.date || c.published_at || new Date().toISOString(),
+      platform: c.platform || 'google',
+      source_url: c.source_url || null,
+    }));
+
+    return {
+      answer: data.answer || '',
+      citations,
+      limitation_note: data.limitation_note || null,
+      confidence:
+        data.confidence === 'High'
+          ? 0.95
+          : data.confidence === 'Medium'
+          ? 0.7
+          : data.confidence === 'Low'
+          ? 0.4
+          : typeof data.confidence === 'number'
+          ? data.confidence
+          : 0.85,
+    };
+  },
+
+  async listReports(
+    businessId: string,
+    limit = 20,
+    offset = 0
+  ): Promise<{ reports: ReportItem[]; total: number }> {
+    const res = await apiClient.request<any>(
+      `/v1/businesses/${businessId}/reports?limit=${limit}&offset=${offset}`,
+      { method: 'GET' }
+    );
+    const reports = Array.isArray(res) ? res : res.data || [];
+    const total = typeof res.total === 'number' ? res.total : reports.length;
+    return { reports, total };
+  },
+
+  async getReport(businessId: string, reportId: string): Promise<ReportItem> {
+    return apiClient.get<ReportItem>(`/v1/businesses/${businessId}/reports/${reportId}`);
+  },
+
+  async generateReport(
+    businessId: string,
+    payload: {
+      report_type: 'weekly' | 'monthly' | 'custom';
+      startDate?: string;
+      endDate?: string;
+      title?: string;
+    }
+  ): Promise<ReportItem> {
+    return apiClient.post<ReportItem>(`/v1/businesses/${businessId}/reports/generate`, payload);
+  },
+
+  async downloadReportPdf(businessId: string, reportId: string, filename = 'report.pdf'): Promise<void> {
+    const blob = await apiClient.downloadBlob(`/v1/businesses/${businessId}/reports/${reportId}/download`);
+    const downloadUrl = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.download = filename.endsWith('.pdf') ? filename : `${filename}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(downloadUrl);
+  },
+
+  async deleteReport(businessId: string, reportId: string): Promise<void> {
+    return apiClient.delete<void>(`/v1/businesses/${businessId}/reports/${reportId}`);
   },
 };
+
+export interface ReportItem {
+  id: string;
+  business_id: string;
+  title: string;
+  report_type: 'weekly' | 'monthly' | 'custom';
+  period_start: string;
+  period_end: string;
+  summary_text: string;
+  confidence: 'High' | 'Medium' | 'Low';
+  confidence_score: number;
+  data: {
+    title: string;
+    business_name: string;
+    report_type: string;
+    period_start: string;
+    period_end: string;
+    generated_date: string;
+    confidence: string;
+    confidence_score: number;
+    limitations: string[];
+    kpis: {
+      total_reviews: number;
+      previous_total_reviews: number;
+      reviews_delta: number;
+      average_rating: number | null;
+      previous_average_rating: number | null;
+      rating_delta: number | null;
+      total_rated: number;
+    };
+    sentiment: {
+      positive: number;
+      neutral: number;
+      negative: number;
+      total: number;
+      averageScore: number | null;
+    };
+    ai_summary: string;
+    ai_sentiment_observation?: string | null;
+    key_changes: Array<{
+      theme: string;
+      change_type: string;
+      description: string;
+    }>;
+    strengths: Array<{
+      theme: string;
+      description: string;
+      evidence_quote?: string | null;
+    }>;
+    areas_to_improve: Array<{
+      theme: string;
+      description: string;
+      evidence_quote?: string | null;
+    }>;
+    recommendations: Array<{
+      title: string;
+      action: string;
+      priority: 'High' | 'Medium' | 'Low';
+      related_theme: string;
+      rationale: string;
+    }>;
+    themes: Array<{
+      theme: string;
+      count: number;
+      prevalence: number;
+      negativeCount: number;
+      positiveCount: number;
+      neutralCount: number;
+      averageRating: number | null;
+    }>;
+    meaningful_changes: Array<{
+      theme: string;
+      change_type: string;
+      metric: string;
+      current_value?: number;
+      previous_value?: number;
+      delta?: number;
+    }>;
+    evidence: Array<{
+      author?: string;
+      rating?: number | null;
+      platform?: string;
+      published_at_str?: string;
+      content: string;
+    }>;
+    trends: Array<{
+      label: string;
+      count: number;
+      average_rating: number | null;
+    }>;
+  };
+  pdf_path: string | null;
+  created_at: string;
+  updated_at: string;
+}

@@ -34,3 +34,6 @@ Thumbs.db
 
 # uv
 uv.lock
+
+# Binaries
+bin/

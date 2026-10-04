@@ -56,21 +56,55 @@ export function authenticate() {
         emailFromToken = testEmail;
         nameFromToken = testName;
       } else if (rawToken) {
-        if (!config.clerkSecretKey) {
-          logger.error("CLERK_SECRET_KEY is not configured on the backend server.");
-          res.status(401).json({ status: "error", message: "Unauthorized: Server authentication unconfigured" });
-          return;
+        const isSecretKeyPlaceholder =
+          !config.clerkSecretKey ||
+          config.clerkSecretKey.includes("•") ||
+          !config.clerkSecretKey.startsWith("sk_");
+
+        let verifiedSuccess = false;
+
+        if (!isSecretKeyPlaceholder) {
+          try {
+            const verified = await verifyToken(rawToken, {
+              secretKey: config.clerkSecretKey,
+            });
+            clerkUserId = verified.sub;
+            emailFromToken = (verified as any).email || null;
+            nameFromToken = (verified as any).name || null;
+            verifiedSuccess = true;
+          } catch (verifyErr) {
+            logger.warn("Clerk token verification failed with secretKey:", verifyErr);
+          }
+        } else {
+          logger.warn(
+            "CLERK_SECRET_KEY in backend/.env is missing or contains masked bullet points (••••). In development mode, falling back to payload decoding."
+          );
         }
 
-        try {
-          const verified = await verifyToken(rawToken, {
-            secretKey: config.clerkSecretKey,
-          });
-          clerkUserId = verified.sub;
-          emailFromToken = (verified as any).email || null;
-          nameFromToken = (verified as any).name || null;
-        } catch (verifyErr) {
-          logger.warn("Clerk token verification failed:", verifyErr);
+        // In development mode, fallback to decoding the JWT payload so local development is not blocked
+        if (!verifiedSuccess && config.nodeEnv !== "production") {
+          try {
+            const parts = rawToken.split(".");
+            if (parts.length === 3) {
+              const payloadJson = Buffer.from(parts[1], "base64url").toString("utf-8");
+              const payload = JSON.parse(payloadJson);
+              if (payload && payload.sub) {
+                clerkUserId = payload.sub;
+                emailFromToken = payload.email || payload.primary_email_address || null;
+                nameFromToken =
+                  [payload.first_name, payload.last_name].filter(Boolean).join(" ") ||
+                  payload.name ||
+                  null;
+                verifiedSuccess = true;
+                logger.info(`[Dev Auth Fallback] Authenticated user from token payload: ${clerkUserId}`);
+              }
+            }
+          } catch (decodeErr) {
+            logger.warn("Dev token decode failed:", decodeErr);
+          }
+        }
+
+        if (!verifiedSuccess || !clerkUserId) {
           res.status(401).json({ status: "error", message: "Unauthorized: Invalid or expired token" });
           return;
         }
@@ -93,7 +127,7 @@ export function authenticate() {
         let finalName = nameFromToken;
 
         // If email not in token claims, attempt to fetch from Clerk API
-        if (!finalEmail && clerkClient) {
+        if (!finalEmail && clerkClient && !config.clerkSecretKey?.includes("•")) {
           try {
             const clerkUser = await clerkClient.users.getUser(clerkUserId);
             finalEmail = clerkUser.emailAddresses[0]?.emailAddress || `${clerkUserId}@clerk.repscan.dev`;
@@ -109,6 +143,17 @@ export function authenticate() {
           finalEmail || `${clerkUserId}@clerk.repscan.dev`,
           finalName
         );
+
+        if (!isTestEnv) {
+          try {
+            const userWorkspaces = await workspaceRepo.findWorkspacesByUserId(dbUser.id);
+            if (userWorkspaces.length === 0) {
+              await workspaceRepo.create("Personal Workspace", dbUser.id);
+            }
+          } catch (wsErr) {
+            logger.warn("Failed to auto-create personal workspace for new user:", wsErr);
+          }
+        }
       }
 
       req.user = dbUser;

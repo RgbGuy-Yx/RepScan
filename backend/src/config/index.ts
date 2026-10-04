@@ -13,4 +13,5 @@ export const config = {
   enableScheduler: process.env.ENABLE_SCHEDULED_SCRAPING === "true",
   clerkSecretKey: process.env.CLERK_SECRET_KEY || "",
   clerkPublishableKey: process.env.CLERK_PUBLISHABLE_KEY || "",
+  googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY || "",
 };

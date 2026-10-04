@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ report.title }} - RepScan Executive Audit</title>
+  <style>
+    @page {
+      size: A4 portrait;
+      margin: 10mm 12mm 10mm 12mm;
+      @bottom-right {
+        content: "RepScan Executive Intelligence • 1-Page Audit";
+        font-size: 7.5pt;
+        color: #94a3b8;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      }
+      @bottom-left {
+        content: "Confidential • {{ report.business_name }}";
+        font-size: 7.5pt;
+        color: #94a3b8;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #0f172a;
+      background-color: #ffffff;
+      line-height: 1.35;
+      font-size: 8.5pt;
+    }
+
+    /* Header styling */
+    .header-bar {
+      border-bottom: 2px solid #0f172a;
+      padding-bottom: 8px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .logo-tag {
+      font-size: 7.5pt;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #334155;
+      background-color: #f1f5f9;
+      padding: 2px 7px;
+      border-radius: 4px;
+      display: inline-block;
+      margin-bottom: 4px;
+    }
+
+    h1 {
+      font-size: 14pt;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+    }
+
+    .meta-subtitle {
+      font-size: 8pt;
+      color: #64748b;
+      margin-top: 2px;
+    }
+
+    .badge-confidence {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 5px;
+      font-size: 7.5pt;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .badge-confidence.high {
+      background-color: #ecfdf5;
+      color: #047857;
+      border: 1px solid #a7f3d0;
+    }
+
+    .badge-confidence.medium {
+      background-color: #fffbeb;
+      color: #b45309;
+      border: 1px solid #fde68a;
+    }
+
+    .badge-confidence.low {
+      background-color: #fff1f2;
+      color: #be123c;
+      border: 1px solid #fecdd3;
+    }
+
+    /* 4-KPI Grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .kpi-card {
+      background-color: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 7px 9px;
+    }
+
+    .kpi-label {
+      font-size: 6.8pt;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #64748b;
+      font-weight: 600;
+    }
+
+    .kpi-value {
+      font-size: 13pt;
+      font-weight: 800;
+      color: #0f172a;
+      margin-top: 1px;
+      line-height: 1.1;
+    }
+
+    .kpi-delta {
+      font-size: 7pt;
+      margin-top: 2px;
+      font-weight: 600;
+    }
+
+    .delta-pos { color: #10b981; }
+    .delta-neg { color: #f43f5e; }
+    .delta-neutral { color: #64748b; }
+
+    /* Synopsis Card */
+    .synopsis-box {
+      background-color: #f8fafc;
+      border-left: 3px solid #0f172a;
+      border: 1px solid #e2e8f0;
+      border-left-width: 3px;
+      border-left-color: #0f172a;
+      border-radius: 0 5px 5px 0;
+      padding: 7px 11px;
+      font-size: 8.2pt;
+      color: #1e293b;
+      line-height: 1.4;
+      margin-bottom: 10px;
+    }
+
+    .box-tag {
+      font-size: 6.8pt;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 700;
+      color: #64748b;
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    /* 2-Column Middle Grid */
+    .middle-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .subcard {
+      background-color: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 8px 10px;
+    }
+
+    .card-heading {
+      font-size: 7.8pt;
+      font-weight: 700;
+      color: #0f172a;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 4px;
+      margin-bottom: 6px;
+    }
+
+    /* Compact Themes Table */
+    table.compact-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 7.8pt;
+    }
+
+    table.compact-table th {
+      text-align: left;
+      padding: 3px 4px;
+      color: #64748b;
+      font-weight: 600;
+      border-bottom: 1px solid #cbd5e1;
+      font-size: 6.8pt;
+      text-transform: uppercase;
+    }
+
+    table.compact-table td {
+      padding: 3px 4px;
+      border-bottom: 1px solid #f1f5f9;
+      color: #1e293b;
+    }
+
+    .pill {
+      font-size: 6.8pt;
+      font-weight: 600;
+      padding: 1px 4px;
+      border-radius: 3px;
+      display: inline-block;
+    }
+
+    .pill-pos { background-color: #d1fae5; color: #065f46; }
+    .pill-neu { background-color: #e2e8f0; color: #334155; }
+    .pill-neg { background-color: #ffe4e6; color: #9f1239; }
+
+    /* Sentiment Donut */
+    .donut-wrap {
+      text-align: center;
+      margin-bottom: 6px;
+    }
+
+    .donut-wrap img {
+      max-height: 115px;
+      width: auto;
+    }
+
+    /* Change Signals */
+    .signals-list {
+      space-y: 4px;
+    }
+
+    .signal-item {
+      font-size: 7.6pt;
+      color: #334155;
+      padding: 2px 0;
+      border-bottom: 1px dashed #e2e8f0;
+      display: flex;
+      align-items: baseline;
+      gap: 5px;
+    }
+
+    .signal-item:last-child {
+      border-bottom: none;
+    }
+
+    .signal-tag {
+      font-size: 6.2pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 1px 4px;
+      border-radius: 3px;
+      shrink: 0;
+    }
+
+    .tag-new { background-color: #eff6ff; color: #1d4ed8; }
+    .tag-increasing { background-color: #fef2f2; color: #b91c1c; }
+    .tag-decreasing { background-color: #f0fdf4; color: #15803d; }
+    .tag-stable { background-color: #f1f5f9; color: #475569; }
+
+    /* Recommendations Row */
+    .recs-section {
+      background-color: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 8px 10px;
+      margin-bottom: 10px;
+    }
+
+    .rec-item {
+      font-size: 7.8pt;
+      color: #1e293b;
+      margin-top: 4px;
+      padding-top: 4px;
+      border-top: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .rec-item:first-of-type {
+      margin-top: 0;
+      padding-top: 0;
+      border-top: none;
+    }
+
+    .rec-priority {
+      font-size: 6.5pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 1px 5px;
+      border-radius: 3px;
+      height: fit-content;
+      margin-top: 1px;
+    }
+
+    .priority-high { background-color: #ffe4e6; color: #9f1239; }
+    .priority-medium { background-color: #fef3c7; color: #92400e; }
+    .priority-low { background-color: #eff6ff; color: #1e40af; }
+
+    /* Evidence Excerpt Callout */
+    .evidence-callout {
+      background-color: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-left: 3px solid #64748b;
+      padding: 6px 10px;
+      border-radius: 0 4px 4px 0;
+      font-size: 7.5pt;
+      color: #475569;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 1. Header -->
+  <div class="header-bar">
+    <div>
+      <span class="logo-tag">RepScan Intelligence Audit &bull; {{ report.report_type | capitalize }}</span>
+      <h1>{{ report.business_name }}</h1>
+      <div class="meta-subtitle">
+        Window: <strong>{{ report.period_start }}</strong> to <strong>{{ report.period_end }}</strong> &bull; Generated: {{ report.generated_date }}
+      </div>
+    </div>
+    <div>
+      <span class="badge-confidence {{ report.confidence | lower }}">
+        Confidence: {{ report.confidence }} ({{ (report.confidence_score * 100) | round }}%)
+      </span>
+    </div>
+  </div>
+
+  <!-- 2. Four Deterministic KPIs -->
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">Analyzed Reviews</div>
+      <div class="kpi-value">{{ report.kpis.total_reviews }}</div>
+      <div class="kpi-delta {% if report.kpis.reviews_delta > 0 %}delta-pos{% elif report.kpis.reviews_delta < 0 %}delta-neg{% else %}delta-neutral{% endif %}">
+        {% if report.kpis.reviews_delta > 0 %}+{% endif %}{{ report.kpis.reviews_delta }} vs prior
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-label">Average Rating</div>
+      <div class="kpi-value">
+        {% if report.kpis.average_rating %}{{ "%.1f"|format(report.kpis.average_rating) }}★{% else %}N/A{% endif %}
+      </div>
+      <div class="kpi-delta {% if report.kpis.rating_delta and report.kpis.rating_delta > 0 %}delta-pos{% elif report.kpis.rating_delta and report.kpis.rating_delta < 0 %}delta-neg{% else %}delta-neutral{% endif %}">
+        {% if report.kpis.rating_delta is not none %}
+          {% if report.kpis.rating_delta > 0 %}+{% endif %}{{ "%.2f"|format(report.kpis.rating_delta) }}★ net shift
+        {% else %}
+          Baseline
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-label">Positive Sentiment</div>
+      <div class="kpi-value">{{ report.sentiment.positive_pct }}%</div>
+      <div class="kpi-delta delta-pos">{{ report.sentiment.positive }} positive reviews</div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-label">Critical Friction</div>
+      <div class="kpi-value">{{ report.sentiment.negative_pct }}%</div>
+      <div class="kpi-delta delta-neg">{{ report.sentiment.negative }} complaints logged</div>
+    </div>
+  </div>
+
+  <!-- 3. Short, Direct Executive Synopsis -->
+  <div class="synopsis-box">
+    <span class="box-tag">Executive Briefing Synopsis</span>
+    {{ report.ai_summary }}
+  </div>
+
+  <!-- 4. Middle Section: Key Themes & Sentiment Donut -->
+  <div class="middle-grid">
+    <!-- Left: Top Themes Table -->
+    <div class="subcard">
+      <div class="card-heading">Top Themes & Topic Drivers</div>
+      {% if report.themes and report.themes|length > 0 %}
+      <table class="compact-table">
+        <thead>
+          <tr>
+            <th>Topic Theme</th>
+            <th>Mentions</th>
+            <th>Share</th>
+            <th>Pos / Neu / Neg</th>
+            <th>Rating</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for t in report.themes[:5] %}
+          <tr>
+            <td><strong>{{ t.theme }}</strong></td>
+            <td>{{ t.count }}</td>
+            <td>{{ t.prevalence }}%</td>
+            <td>
+              <span class="pill pill-pos">{{ t.positiveCount }}</span>
+              <span class="pill pill-neu">{{ t.neutralCount }}</span>
+              <span class="pill pill-neg">{{ t.negativeCount }}</span>
+            </td>
+            <td>{% if t.averageRating %}{{ "%.1f"|format(t.averageRating) }}★{% else %}-{% endif %}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p style="font-size: 7.5pt; color: #94a3b8; font-style: italic;">No specific theme patterns detected.</p>
+      {% endif %}
+    </div>
+
+    <!-- Right: Sentiment Donut & Notable Shifts -->
+    <div class="subcard">
+      <div class="card-heading">Sentiment & Notable Shifts</div>
+      {% if report.charts.sentiment_donut %}
+      <div class="donut-wrap">
+        <img src="{{ report.charts.sentiment_donut }}" alt="Sentiment Donut Chart">
+      </div>
+      {% endif %}
+
+      <div class="signals-list">
+        {% if report.key_changes and report.key_changes|length > 0 %}
+          {% for ch in report.key_changes[:2] %}
+          <div class="signal-item">
+            <span class="signal-tag tag-{{ ch.change_type | lower }}">{{ ch.change_type }}</span>
+            <div>
+              <strong>{{ ch.theme }}:</strong> {{ ch.description | truncate(90) }}
+            </div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div style="font-size: 7.5pt; color: #94a3b8;">Sentiment metrics stable across evaluation cycles.</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Priority Action Directives -->
+  <div class="recs-section">
+    <div class="card-heading" style="border-bottom: none; margin-bottom: 2px;">
+      Operational Action Directives
+    </div>
+    {% if report.recommendations and report.recommendations|length > 0 %}
+      {% for rec in report.recommendations[:2] %}
+      <div class="rec-item">
+        <div style="flex: 1;">
+          <strong>{{ rec.title }}:</strong> {{ rec.action }}
+          <span style="color: #64748b; font-size: 7pt; display: block; margin-top: 1px;">
+            Target: #{{ rec.related_theme }} &bull; Rationale: {{ rec.rationale }}
+          </span>
+        </div>
+        <span class="rec-priority priority-{{ rec.priority | lower }}">{{ rec.priority }}</span>
+      </div>
+      {% endfor %}
+    {% else %}
+      <p style="font-size: 7.5pt; color: #94a3b8;">No immediate interventions required.</p>
+    {% endif %}
+  </div>
+
+  <!-- 6. Grounded Customer Review Evidence Callout -->
+  {% if report.evidence and report.evidence|length > 0 %}
+  <div class="evidence-callout">
+    <strong>Verified Customer Evidence:</strong> “{{ report.evidence[0].content | truncate(160) }}” &mdash; {{ report.evidence[0].author or "Verified Patient" }} {% if report.evidence[0].rating %}({{ report.evidence[0].rating }}★){% endif %}
+  </div>
+  {% endif %}
+
+</body>
+</html>

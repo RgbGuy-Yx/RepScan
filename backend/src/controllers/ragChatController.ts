@@ -8,16 +8,29 @@ export async function handleRagChat(
 ): Promise<void> {
   try {
     const businessId = req.params.id;
-    const { query, filters, conversation_history, session_id, thread_id } = req.body;
+    const body = req.body;
+    const query = (body.query || body.message || "").trim();
+    const conversationHistory = body.conversation_history || body.history;
+    const { filters, session_id, thread_id } = body;
 
     const result = await processRagChat({
       businessId,
       query,
       filters,
-      conversationHistory: conversation_history,
+      conversationHistory,
       sessionId: session_id,
       threadId: thread_id,
     });
+
+    const citations = (result.sources || []).map((s) => ({
+      id: s.raw_item_id,
+      author: s.author || "Verified Customer",
+      rating: s.rating ?? 5,
+      content: s.excerpt,
+      published_at: s.date || new Date().toISOString(),
+      platform: s.platform,
+      source_url: s.source_url || null,
+    }));
 
     res.status(200).json({
       status: "success",

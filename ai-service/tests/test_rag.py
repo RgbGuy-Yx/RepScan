@@ -342,3 +342,114 @@ async def test_langgraph_multi_turn_conversation_state():
             assert data["sources"][0]["raw_item_id"] == "item-200"
 
 
+# ── Edge Case & Hardening Tests ────────────────────────────────────
+@pytest.mark.asyncio
+async def test_chat_endpoint_whitespace_query_validation():
+    app = create_app()
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        response = await client.post(
+            "/api/v1/chat",
+            json={"business_id": "biz-123", "query": "     "},
+        )
+        assert response.status_code == 422
+        data = response.json()
+        assert data["status"] == "error"
+        assert "Validation error" in data["message"]
+
+
+@pytest.mark.asyncio
+async def test_chat_endpoint_zero_reviews_guardrail():
+    app = create_app()
+    with patch("app.services.rag.retriever.hybrid_retriever.retrieve_semantic_docs") as mock_retrieve:
+        mock_retrieve.return_value = []
+        transport = ASGITransport(app=app)
+        async with AsyncClient(transport=transport, base_url="http://test") as client:
+            response = await client.post(
+                "/api/v1/chat",
+                json={
+                    "business_id": "biz-zero",
+                    "query": "What are patient complaints?",
+                    "structured_context": {"total_reviews": 0},
+                },
+            )
+            assert response.status_code == 200
+            data = response.json()
+            assert "no customer reviews" in data["answer"].lower()
+            assert data["confidence"] == "Low"
+            assert len(data["sources"]) == 0
+
+
+def test_validate_sources_index_reference_resolution():
+    retrieved = [
+        {
+            "raw_item_id": "uuid-real-review-99",
+            "content": "Superb dental cleaning, no pain at all.",
+            "platform": "google",
+            "author": "Marcus",
+            "rating": 5.0,
+            "date": "2026-09-20",
+        }
+    ]
+    # LLM cited citation by numeric index '[1]'
+    raw_sources = [{"raw_item_id": "[1]", "excerpt": "Superb dental cleaning, no pain at all."}]
+    validated = validate_and_format_sources(raw_sources, retrieved)
+    assert len(validated) == 1
+    assert validated[0].raw_item_id == "uuid-real-review-99"
+    assert validated[0].author == "Marcus"
+
+
+def test_retriever_uses_query_embeddings_when_available():
+    mock_chroma = MagicMock()
+    mock_chroma.embed_query.return_value = [0.1] * 1024
+    mock_chroma.collection.query.return_value = {
+        "ids": [["doc-1"]],
+        "documents": [["Test review"]],
+        "metadatas": [[{"raw_item_id": "doc-1", "platform": "google"}]],
+        "distances": [[0.1]],
+    }
+
+    retriever = HybridRetriever(mock_chroma)
+    results = retriever.retrieve_semantic_docs(query="great service", business_id="biz-1")
+
+    assert len(results) == 1
+    assert results[0]["raw_item_id"] == "doc-1"
+    mock_chroma.collection.query.assert_called_once()
+    call_kwargs = mock_chroma.collection.query.call_args.kwargs
+    assert "query_embeddings" in call_kwargs
+    assert len(call_kwargs["query_embeddings"][0]) == 1024
+    assert "query_texts" not in call_kwargs
+
+
+def test_retrieve_reviews_tool_and_runnable():
+    from app.services.rag.retriever import retrieve_reviews_tool, retriever_runnable
+
+    with patch("app.services.rag.retriever.hybrid_retriever.retrieve_semantic_docs") as mock_retrieve:
+        mock_retrieve.return_value = [
+            {"raw_item_id": "test-doc-1", "content": "Tool test review", "rating": 5.0}
+        ]
+
+        # Test LangChain @tool
+        tool_results = retrieve_reviews_tool.invoke({
+            "query": "clean dental clinic",
+            "business_id": "biz-999",
+            "platform": "google",
+        })
+        assert len(tool_results) == 1
+        assert tool_results[0]["raw_item_id"] == "test-doc-1"
+
+        # Test LangChain Runnable
+        runnable_results = retriever_runnable.invoke({
+            "query": "clean dental clinic",
+            "business_id": "biz-999",
+            "structured_context": {
+                "sample_reviews": [
+                    {"id": "test-doc-2", "content": "Sample review", "rating": 4.0}
+                ]
+            },
+        })
+        assert len(runnable_results) == 2
+        assert {r["raw_item_id"] for r in runnable_results} == {"test-doc-1", "test-doc-2"}
+
+
+

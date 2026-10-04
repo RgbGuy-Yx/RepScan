@@ -13,6 +13,24 @@ setup_logging()
 logger = logging.getLogger(__name__)
 
 
+from contextlib import asynccontextmanager
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Lifespan event handler for starting and stopping background resources."""
+    chroma_service.initialize()
+    logger.info(
+        "%s v%s started (%s)",
+        settings.APP_NAME,
+        settings.APP_VERSION,
+        settings.ENVIRONMENT,
+    )
+    try:
+        yield
+    finally:
+        logger.info("%s shutting down", settings.APP_NAME)
+
+
 def create_app() -> FastAPI:
     """Application factory for the RepScan AI Service."""
     app = FastAPI(
@@ -25,6 +43,7 @@ def create_app() -> FastAPI:
         docs_url=settings.DOCS_URL,
         redoc_url=settings.REDOC_URL,
         openapi_url=settings.OPENAPI_URL,
+        lifespan=lifespan,
     )
 
     # ── Middleware ────────────────────────────────────────────────
@@ -41,20 +60,6 @@ def create_app() -> FastAPI:
 
     # ── Routers ──────────────────────────────────────────────────
     app.include_router(v1_router)
-
-    @app.on_event("startup")
-    async def on_startup() -> None:
-        chroma_service.initialize()
-        logger.info(
-            "%s v%s started (%s)",
-            settings.APP_NAME,
-            settings.APP_VERSION,
-            settings.ENVIRONMENT,
-        )
-
-    @app.on_event("shutdown")
-    async def on_shutdown() -> None:
-        logger.info("%s shutting down", settings.APP_NAME)
 
     return app
 

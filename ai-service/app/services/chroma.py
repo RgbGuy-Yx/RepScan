@@ -46,6 +46,26 @@ class ChromaService:
         logger.info("ChromaDB & LangChain vector store initialized at %s", settings.CHROMA_PATH)
 
     @property
+    def embeddings(self) -> VoyageAIEmbeddings | None:
+        if self._embeddings is None and settings.VOYAGE_API_KEY:
+            self._embeddings = VoyageAIEmbeddings(
+                model=settings.VOYAGE_MODEL,
+                voyage_api_key=settings.VOYAGE_API_KEY,
+            )
+        return self._embeddings
+
+    def embed_query(self, text: str) -> list[float] | None:
+        """Embed a query text using Voyage embeddings if available."""
+        embedder = self.embeddings
+        if embedder is not None:
+            try:
+                return embedder.embed_query(text)
+            except Exception as err:
+                logger.error("Failed to generate Voyage query embedding: %s", err)
+                return None
+        return None
+
+    @property
     def collection(self) -> chromadb.Collection:
         if self._collection is None:
             raise RuntimeError("ChromaDB not initialized. Call initialize() first.")

@@ -56,13 +56,23 @@ class HybridRetriever:
             where_filter = build_chroma_filter(business_id, filters)
             logger.debug("Executing ChromaDB query with filter: %s", where_filter)
 
-            # Query ChromaDB collection directly using query_texts
-            query_res = self.chroma.collection.query(
-                query_texts=[query],
-                n_results=k,
-                where=where_filter,
-                include=["documents", "metadatas", "distances"],
-            )
+            # Match stored embedding dimension (Voyage 1024-dim)
+            query_embedding = self.chroma.embed_query(query)
+
+            if query_embedding is not None:
+                query_res = self.chroma.collection.query(
+                    query_embeddings=[query_embedding],
+                    n_results=k,
+                    where=where_filter,
+                    include=["documents", "metadatas", "distances"],
+                )
+            else:
+                query_res = self.chroma.collection.query(
+                    query_texts=[query],
+                    n_results=k,
+                    where=where_filter,
+                    include=["documents", "metadatas", "distances"],
+                )
 
             if query_res and query_res.get("ids") and len(query_res["ids"][0]) > 0:
                 ids = query_res["ids"][0]
@@ -126,3 +136,45 @@ class HybridRetriever:
 
 
 hybrid_retriever = HybridRetriever()
+
+
+# ── LangChain Tool & Runnable Integration ────────────────────────────────────
+from langchain_core.runnables import RunnableLambda
+from langchain_core.tools import tool
+
+
+@tool
+def retrieve_reviews_tool(
+    query: str,
+    business_id: str,
+    platform: str | None = None,
+    sentiment: str | None = None,
+    limit: int = 8,
+) -> list[dict[str, Any]]:
+    """Retrieve semantically relevant customer reviews from ChromaDB vector store matching filters."""
+    filters = {}
+    if platform:
+        filters["platform"] = platform
+    if sentiment:
+        filters["sentiment"] = sentiment
+    return hybrid_retriever.retrieve_semantic_docs(
+        query=query,
+        business_id=business_id,
+        filters=filters or None,
+        k=limit,
+    )
+
+
+# Declarative LangChain Runnable for hybrid retrieval
+retriever_runnable = RunnableLambda(
+    lambda inputs: hybrid_retriever.combine_with_structured(
+        hybrid_retriever.retrieve_semantic_docs(
+            query=inputs["query"],
+            business_id=inputs["business_id"],
+            filters=inputs.get("filters"),
+            k=inputs.get("k", 8),
+        ),
+        inputs.get("structured_context", {}),
+    )
+)
+

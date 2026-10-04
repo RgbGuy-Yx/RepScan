@@ -1,55 +1,60 @@
 import { Inbox, Cpu, BarChart2, ShieldCheck, CheckSquare } from 'lucide-react';
+import googleIcon from '../../assets/Google-modern-3D-icon-on-Premium-vector-PNG.avif';
 
 export default function LandingHowItWorks() {
   const steps = [
     {
       step: '01',
       title: 'Collect',
-      description: 'Bring customer feedback from your connected platforms into one place.',
+      description: 'Ingest raw customer feedback across Google Maps, Instagram, and verified channels.',
       icon: Inbox,
-      tag: 'Multi-Channel Ingestion',
+      tag: 'Multi-Channel Pipeline',
+      isGoogle: true,
     },
     {
       step: '02',
-      title: 'Understand',
-      description: 'AI analyzes sentiment, recurring themes, languages, and customer concerns.',
+      title: 'Analyze',
+      description: 'AI extracts sentiment, recurring topics, native code-mixed languages, and root friction.',
       icon: Cpu,
-      tag: 'Semantic & Multilingual',
+      tag: 'Semantic & NLU Clustering',
     },
     {
       step: '03',
       title: 'Compare',
-      description: "See how this week's feedback compares with previous periods.",
+      description: "Measure telemetry velocity shifts against previous crawl cycles with confidence bounds.",
       icon: BarChart2,
-      tag: 'Period Velocity Deltas',
+      tag: 'Velocity & Delta Models',
     },
     {
       step: '04',
       title: 'Prove',
-      description: 'Trace every important insight back to the actual customer reviews behind it.',
+      description: 'Trace every statistical conclusion directly back to timestamped customer citations.',
       icon: ShieldCheck,
-      tag: 'Grounded Evidence',
+      tag: 'Grounded Verifiability',
     },
     {
       step: '05',
-      title: 'Act',
-      description: 'Turn important insights into trackable action items.',
+      title: 'Remediate',
+      description: 'Convert critical friction findings into operational Kanban tasks for your team.',
       icon: CheckSquare,
-      tag: 'Operational Kanban',
+      tag: 'Closed-Loop Action',
     },
   ];
 
   return (
-    <section id="how-it-works" className="py-24 border-t border-[#23252a] bg-[#010102]">
-      <div className="max-w-6xl mx-auto px-6 lg:px-8">
+    <section id="how-it-works" className="py-24 border-t border-zinc-800/80 bg-zinc-950">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 space-y-12">
         {/* Section Header */}
-        <div className="max-w-2xl mb-12">
-          <span className="text-[11px] font-semibold text-[#8a8f98] uppercase tracking-[0.06em] block mb-2">
-            How RepScan Works
+        <div className="max-w-2xl space-y-2">
+          <span className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider block">
+            Operational Workflow
           </span>
-          <h2 className="text-3xl sm:text-4xl font-semibold tracking-[-0.03em] text-[#f7f8f8] leading-tight">
-            From customer feedback to clear action.
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-zinc-100">
+            From raw customer reviews to closed-loop remediation.
           </h2>
+          <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed font-sans">
+            A deterministic 5-step pipeline engineered to eradicate guesswork and operational blind spots.
+          </p>
         </div>
 
         {/* 5-Step Pipeline Grid */}
@@ -59,27 +64,31 @@ export default function LandingHowItWorks() {
             return (
               <div
                 key={item.step}
-                className="p-5 rounded-xl bg-[#0f1011] border border-[#23252a] hover:border-[#34343a] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.04)] transition-all flex flex-col justify-between group"
+                className="p-5 rounded-xl bg-zinc-950/70 border border-zinc-800/80 hover:border-zinc-700 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)] transition-all flex flex-col justify-between group"
               >
                 <div>
                   <div className="flex items-center justify-between mb-4">
-                    <div className="w-8 h-8 rounded-md bg-[#141516] border border-[#23252a] flex items-center justify-center text-[#828fff] group-hover:border-[#5e6ad2]/40 transition-colors">
-                      <Icon className="w-4 h-4" />
+                    <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-300 group-hover:text-emerald-400 group-hover:border-zinc-700 transition-colors">
+                      {item.isGoogle ? (
+                        <img src={googleIcon} alt="Google" className="w-4 h-4 object-contain" />
+                      ) : (
+                        <Icon className="w-4 h-4" />
+                      )}
                     </div>
-                    <span className="font-mono text-xs text-[#62666d] bg-[#141516] px-2 py-0.5 rounded border border-[#23252a]">
+                    <span className="font-mono text-xs text-zinc-500 bg-zinc-900/80 px-2 py-0.5 rounded border border-zinc-800 tabular-nums">
                       {item.step}
                     </span>
                   </div>
 
-                  <h3 className="text-base font-semibold text-[#f7f8f8] tracking-tight">
+                  <h3 className="text-sm font-semibold text-zinc-100 tracking-tight">
                     {item.title}
                   </h3>
-                  <p className="mt-2 text-xs text-[#8a8f98] leading-relaxed">
+                  <p className="mt-2 text-xs text-zinc-400 leading-relaxed">
                     {item.description}
                   </p>
                 </div>
 
-                <div className="mt-5 pt-3 border-t border-[#23252a]/70 text-[10px] font-mono text-[#62666d]">
+                <div className="mt-5 pt-3 border-t border-zinc-800/70 text-[10px] font-mono text-zinc-500">
                   {item.tag}
                 </div>
               </div>

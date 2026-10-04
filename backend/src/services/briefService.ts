@@ -111,14 +111,14 @@ export async function getWeeklyComparison(
  */
 export async function generateWeeklyBrief(
   businessId: string,
-  input: GenerateBriefInput
+  input?: GenerateBriefInput
 ): Promise<BriefResponse> {
   const business = await businessRepo.findById(businessId);
   if (!business) {
     throw new AppError("Business not found", 404);
   }
 
-  const analytics = await getWeeklyComparison(businessId, input.startDate, input.endDate);
+  const analytics = await getWeeklyComparison(businessId, input?.startDate, input?.endDate);
   const { current_week, previous_week, meaningful_changes, confidence, limitations } = analytics;
 
   // Prepare top praise & complaint candidates with evidence snippets
@@ -152,7 +152,17 @@ export async function generateWeeklyBrief(
   );
   const sampleReviews = currentReviews.slice(0, 10).map((r) => r.content);
 
+  const dataVersion = [
+    current_week.totalReviews,
+    previous_week.totalReviews,
+    current_week.ratingStats.averageRating,
+    previous_week.ratingStats.averageRating,
+    sampleReviews.length,
+  ].join(":");
+
   const aiResult = await generateBriefSummary({
+    business_id: businessId,
+    data_version: dataVersion,
     business_name: business.name,
     period_start: current_week.periodStart.slice(0, 10),
     period_end: current_week.periodEnd.slice(0, 10),

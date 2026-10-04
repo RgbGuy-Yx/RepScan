@@ -32,32 +32,32 @@ export default function CreateWorkspaceModal({ isOpen, onClose }: CreateWorkspac
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-      <div className="w-full max-w-md bg-[#0f1011] border border-[#23252a] rounded-2xl shadow-2xl overflow-hidden">
-        <div className="px-6 py-4 border-b border-[#23252a] flex items-center justify-between">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+      <div className="w-full max-w-md bg-zinc-950 border border-zinc-800 rounded-lg shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-100">
+        <div className="px-5 py-4 border-b border-zinc-800/80 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Building2 className="w-4 h-4 text-[#5e6ad2]" />
-            <h3 className="text-sm font-semibold text-[#f7f8f8]">Create New Workspace</h3>
+            <Building2 className="w-4 h-4 text-zinc-400" />
+            <h3 className="text-xs font-semibold text-zinc-100 tracking-tight">Create Workspace</h3>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-1 rounded-md text-[#8a8f98] hover:text-[#f7f8f8] hover:bg-[#141516] transition-colors"
+            className="p-1 rounded-md text-zinc-500 hover:text-zinc-200 hover:bg-zinc-900 transition-colors cursor-pointer"
           >
-            <X className="w-4 h-4" />
+            <X className="w-3.5 h-3.5" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-5 space-y-3.5">
           {error && (
-            <div className="p-2.5 rounded-lg bg-rose-950/40 border border-rose-800/40 text-rose-200 text-xs">
+            <div className="p-2.5 rounded-md bg-rose-950/40 border border-rose-800/40 text-rose-300 text-xs font-mono">
               {error}
             </div>
           )}
 
           <div>
-            <label className="block text-xs font-medium text-[#d0d6e0] mb-1">
-              Workspace Organization Name <span className="text-[#5e6ad2]">*</span>
+            <label className="block text-xs font-medium text-zinc-300 mb-1">
+              Workspace Organization Name <span className="text-zinc-500">*</span>
             </label>
             <input
               type="text"
@@ -65,10 +65,10 @@ export default function CreateWorkspaceModal({ isOpen, onClose }: CreateWorkspac
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Apex Hospitality Group"
-              className="w-full bg-[#141516] border border-[#23252a] rounded-lg px-3 py-2 text-xs text-[#f7f8f8] focus:border-[#5e6ad2] focus:outline-none transition-colors"
+              className="w-full bg-zinc-900 border border-zinc-800 rounded-md px-3 py-1.5 text-xs text-zinc-100 focus:border-zinc-500 focus:outline-none transition-colors"
             />
-            <p className="text-[11px] text-[#62666d] mt-1.5">
-              You will automatically be assigned the <span className="text-[#f7f8f8]">owner</span> role with full administrative permissions.
+            <p className="text-[11px] text-zinc-500 mt-1 font-mono">
+              You will automatically be assigned the <span className="text-zinc-300">owner</span> role.
             </p>
           </div>
 
@@ -76,18 +76,18 @@ export default function CreateWorkspaceModal({ isOpen, onClose }: CreateWorkspac
             <button
               type="button"
               onClick={onClose}
-              className="px-3.5 py-2 text-xs font-medium text-[#8a8f98] hover:text-[#f7f8f8] transition-colors"
+              className="px-3 py-1.5 text-xs font-medium text-zinc-400 hover:text-zinc-200 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting || !name.trim()}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#5e6ad2] hover:bg-[#828fff] text-white text-xs font-medium transition-all shadow-[0_2px_8px_rgba(94,106,210,0.3)] disabled:opacity-50 cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-md bg-zinc-100 hover:bg-white text-zinc-950 text-xs font-medium transition-colors disabled:opacity-50 cursor-pointer active:scale-[0.98]"
             >
               {isSubmitting ? (
                 <>
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <Loader2 className="w-3 h-3 animate-spin" />
                   <span>Creating...</span>
                 </>
               ) : (

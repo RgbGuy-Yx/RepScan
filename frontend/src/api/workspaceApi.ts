@@ -40,6 +40,9 @@ export interface Business {
   industry?: string | null;
   website?: string | null;
   location?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
+  google_place_id?: string | null;
   description?: string | null;
   sentiment_score?: number | null;
   status?: string;
@@ -57,6 +60,9 @@ export interface CreateBusinessPayload {
   industry?: string;
   website?: string;
   location?: string;
+  latitude?: number;
+  longitude?: number;
+  google_place_id?: string;
   description?: string;
 }
 

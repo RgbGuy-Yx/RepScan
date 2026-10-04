@@ -56,7 +56,10 @@ export async function findPendingByConnection(connectionId: string): Promise<Pen
      FROM raw_items WHERE platform_connection_id = $1 AND processing_status = 'pending'
      ORDER BY created_at ASC`, [connectionId]
   );
-  return result.rows;
+  return result.rows.map(row => ({
+    ...row,
+    rating: row.rating !== null && row.rating !== undefined ? Number(row.rating) : null,
+  }));
 }
 
 export async function saveProcessed(item: ProcessedFeedback): Promise<void> {
@@ -145,6 +148,7 @@ export async function findReviewsByBusinessId(
 
   return result.rows.map((row) => ({
     ...row,
+    rating: row.rating !== null ? Number(row.rating) : null,
     themes: Array.isArray(row.themes) ? row.themes : typeof row.themes === 'string' ? JSON.parse(row.themes) : [],
     evidence: Array.isArray(row.evidence) ? row.evidence : typeof row.evidence === 'string' ? JSON.parse(row.evidence) : [],
   }));

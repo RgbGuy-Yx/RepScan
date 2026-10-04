@@ -1,5 +1,5 @@
 from typing import Any, Literal, TypedDict
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class ChatFilter(BaseModel):
@@ -41,11 +41,31 @@ class StructuredContext(BaseModel):
 
 class RagChatRequest(BaseModel):
     business_id: str
-    query: str = Field(min_length=1)
+    query: str
     filters: ChatFilter | None = None
     conversation_history: list[ChatMessage] = Field(default_factory=list)
     structured_context: StructuredContext | None = None
     thread_id: str | None = None
+    data_version: str | None = None
+    prompt_version: str | None = None
+    force_refresh: bool = False
+    language: str = "en"
+
+    @field_validator("business_id")
+    @classmethod
+    def validate_business_id(cls, v: str) -> str:
+        clean = v.strip() if isinstance(v, str) else ""
+        if not clean:
+            raise ValueError("business_id cannot be empty or blank")
+        return clean
+
+    @field_validator("query")
+    @classmethod
+    def validate_query(cls, v: str) -> str:
+        clean = v.strip() if isinstance(v, str) else ""
+        if not clean:
+            raise ValueError("Query cannot be empty or whitespace only")
+        return clean
 
 
 class RagChatResponse(BaseModel):
@@ -54,6 +74,8 @@ class RagChatResponse(BaseModel):
     confidence: Literal["High", "Medium", "Low"]
     limitation_note: str | None = None
     sources: list[SourceProof] = Field(default_factory=list)
+    cached: bool = False
+    cache_key: str | None = None
 
 
 class RagChatState(TypedDict, total=False):

@@ -46,3 +46,19 @@ export async function updatePlatformConnection(
     next(err);
   }
 }
+
+export async function deletePlatformConnection(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    await platformService.deletePlatformConnection(
+      req.params.id,
+      req.params.platformId
+    );
+    res.json({ status: "success", message: "Platform connection deleted" });
+  } catch (err) {
+    next(err);
+  }
+}

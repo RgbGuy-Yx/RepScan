@@ -1,5 +1,6 @@
-import { ShieldCheck, ExternalLink, AlertCircle, FileText, CheckCircle2 } from 'lucide-react';
+import { ShieldCheck, ExternalLink, AlertCircle, FileText, CheckCircle2, Star } from 'lucide-react';
 import type { ProofItem } from '../../types';
+import googleIcon from '../../assets/Google-modern-3D-icon-on-Premium-vector-PNG.avif';
 
 interface LandingProofProps {
   onOpenProof?: (proof: ProofItem) => void;
@@ -7,15 +8,15 @@ interface LandingProofProps {
 
 export default function LandingProof({ onOpenProof }: LandingProofProps) {
   const sampleProof: ProofItem = {
-    theme: 'Food Quality (Lukewarm Entrees & Temperature Latency)',
+    theme: 'Clinical Consultation Latency & Waiting Queue',
     author: 'Rahul Sharma',
-    date: 'Sep 24, 2026',
+    date: 'Sep 29, 2026',
     rating: 2,
     platform: 'Google Reviews',
     excerpt:
-      'The paneer tikka and dal makhani arrived lukewarm. We waited 35 minutes and the food temperature was completely off. Noticeable drop in food quality compared to our previous visits.',
-    highlight: 'arrived lukewarm',
-    rawId: 'rev_fq_84920b',
+      'The clinic was extremely clean and doctor was polite, but wait times exceeded 45 minutes past our scheduled appointment slot. Need better scheduling coordination.',
+    highlight: 'wait times exceeded 45 minutes',
+    rawId: 'rev_08a9d4_fq849',
   };
 
   const proofDimensions = [
@@ -25,78 +26,78 @@ export default function LandingProof({ onOpenProof }: LandingProofProps) {
       badge: 'Signal Detected',
       badgeColor: 'text-rose-400 bg-rose-500/10 border-rose-500/20',
       title: 'Insight',
-      description: 'Food quality complaints increased this week.',
-      detail: '+267% spike in food temperature & preparation mentions week-over-week.',
+      description: 'Consultation wait times spiked this week.',
+      detail: '+24% increase in appointment queue latency mentions cycle-over-cycle.',
     },
     {
-      label: 'Evidence',
       icon: FileText,
+      label: 'Evidence',
       badge: 'Raw Grounding',
-      badgeColor: 'text-[#828fff] bg-[#5e6ad2]/10 border-[#5e6ad2]/20',
+      badgeColor: 'text-zinc-300 bg-zinc-900 border-zinc-700',
       title: 'Evidence',
       description: 'See the actual reviews, ratings, dates, and source behind the insight.',
-      detail: 'Direct foreign-key linkage to raw customer reviews across connected platforms.',
+      detail: 'Direct cryptographic linkage to verified raw customer reviews across connected platforms.',
     },
     {
-      label: 'Confidence',
       icon: CheckCircle2,
+      label: 'Confidence',
       badge: 'High Reliability',
-      badgeColor: 'text-[#4ade80] bg-[#27a644]/10 border-[#27a644]/25',
+      badgeColor: 'text-emerald-400 bg-emerald-950/40 border-emerald-800/40',
       title: 'Confidence',
-      description: 'Understand how strong the available evidence is.',
+      description: 'Understand the mathematical weight of the corroborating evidence.',
       detail: 'Confidence: 94% based on 14 corroborating reviews with p < 0.01 statistical significance.',
     },
     {
-      label: 'Limitations',
       icon: ShieldCheck,
+      label: 'Boundaries',
       badge: 'Boundary Defined',
       badgeColor: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
-      title: 'Limitations',
-      description: "Know when the available data isn't enough to make a reliable conclusion.",
-      detail: 'Isolated to Friday/Saturday dinner rush (8–10 PM); weekday lunch dataset remains unaffected.',
+      title: 'Boundaries',
+      description: 'Know when available data is limited to specific operational cohorts.',
+      detail: 'Isolated to peak evening consultation hours (6 - 8 PM); morning slots remain unaffected.',
     },
   ];
 
   return (
-    <section id="the-proof" className="py-24 border-t border-[#23252a] bg-[#010102]">
-      <div className="max-w-6xl mx-auto px-6 lg:px-8">
+    <section id="the-proof" className="py-24 border-t border-zinc-800/80 bg-zinc-950">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 space-y-12">
         {/* Section Header */}
-        <div className="max-w-2xl mb-12">
-          <span className="text-[11px] font-semibold text-[#8a8f98] uppercase tracking-[0.06em] block mb-2">
-            The Proof
+        <div className="max-w-2xl space-y-2">
+          <span className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider block">
+            Verification Protocol
           </span>
-          <h2 className="text-3xl sm:text-4xl font-semibold tracking-[-0.03em] text-[#f7f8f8] leading-tight">
-            Don't just take the AI's word for it.
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-zinc-100">
+            Don't just take an AI's word for it.
           </h2>
-          <p className="mt-3 text-sm sm:text-base text-[#8a8f98] leading-relaxed">
-            Every important insight can be traced back to the customer feedback that supports it.
+          <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed font-sans">
+            Every analytical conclusion is grounded in verifiable evidence. Zero black-box summarization, zero synthetic fabrications.
           </p>
         </div>
 
         {/* 4 Dimension Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {proofDimensions.map((item) => {
             const Icon = item.icon;
             return (
               <div
                 key={item.label}
-                className="p-5 rounded-xl bg-[#0f1011] border border-[#23252a] hover:border-[#34343a] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.04)] transition-all flex flex-col justify-between"
+                className="p-5 rounded-xl bg-zinc-950/70 border border-zinc-800/80 hover:border-zinc-700 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)] transition-all flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-center justify-between mb-3">
                     <span className={`text-[10px] font-mono px-2 py-0.5 rounded border ${item.badgeColor}`}>
                       {item.badge}
                     </span>
-                    <Icon className="w-4 h-4 text-[#8a8f98]" />
+                    <Icon className="w-4 h-4 text-zinc-500" />
                   </div>
-                  <h3 className="text-base font-semibold text-[#f7f8f8] tracking-tight">
+                  <h3 className="text-sm font-semibold text-zinc-100 tracking-tight">
                     {item.title}
                   </h3>
-                  <p className="mt-2 text-xs sm:text-sm text-[#d0d6e0] font-medium leading-snug">
+                  <p className="mt-2 text-xs text-zinc-300 font-medium leading-relaxed">
                     {item.description}
                   </p>
                 </div>
-                <div className="mt-4 pt-3 border-t border-[#23252a] text-[11px] text-[#8a8f98] leading-relaxed">
+                <div className="mt-4 pt-3 border-t border-zinc-800/70 text-[11px] font-mono text-zinc-500 leading-relaxed">
                   {item.detail}
                 </div>
               </div>
@@ -105,66 +106,73 @@ export default function LandingProof({ onOpenProof }: LandingProofProps) {
         </div>
 
         {/* Interactive Proof Grounding Panel */}
-        <div className="rounded-2xl bg-[#0f1011] border border-[#23252a] p-6 sm:p-7 shadow-[0_20px_60px_rgba(0,0,0,0.9),inset_0_1px_0_0_rgba(255,255,255,0.06)]">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#23252a]">
+        <div className="rounded-xl bg-zinc-950/90 border border-zinc-800/80 p-6 sm:p-7 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.04)] space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-zinc-800/60">
             <div>
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-[#27a644]" />
-                <h4 className="text-sm font-semibold text-[#f7f8f8]">
+                <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                <h4 className="text-sm font-semibold text-zinc-100">
                   Verified Evidence Citation Inspector
                 </h4>
               </div>
-              <p className="text-xs text-[#8a8f98] mt-0.5">
-                Exact review matching the detected insight: Food quality complaints increased this week
+              <p className="text-xs text-zinc-500 font-mono mt-0.5">
+                Exact review corroborating detected shift: Consultation wait times spiked this week
               </p>
             </div>
 
             <div className="flex items-center gap-2">
-              <span className="font-mono text-[11px] text-[#4ade80] bg-[#27a644]/10 px-2 py-0.5 rounded border border-[#27a644]/25">
+              <span className="font-mono text-[11px] text-emerald-400 bg-emerald-950/40 px-2.5 py-1 rounded border border-emerald-800/40">
                 Confidence: High (94%)
               </span>
             </div>
           </div>
 
-          <div className="mt-5 p-5 rounded-xl bg-[#141516] border border-[#23252a] space-y-3">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-semibold text-[#f7f8f8]">{sampleProof.author}</span>
-                  <span className="text-xs text-[#62666d]">·</span>
-                  <span className="text-xs text-[#8a8f98]">{sampleProof.date}</span>
-                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#18191a] border border-[#23252a] text-[#8a8f98]">
-                    {sampleProof.platform}
-                  </span>
-                </div>
-
-                <div className="text-amber-400 text-xs flex items-center gap-1 mt-1">
-                  {'★'.repeat(sampleProof.rating)}
-                  <span className="text-[#62666d]">({sampleProof.rating}.0)</span>
-                </div>
+          <div className="p-4 sm:p-5 rounded-lg bg-zinc-900/40 border border-zinc-800/80 space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-2 text-xs font-mono">
+                <span className="font-medium text-zinc-200">{sampleProof.author}</span>
+                <span className="text-zinc-600">/</span>
+                <span className="text-zinc-500 text-[11px]">{sampleProof.date}</span>
+                <span className="text-zinc-600">/</span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded border border-zinc-800 bg-zinc-900 text-zinc-300 inline-flex items-center gap-1">
+                  <img src={googleIcon} alt="Google" className="w-3 h-3 object-contain shrink-0" />
+                  <span>Google</span>
+                </span>
               </div>
 
-              {onOpenProof && (
-                <button
-                  type="button"
-                  onClick={() => onOpenProof(sampleProof)}
-                  className="linear-btn-secondary text-xs h-8 px-3 flex items-center gap-1.5 cursor-pointer"
-                >
-                  <span>Inspect Raw Record</span>
-                  <ExternalLink className="w-3.5 h-3.5 text-[#8a8f98]" />
-                </button>
-              )}
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-0.5 text-amber-400">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star
+                      key={i}
+                      className={`w-3 h-3 ${i < sampleProof.rating ? 'fill-amber-400 text-amber-400' : 'text-zinc-700'}`}
+                    />
+                  ))}
+                  <span className="text-zinc-500 font-mono text-[11px] ml-1">({sampleProof.rating}.0)</span>
+                </div>
+
+                {onOpenProof && (
+                  <button
+                    type="button"
+                    onClick={() => onOpenProof(sampleProof)}
+                    className="px-2.5 py-1 rounded-md bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 text-xs font-mono transition-colors inline-flex items-center gap-1.5 cursor-pointer ml-2"
+                  >
+                    <span>Inspect Raw Record</span>
+                    <ExternalLink className="w-3 h-3 text-zinc-400" />
+                  </button>
+                )}
+              </div>
             </div>
 
-            <p className="text-xs sm:text-sm text-[#d0d6e0] leading-relaxed pt-1 font-sans">
-              “{sampleProof.excerpt}”
+            <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed font-sans pl-2.5 border-l-2 border-rose-500/80">
+              "{sampleProof.excerpt}"
             </p>
 
-            <div className="pt-3 border-t border-[#23252a] flex flex-wrap items-center justify-between text-xs text-[#62666d] gap-2">
-              <span className="text-[#8a8f98]">
-                Extracted Theme: <strong className="text-[#f7f8f8]">{sampleProof.theme}</strong>
+            <div className="pt-3 border-t border-zinc-800/80 flex flex-wrap items-center justify-between text-xs font-mono text-zinc-500 gap-2">
+              <span>
+                Theme Cluster: <strong className="text-zinc-200 font-normal">{sampleProof.theme}</strong>
               </span>
-              <span className="font-mono text-[11px] text-[#8a8f98]">
+              <span>
                 UUID: {sampleProof.rawId}
               </span>
             </div>

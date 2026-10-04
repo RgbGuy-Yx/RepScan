@@ -41,3 +41,7 @@ npm-debug.log*
 
 # uv
 uv.lock
+
+# Storage and Binaries
+storage/
+bin/

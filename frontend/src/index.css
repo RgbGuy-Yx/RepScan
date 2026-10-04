@@ -6,29 +6,29 @@
    and signature Linear lavender-blue #5e6ad2 accent.
    ───────────────────────────────────────────────────────────── */
 :root {
-  --canvas: #010102;
+  --canvas: #09090b;
   --surface-1: #0f1011;
   --surface-2: #141516;
-  --surface-3: #18191a;
-  --surface-4: #191a1b;
+  --surface-3: #18191b;
+  --surface-4: #202124;
 
-  --hairline: #23252a;
-  --hairline-strong: #34343a;
-  --hairline-tertiary: #3e3e44;
+  --hairline: #27272a;
+  --hairline-strong: #3f3f46;
+  --hairline-tertiary: #52525b;
 
-  --primary: #5e6ad2;
-  --primary-hover: #828fff;
-  --primary-focus: #5e69d1;
-  --on-primary: #ffffff;
+  --primary: #f4f4f5;
+  --primary-hover: #ffffff;
+  --primary-focus: #e4e4e7;
+  --on-primary: #09090b;
 
-  --ink: #f7f8f8;
-  --ink-muted: #d0d6e0;
-  --ink-subtle: #8a8f98;
-  --ink-tertiary: #62666d;
+  --ink: #f4f4f5;
+  --ink-muted: #d4d4d8;
+  --ink-subtle: #a1a1aa;
+  --ink-tertiary: #71717a;
 
-  --semantic-success: #27a644;
+  --semantic-success: #10b981;
   --semantic-overlay: #000000;
-  --brand-secure: #7a7fad;
+  --brand-secure: #a1a1aa;
 }
 
 /* Base resets & typography */
@@ -39,7 +39,7 @@ html {
 }
 
 body {
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   color: var(--ink);
   background-color: var(--canvas);
   -webkit-font-smoothing: antialiased;
@@ -49,32 +49,32 @@ body {
   letter-spacing: -0.011em;
 }
 
-/* Custom Selection in Linear signature lavender */
+/* Custom Selection in subtle neutral highlight */
 ::selection {
-  background-color: #5e6ad2;
-  color: #ffffff;
+  background-color: #27272a;
+  color: #f4f4f5;
 }
 
 /* Custom Linear Dark Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #23252a;
-  border-radius: 4px;
+  background: #27272a;
+  border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #34343a;
+  background: #3f3f46;
 }
 
-/* Headings with Linear measured negative tracking */
+/* Headings with measured negative tracking */
 h1, h2, h3, h4 {
   text-wrap: balance;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.025em;
   font-weight: 600;
   color: var(--ink);
 }
@@ -89,109 +89,113 @@ h1, h2, h3, h4 {
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   color: var(--ink-subtle);
 }
 
 /* ─────────────────────────────────────────────────────────────
-   LINEAR COMPONENT UTILITIES
+   COMPONENT UTILITIES - TASTE COMPLIANT (HANDCRAFTED MINIMAL)
    ───────────────────────────────────────────────────────────── */
 
-/* Primary CTA Button (Linear Lavender #5e6ad2) */
+/* Primary CTA Button (High-Contrast Neutral) */
 .linear-btn-primary,
 .cal-button-primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
-  border-radius: 8px;
-  padding: 8px 14px;
-  background-color: #5e6ad2;
-  color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.16);
-  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+  border-radius: 6px;
+  padding: 7px 14px;
+  background-color: #f4f4f5;
+  color: #09090b;
+  border: 1px solid #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  transition: background-color 0.15s ease, transform 0.1s ease, opacity 0.15s ease;
   cursor: pointer;
 }
 .linear-btn-primary:hover,
 .cal-button-primary:hover {
-  background-color: #828fff;
-  box-shadow: 0 2px 8px rgba(94, 106, 210, 0.35);
+  background-color: #ffffff;
 }
 .linear-btn-primary:active,
 .cal-button-primary:active {
-  background-color: #5e69d1;
   transform: scale(0.98);
 }
+.linear-btn-primary:disabled,
+.cal-button-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 
-/* Secondary Charcoal Button (Surface-1 / Surface-2) */
+/* Secondary Neutral Button */
 .linear-btn-secondary,
 .cal-button-secondary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
-  border-radius: 8px;
-  padding: 8px 14px;
-  background-color: #141516;
-  color: #d0d6e0;
-  border: 1px solid #23252a;
-  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.04);
-  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  border-radius: 6px;
+  padding: 7px 14px;
+  background-color: #18181b;
+  color: #e4e4e7;
+  border: 1px solid #27272a;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
   cursor: pointer;
 }
 .linear-btn-secondary:hover,
 .cal-button-secondary:hover {
-  background-color: #18191a;
-  border-color: #34343a;
-  color: #f7f8f8;
+  background-color: #27272a;
+  border-color: #3f3f46;
+  color: #f4f4f5;
 }
 .linear-btn-secondary:active,
 .cal-button-secondary:active {
   transform: scale(0.98);
 }
+.linear-btn-secondary:disabled,
+.cal-button-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 
-/* Linear Card Base (Surface 1 with subtle top highlight and hairline border) */
+/* Card Base with hairline border */
 .linear-card {
-  background-color: #0f1011;
-  border: 1px solid #23252a;
-  border-radius: 12px;
-  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.04);
-}
-
-/* Linear Card Lifted (Surface 2) */
-.linear-card-lifted {
-  background-color: #141516;
-  border: 1px solid #34343a;
-  border-radius: 12px;
-  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
-}
-
-/* Text Input Styling (Linear Spec) */
-.linear-input {
-  background-color: #141516;
-  border: 1px solid #23252a;
-  color: #f7f8f8;
+  background-color: #0c0d0e;
+  border: 1px solid #27272a;
   border-radius: 8px;
-  font-size: 13px;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* Card Lifted */
+.linear-card-lifted {
+  background-color: #141416;
+  border: 1px solid #3f3f46;
+  border-radius: 8px;
+}
+
+/* Text Input Styling */
+.linear-input {
+  background-color: #141416;
+  border: 1px solid #27272a;
+  color: #f4f4f5;
+  border-radius: 6px;
+  font-size: 12px;
+  transition: border-color 0.15s ease;
 }
 .linear-input:focus,
 .linear-input:focus-visible {
   outline: none;
-  border-color: #5e6ad2;
-  box-shadow: 0 0 0 2px rgba(94, 106, 210, 0.25);
+  border-color: #71717a;
 }
 .linear-input::placeholder {
-  color: #62666d;
+  color: #71717a;
 }
 
 /* Accessible focus visible states */
 a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px #010102, 0 0 0 3px #5e6ad2;
+  border-color: #71717a;
 }
 
 /* Reduced motion support */
@@ -202,4 +206,42 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   SKELETON SHIMMER EFFECT
+   Subtle Linear/Vercel-style gradient sweep over skeleton blocks
+   ───────────────────────────────────────────────────────────── */
+@keyframes skeleton-sweep {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.skeleton-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton-shimmer::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  transform: translateX(-100%);
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.03) 20%,
+    rgba(255, 255, 255, 0.07) 50%,
+    rgba(255, 255, 255, 0.03) 80%,
+    transparent 100%
+  );
+  animation: skeleton-sweep 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  pointer-events: none;
 }
