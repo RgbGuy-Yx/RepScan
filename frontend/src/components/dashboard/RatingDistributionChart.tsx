@@ -27,11 +27,10 @@ export default function RatingDistributionChart({
   const [hoveredStar, setHoveredStar] = useState<number | null>(null);
 
   // Compute breakdown counts directly from live review records
-  const { starRows, totalCount } = useMemo(() => {
+  const { starRows, totalCount, averageRating, positivePercentage } = useMemo(() => {
     const counts: Record<number, number> = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
 
     if (reviews && reviews.length > 0) {
-      // Prioritize live review data
       for (const r of reviews) {
         const ratingNum = Math.round(Number(r.rating) || 0);
         if (ratingNum >= 1 && ratingNum <= 5) {
@@ -68,11 +67,21 @@ export default function RatingDistributionChart({
       };
     });
 
-    return { starRows: rows, totalCount: total };
+    const weightedSum = rows.reduce((acc, row) => acc + row.star * row.count, 0);
+    const avg = total > 0 ? (weightedSum / total).toFixed(1) : '0.0';
+
+    const posCount = rows.filter((r) => r.star >= 4).reduce((acc, r) => acc + r.count, 0);
+    const posPct = total > 0 ? Math.round((posCount / total) * 100) : 0;
+
+    return {
+      starRows: rows,
+      totalCount: total,
+      averageRating: avg,
+      positivePercentage: posPct,
+    };
   }, [distribution, reviews, totalReviews]);
 
   // Donut chart arc calculations
-  // Radius R = 50, center = (65, 65), circumference = 2 * PI * 50 = 314.159
   const radius = 50;
   const circumference = 2 * Math.PI * radius;
   const strokeWidth = 14;
@@ -113,15 +122,23 @@ export default function RatingDistributionChart({
           <h3 className="text-sm font-semibold text-zinc-100 tracking-tight">Rating Distribution</h3>
           <p className="text-[11px] font-mono text-zinc-500">Volume distribution across 1 to 5 star scores</p>
         </div>
+
+        {totalCount > 0 && Number(averageRating) > 0 && (
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-zinc-900 border border-zinc-800 shrink-0">
+            <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+            <span className="font-mono text-xs font-semibold text-zinc-200">{averageRating}</span>
+            <span className="font-mono text-[10px] text-zinc-500">/ 5.0</span>
+          </div>
+        )}
       </div>
 
-      {/* Main Content: Donut on Left, Progress Breakdown on Right */}
-      <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-6 sm:gap-8">
+      {/* Main Content: Donut on Left, Progress Breakdown on Right (Vertically Centered) */}
+      <div className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-8 my-auto py-5">
         {/* Left: Donut Chart with Centered Total */}
         <div className="relative shrink-0 flex items-center justify-center">
           <svg
-            width="140"
-            height="140"
+            width="144"
+            height="144"
             viewBox="0 0 130 130"
             className="transform -rotate-90 select-none overflow-visible"
           >
@@ -216,6 +233,16 @@ export default function RatingDistributionChart({
             );
           })}
         </div>
+      </div>
+
+      {/* Footer Metrics Strip */}
+      <div className="pt-3.5 border-t border-zinc-800/60 flex items-center justify-between text-xs font-mono text-zinc-500">
+        <div className="flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+          <span className="text-zinc-300 font-medium">{positivePercentage}% Positive</span>
+          <span className="text-zinc-600">(4-5★)</span>
+        </div>
+        <span>{totalCount.toLocaleString()} total</span>
       </div>
     </div>
   );

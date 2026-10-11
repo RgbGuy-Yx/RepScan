@@ -1,5 +1,3 @@
-import googleIcon from '../../assets/Google-modern-3D-icon-on-Premium-vector-PNG.avif';
-
 interface LandingFooterProps {
   onLaunchApp?: () => void;
 }
@@ -53,14 +51,8 @@ export default function LandingFooter({ onLaunchApp: _onLaunchApp }: LandingFoot
             Connectors
           </span>
           <ul className="space-y-2 text-xs text-zinc-400">
-            <li>
-              <span className="inline-flex items-center gap-1.5">
-                <img src={googleIcon} alt="Google" className="w-3.5 h-3.5 object-contain" />
-                <span>Google Places Actor</span>
-              </span>
-            </li>
+            <li><span>Google Places Actor</span></li>
             <li><span>Instagram Comments</span></li>
-            <li><span>LinkedIn Feedback</span></li>
             <li><span>Local Ollama / Mistral</span></li>
             <li><span>pgvector Embeddings</span></li>
           </ul>

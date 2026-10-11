@@ -5,6 +5,7 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   ChevronRight,
+  ChevronLeft,
   Building2,
   Plus,
   CheckCircle2,
@@ -15,18 +16,20 @@ import { businessApi, type WeeklyAnalyticsData, type ReviewItemData } from '../a
 import ReviewTrendChart from '../components/dashboard/ReviewTrendChart';
 import RatingDistributionChart from '../components/dashboard/RatingDistributionChart';
 import DashboardSkeleton from '../components/dashboard/DashboardSkeleton';
-import googleIcon from '../assets/Google-modern-3D-icon-on-Premium-vector-PNG.avif';
-
 interface DashboardViewProps {
   onNavigate: (page: PageId) => void;
   onAskAiQuery: (query: string) => void;
 }
 
-function StarRating({ rating, max = 5 }: { rating: number; max?: number }) {
+function StarRating({ rating, max = 5 }: { rating: number | string | null | undefined; max?: number }) {
+  if (rating === null || rating === undefined) return null;
+  const num = Number(rating);
+  if (isNaN(num) || num <= 0) return null;
+  const safeRating = Math.max(0, Math.min(max, num));
   return (
-    <div className="flex items-center gap-0.5" aria-label={`${rating} out of ${max} stars`}>
+    <div className="flex items-center gap-0.5" aria-label={`${safeRating.toFixed(1)} out of ${max} stars`}>
       {Array.from({ length: max }).map((_, i) => {
-        const fill = i < Math.floor(rating);
+        const fill = i < Math.floor(safeRating);
         return (
           <svg
             key={i}
@@ -49,11 +52,14 @@ export default function DashboardView({ onNavigate, onAskAiQuery }: DashboardVie
   const [analytics, setAnalytics] = useState<WeeklyAnalyticsData | null>(null);
   const [recentReviews, setRecentReviews] = useState<ReviewItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [reviewPage, setReviewPage] = useState(1);
+  const REVIEWS_PAGE_SIZE = 5;
 
   useEffect(() => {
     if (!activeBusiness?.id) {
       setAnalytics(null);
       setRecentReviews([]);
+      setReviewPage(1);
       return;
     }
 
@@ -70,24 +76,28 @@ export default function DashboardView({ onNavigate, onAskAiQuery }: DashboardVie
 
         setAnalytics(analyticsData);
 
-        const mapped: ReviewItem[] = (rawReviews || []).map((r: ReviewItemData) => ({
-          id: r.id,
-          author: r.author || 'Verified Patient',
-          rating: Number(r.rating) || 5,
-          publishedAt: r.published_at || undefined,
-          date: r.published_at
-            ? new Date(r.published_at).toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric',
-              })
-            : 'Recent',
-          platform: (String(r.platform || 'google').toLowerCase() as any),
-          content: r.content || '',
-          sentiment: (r.sentiment_label as any) || 'neutral',
-          themes: Array.isArray(r.themes) ? r.themes : [],
-        }));
+        const mapped: ReviewItem[] = (rawReviews || []).map((r: ReviewItemData) => {
+          const isIg = String(r.platform || '').toLowerCase().includes('instagram');
+          return {
+            id: r.id,
+            author: r.author || (isIg ? 'Instagram User' : 'Verified User'),
+            rating: isIg ? null : (r.rating !== null && r.rating !== undefined ? Number(r.rating) : null),
+            publishedAt: r.published_at || undefined,
+            date: r.published_at
+              ? new Date(r.published_at).toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                })
+              : 'Recent',
+            platform: isIg ? 'instagram' : 'google',
+            content: r.content || '',
+            sentiment: (r.sentiment_label as any) || 'neutral',
+            themes: Array.isArray(r.themes) ? r.themes : [],
+          };
+        });
         setRecentReviews(mapped);
+        setReviewPage(1);
       } catch (err) {
         console.warn('Dashboard telemetry fetch notice:', err);
       } finally {
@@ -114,14 +124,15 @@ export default function DashboardView({ onNavigate, onAskAiQuery }: DashboardVie
     ? curr.totalReviews
     : recentReviews.length;
 
-  const avgRating = curr?.ratingStats?.averageRating ?? (
-    recentReviews.length > 0
-      ? Number((recentReviews.reduce((sum, r) => sum + (Number(r.rating) || 0), 0) / recentReviews.length).toFixed(2))
-      : 0
+  const googleReviewsWithRating = recentReviews.filter((r) =>
+    String(r.platform).toLowerCase().includes('google') && r.rating !== null && r.rating !== undefined
   );
 
-  const prevRating = prev?.ratingStats?.averageRating ?? 0;
-  const ratingDelta = prevRating > 0 ? Number((avgRating - prevRating).toFixed(2)) : 0;
+  const avgRating = curr?.ratingStats?.averageRating ?? (
+    googleReviewsWithRating.length > 0
+      ? Number((googleReviewsWithRating.reduce((sum, r) => sum + (Number(r.rating) || 0), 0) / googleReviewsWithRating.length).toFixed(2))
+      : 0
+  );
 
   const prevTotal = prev?.totalReviews ?? 0;
   const reviewsChangePercent =
@@ -141,6 +152,14 @@ export default function DashboardView({ onNavigate, onAskAiQuery }: DashboardVie
       ? Math.round((recentReviews.filter((r) => r.sentiment === 'negative').length / recentReviews.length) * 100)
       : 0;
 
+  const googleReviewsCount = recentReviews.filter((r) =>
+    String(r.platform).toLowerCase().includes('google')
+  ).length;
+
+  const instagramFeedbackCount = recentReviews.filter((r) =>
+    String(r.platform).toLowerCase().includes('instagram')
+  ).length;
+
   const meaningfulShifts: MetricShiftItem[] = (
     analytics?.meaningfulChanges || (analytics as any)?.meaningful_changes || []
   ).map((ch: any, idx: number) => ({
@@ -152,9 +171,22 @@ export default function DashboardView({ onNavigate, onAskAiQuery }: DashboardVie
   }));
 
   const themesList = (curr?.themes && curr.themes.length > 0)
-    ? curr.themes
+    ? curr.themes.map((t: any) => ({
+        theme: t.theme || t.name,
+        count: t.count || 0,
+        prevalence: t.prevalence || Math.round(((t.count || 0) / (recentReviews.length || 1)) * 100),
+        negativeCount: t.negativeCount || 0,
+        positiveCount: t.positiveCount || 0,
+        neutralCount: t.neutralCount || 0,
+        averageRating: t.averageRating ?? 5.0,
+        evidenceSnippets: t.evidenceSnippets || [],
+      }))
     : Array.from(new Set(recentReviews.flatMap((r) => r.themes || []))).slice(0, 6).map((theme) => {
         const matching = recentReviews.filter((r) => (r.themes || []).includes(theme));
+        const ratedMatching = matching.filter((r) => r.rating !== null && r.rating !== undefined);
+        const averageRating = ratedMatching.length > 0
+          ? Number((ratedMatching.reduce((s, r) => s + (Number(r.rating) || 0), 0) / ratedMatching.length).toFixed(1))
+          : null;
         return {
           theme,
           count: matching.length,
@@ -162,12 +194,17 @@ export default function DashboardView({ onNavigate, onAskAiQuery }: DashboardVie
           negativeCount: matching.filter((r) => r.sentiment === 'negative').length,
           positiveCount: matching.filter((r) => r.sentiment === 'positive').length,
           neutralCount: matching.filter((r) => r.sentiment === 'neutral').length,
-          averageRating: matching.length > 0
-            ? Number((matching.reduce((s, r) => s + (Number(r.rating) || 0), 0) / matching.length).toFixed(1))
-            : 5.0,
+          averageRating: averageRating ?? 5.0,
           evidenceSnippets: matching.slice(0, 2).map((r) => r.content),
         };
-      });
+        });
+
+  const totalReviewPages = Math.max(1, Math.ceil(recentReviews.length / REVIEWS_PAGE_SIZE));
+  const currentReviewsPage = Math.min(Math.max(1, reviewPage), totalReviewPages);
+  const pagedReviews = recentReviews.slice(
+    (currentReviewsPage - 1) * REVIEWS_PAGE_SIZE,
+    currentReviewsPage * REVIEWS_PAGE_SIZE
+  );
 
   if (isBusinessLoading) {
     return <DashboardSkeleton />;
@@ -185,7 +222,7 @@ export default function DashboardView({ onNavigate, onAskAiQuery }: DashboardVie
               Select a Workspace Business
             </h2>
             <p className="text-xs text-zinc-400 max-w-lg leading-relaxed">
-              Choose an active business profile to review telemetry, analyze sentiment patterns, and query customer feedback.
+              Choose a business profile to view ratings, sentiment patterns, and customer reviews.
             </p>
           </div>
 
@@ -243,15 +280,12 @@ export default function DashboardView({ onNavigate, onAskAiQuery }: DashboardVie
         <div className="p-4 rounded-lg bg-zinc-900/60 border border-zinc-800 flex flex-wrap items-center justify-between gap-3 text-xs">
           <div className="space-y-0.5">
             <span className="font-medium text-zinc-200">
-              No reviews indexed yet for {activeBusiness.name}
+              No reviews imported yet for {activeBusiness.name}
             </span>
             <p className="text-zinc-500 text-[11px] flex items-center gap-1.5 flex-wrap">
               <span>Connect your</span>
-              <span className="inline-flex items-center gap-1 font-medium text-zinc-300">
-                <img src={googleIcon} alt="Google" className="w-3.5 h-3.5 object-contain inline-block shrink-0" />
-                <span>Google Maps</span>
-              </span>
-              <span>listing or trigger a scrape in Settings to begin sentiment processing.</span>
+              <span className="font-medium text-zinc-300">Google Maps</span>
+              <span>or Instagram listing in Settings to start analyzing reviews.</span>
             </p>
           </div>
           <button
@@ -268,10 +302,10 @@ export default function DashboardView({ onNavigate, onAskAiQuery }: DashboardVie
           SECTION 1: REFINED TELEMETRY GRID (4 METRICS)
           ───────────────────────────────────────────────────────────── */}
       <div className="border border-zinc-800/80 rounded-xl bg-zinc-950/70 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)] grid grid-cols-2 lg:grid-cols-4 divide-y lg:divide-y-0 lg:divide-x divide-zinc-800/80">
-        {/* Metric 1: Average Rating */}
+        {/* Metric 1: Average Rating (Google Reviews Exclusively) */}
         <div className="p-5 sm:p-6 space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-mono uppercase tracking-wider text-zinc-400">Average Rating</span>
+            <span className="text-[11px] font-mono uppercase tracking-wider text-zinc-400">Google Rating</span>
             <div className="text-amber-400">
               <StarRating rating={avgRating} />
             </div>
@@ -282,24 +316,8 @@ export default function DashboardView({ onNavigate, onAskAiQuery }: DashboardVie
             </span>
             <span className="text-xs text-zinc-500 font-mono">/ 5.0</span>
           </div>
-          <div className="flex items-center gap-1.5 text-[11px] font-mono">
-            {ratingDelta !== 0 ? (
-              <span
-                className={`inline-flex items-center gap-0.5 ${
-                  ratingDelta > 0 ? 'text-emerald-400' : 'text-rose-400'
-                }`}
-              >
-                {ratingDelta > 0 ? (
-                  <ArrowUpRight className="w-3 h-3" />
-                ) : (
-                  <ArrowDownRight className="w-3 h-3" />
-                )}
-                {ratingDelta > 0 ? `+${ratingDelta}` : `${ratingDelta}`}
-                <span className="text-zinc-500 ml-1">vs prior cycle</span>
-              </span>
-            ) : (
-              <span className="text-zinc-500">Benchmark across sample</span>
-            )}
+          <div className="flex items-center gap-1.5 text-[11px] font-mono text-zinc-500">
+            <span>Google reviews only</span>
           </div>
         </div>
 
@@ -319,12 +337,22 @@ export default function DashboardView({ onNavigate, onAskAiQuery }: DashboardVie
             {reviewsChangePercent !== 0 ? (
               <span className="text-emerald-400 inline-flex items-center gap-0.5">
                 <ArrowUpRight className="w-3 h-3" />
-                +{reviewsChangePercent}% velocity
+                +{reviewsChangePercent}% vs prior period
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1.5">
-                <img src={googleIcon} alt="Google" className="w-3.5 h-3.5 object-contain shrink-0" />
-                <span>Synced from verified Google listings</span>
+              <span className="inline-flex items-center gap-1.5 flex-wrap">
+                <span className="text-zinc-300">
+                  {googleReviewsCount} Google
+                </span>
+                {instagramFeedbackCount > 0 && (
+                  <>
+                    <span className="text-zinc-600">•</span>
+                    <span className="inline-flex items-center gap-1 text-zinc-300">
+                      <span className="w-1.5 h-1.5 rounded-full bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 shrink-0" />
+                      <span>{instagramFeedbackCount} Instagram</span>
+                    </span>
+                  </>
+                )}
               </span>
             )}
           </div>
@@ -340,30 +368,32 @@ export default function DashboardView({ onNavigate, onAskAiQuery }: DashboardVie
             <span className="text-3xl font-semibold text-zinc-100 tracking-tight font-mono">
               {positivePercent}%
             </span>
-            <span className="text-xs text-zinc-500 font-mono">favorable</span>
+            <span className="text-xs text-zinc-500 font-mono">positive</span>
           </div>
           <div className="flex items-center gap-1 text-[11px] font-mono text-zinc-500">
             <span>{curr?.sentimentDistribution?.positive ?? 0} positive mentions</span>
           </div>
         </div>
 
-        {/* Metric 4: Critical / Negative Friction */}
+        {/* Metric 4: Negative Sentiment */}
         <div className="p-5 sm:p-6 space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-mono uppercase tracking-wider text-zinc-400">Critical Feedback</span>
+            <span className="text-[11px] font-mono uppercase tracking-wider text-zinc-400">Negative Sentiment</span>
             <div className="w-2 h-2 rounded-full bg-rose-400" />
           </div>
           <div className="flex items-baseline gap-2">
             <span className="text-3xl font-semibold text-zinc-100 tracking-tight font-mono">
               {negativePercent}%
             </span>
-            <span className="text-xs text-zinc-500 font-mono">concerns</span>
+            <span className="text-xs text-zinc-500 font-mono">critical</span>
           </div>
           <div className="flex items-center gap-1 text-[11px] font-mono text-zinc-500">
-            <span>{curr?.sentimentDistribution?.negative ?? 0} friction reports</span>
+            <span>{curr?.sentimentDistribution?.negative ?? 0} negative reviews</span>
           </div>
         </div>
       </div>
+
+
 
       {/* ─────────────────────────────────────────────────────────────
           SECTION 2: COMMAND QUERY STRIP (MINIMAL SEARCH INTERFACE)
@@ -394,9 +424,9 @@ export default function DashboardView({ onNavigate, onAskAiQuery }: DashboardVie
           </button>
         </form>
 
-        {/* Quick high-signal prompts */}
+        {/* Quick sample questions */}
         <div className="flex items-center gap-2 overflow-x-auto text-[11px] font-mono text-zinc-400">
-          <span className="text-zinc-600 uppercase text-[10px] shrink-0">Sample Queries:</span>
+          <span className="text-zinc-600 uppercase text-[10px] shrink-0">Examples:</span>
           {[
             'Overall patient treatment feedback',
             'Wait times during consultation hours',
@@ -432,15 +462,15 @@ export default function DashboardView({ onNavigate, onAskAiQuery }: DashboardVie
       </div>
 
       {/* ─────────────────────────────────────────────────────────────
-          SECTION 3: THEMES & DETECTED TELEMETRY SHIFTS
+          SECTION 3: THEMES & NOTABLE SHIFTS
           ───────────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left: Topic Clusters */}
         <div className="rounded-xl border border-zinc-800/80 bg-zinc-950/70 p-5 sm:p-6 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)] space-y-4">
           <div className="flex items-center justify-between border-b border-zinc-800/60 pb-3">
             <div className="space-y-0.5">
-              <h3 className="text-xs font-mono uppercase tracking-wider text-zinc-400">Thematic Clusters</h3>
-              <p className="text-[11px] text-zinc-500">Top topic occurrences across analyzed reviews</p>
+              <h3 className="text-xs font-mono uppercase tracking-wider text-zinc-400">Top Themes</h3>
+              <p className="text-[11px] text-zinc-500">Most frequent topics in customer reviews</p>
             </div>
             <button
               type="button"
@@ -454,7 +484,7 @@ export default function DashboardView({ onNavigate, onAskAiQuery }: DashboardVie
 
           {themesList.length === 0 ? (
             <p className="text-xs text-zinc-500 py-8 text-center font-mono">
-              No cluster themes detected yet.
+              No themes detected yet.
             </p>
           ) : (
             <div className="space-y-3.5">
@@ -486,8 +516,8 @@ export default function DashboardView({ onNavigate, onAskAiQuery }: DashboardVie
         <div className="rounded-xl border border-zinc-800/80 bg-zinc-950/70 p-5 sm:p-6 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)] space-y-4">
           <div className="flex items-center justify-between border-b border-zinc-800/60 pb-3">
             <div className="space-y-0.5">
-              <h3 className="text-xs font-mono uppercase tracking-wider text-zinc-400">Telemetry Shifts</h3>
-              <p className="text-[11px] text-zinc-500">Statistically significant changes between crawl windows</p>
+              <h3 className="text-xs font-mono uppercase tracking-wider text-zinc-400">Notable Shifts</h3>
+              <p className="text-[11px] text-zinc-500">Significant changes compared to previous weeks</p>
             </div>
             <button
               type="button"
@@ -503,7 +533,7 @@ export default function DashboardView({ onNavigate, onAskAiQuery }: DashboardVie
             <div className="py-8 text-center space-y-1.5">
               <CheckCircle2 className="w-4 h-4 text-zinc-600 mx-auto" />
               <p className="text-xs text-zinc-500 font-mono">
-                No statistical anomalies detected in the current window.
+                No major metric changes detected in this period.
               </p>
             </div>
           ) : (
@@ -534,13 +564,13 @@ export default function DashboardView({ onNavigate, onAskAiQuery }: DashboardVie
       </div>
 
       {/* ─────────────────────────────────────────────────────────────
-          SECTION 4: RECENT VERIFIED REVIEWS STREAM
+          SECTION 4: RECENT REVIEWS
           ───────────────────────────────────────────────────────────── */}
       <div className="rounded-xl border border-zinc-800/80 bg-zinc-950/70 p-5 sm:p-6 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)] space-y-4">
         <div className="flex items-center justify-between border-b border-zinc-800/60 pb-3">
           <div className="space-y-0.5">
-            <h3 className="text-xs font-mono uppercase tracking-wider text-zinc-400">Ingested Feedback Stream</h3>
-            <p className="text-[11px] text-zinc-500">Live normalized customer feedback entries</p>
+            <h3 className="text-xs font-mono uppercase tracking-wider text-zinc-400">Recent Reviews</h3>
+            <p className="text-[11px] text-zinc-500">Latest customer reviews from connected platforms</p>
           </div>
           <button
             type="button"
@@ -554,27 +584,44 @@ export default function DashboardView({ onNavigate, onAskAiQuery }: DashboardVie
 
         {recentReviews.length === 0 ? (
           <p className="text-xs text-zinc-500 py-8 text-center font-mono">
-            No customer reviews have been ingested yet.
+            No customer reviews found yet.
           </p>
         ) : (
           <div className="divide-y divide-zinc-800/60">
-            {recentReviews.slice(0, 6).map((rev) => (
+            {pagedReviews.map((rev) => (
               <div key={rev.id} className="py-3.5 flex flex-col sm:flex-row sm:items-start justify-between gap-3 group">
                 <div className="space-y-1.5 flex-1 min-w-0 pr-4">
                   <div className="flex flex-wrap items-center gap-2 text-xs">
                     <span className="font-medium text-zinc-200">{rev.author}</span>
                     <span className="text-zinc-600 font-mono">/</span>
-                    <StarRating rating={rev.rating} />
-                    <span className="text-zinc-600 font-mono">/</span>
+                    {String(rev.platform).toLowerCase().includes('google') ? (
+                      rev.rating != null ? (
+                        <>
+                          <StarRating rating={rev.rating} />
+                          <span className="text-[11px] font-mono text-zinc-400">{Number(rev.rating).toFixed(1)} ★</span>
+                          <span className="text-zinc-600 font-mono">/</span>
+                        </>
+                      ) : (
+                        <>
+                          <span className="text-[11px] font-mono text-zinc-500">Google Review (Unrated)</span>
+                          <span className="text-zinc-600 font-mono">/</span>
+                        </>
+                      )
+                    ) : (
+                      <>
+                        <span className="text-[11px] font-mono text-zinc-500">Instagram Comment</span>
+                        <span className="text-zinc-600 font-mono">/</span>
+                      </>
+                    )}
                     <span className="text-[11px] font-mono text-zinc-500">{rev.date}</span>
                     <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-300 px-1.5 py-0.5 rounded border border-zinc-800 bg-zinc-900/60 inline-flex items-center gap-1.5">
                       {String(rev.platform).toLowerCase().includes('google') ? (
-                        <>
-                          <img src={googleIcon} alt="Google" className="w-3.5 h-3.5 object-contain shrink-0" />
-                          <span>Google</span>
-                        </>
+                        <span>Google Review</span>
                       ) : (
-                        <span>{rev.platform}</span>
+                        <span className="text-zinc-300 flex items-center gap-1 font-semibold">
+                          <span className="w-2 h-2 rounded-full bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 inline-block" />
+                          <span>Instagram</span>
+                        </span>
                       )}
                     </span>
                   </div>
@@ -604,6 +651,85 @@ export default function DashboardView({ onNavigate, onAskAiQuery }: DashboardVie
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* Pagination Footer Controls */}
+        {recentReviews.length > REVIEWS_PAGE_SIZE && (
+          <div className="pt-4 border-t border-zinc-800/60 flex flex-wrap items-center justify-between gap-3 text-xs">
+            <div className="text-[11px] font-mono text-zinc-500">
+              Showing{' '}
+              <span className="text-zinc-300 font-medium">
+                {(currentReviewsPage - 1) * REVIEWS_PAGE_SIZE + 1}–
+                {Math.min(currentReviewsPage * REVIEWS_PAGE_SIZE, recentReviews.length)}
+              </span>{' '}
+              of <span className="text-zinc-300 font-medium">{recentReviews.length}</span> reviews
+            </div>
+
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => setReviewPage((p) => Math.max(1, p - 1))}
+                disabled={currentReviewsPage <= 1}
+                className="px-2.5 py-1 rounded-md text-xs font-mono border border-zinc-800 bg-zinc-900/60 text-zinc-300 hover:bg-zinc-800 hover:text-white disabled:opacity-30 disabled:pointer-events-none transition-colors inline-flex items-center gap-1 cursor-pointer"
+                title="Previous page"
+              >
+                <ChevronLeft className="w-3.5 h-3.5" />
+                <span>Prev</span>
+              </button>
+
+              <div className="flex items-center gap-1 font-mono text-xs">
+                {Array.from({ length: totalReviewPages }).map((_, idx) => {
+                  const pNum = idx + 1;
+                  // Condense with ellipsis if more than 7 pages
+                  if (
+                    totalReviewPages > 7 &&
+                    pNum !== 1 &&
+                    pNum !== totalReviewPages &&
+                    Math.abs(pNum - currentReviewsPage) > 1
+                  ) {
+                    if (
+                      (pNum === 2 && currentReviewsPage > 3) ||
+                      (pNum === totalReviewPages - 1 && currentReviewsPage < totalReviewPages - 2)
+                    ) {
+                      return (
+                        <span key={`ellipsis-${pNum}`} className="px-1 text-zinc-600">
+                          …
+                        </span>
+                      );
+                    }
+                    return null;
+                  }
+
+                  const isActive = pNum === currentReviewsPage;
+                  return (
+                    <button
+                      key={pNum}
+                      type="button"
+                      onClick={() => setReviewPage(pNum)}
+                      className={`min-w-[28px] h-7 px-2 rounded-md text-xs font-mono transition-colors cursor-pointer ${
+                        isActive
+                          ? 'bg-zinc-100 text-zinc-950 font-semibold shadow-xs'
+                          : 'bg-zinc-900/60 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 border border-zinc-800'
+                      }`}
+                    >
+                      {pNum}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setReviewPage((p) => Math.min(totalReviewPages, p + 1))}
+                disabled={currentReviewsPage >= totalReviewPages}
+                className="px-2.5 py-1 rounded-md text-xs font-mono border border-zinc-800 bg-zinc-900/60 text-zinc-300 hover:bg-zinc-800 hover:text-white disabled:opacity-30 disabled:pointer-events-none transition-colors inline-flex items-center gap-1 cursor-pointer"
+                title="Next page"
+              >
+                <span>Next</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
         )}
       </div>

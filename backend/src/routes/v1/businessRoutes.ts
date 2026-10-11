@@ -26,6 +26,23 @@ import {
   trackCompetitorBodySchema,
 } from "../../schemas/competitorSchemas";
 import {
+  addInstagramAccountSchema,
+  listInstagramAccountsQuerySchema,
+  listInstagramPostsQuerySchema,
+  listInstagramCommentsQuerySchema,
+} from "../../schemas/instagramSchemas";
+import {
+  addInstagramAccountHandler,
+  listInstagramAccountsHandler,
+  getInstagramAccountHandler,
+  getInstagramSyncStatusHandler,
+  triggerInstagramSyncHandler,
+  listInstagramPostsHandler,
+  listInstagramCommentsHandler,
+  getInstagramAnalyticsHandler,
+  deleteInstagramAccountHandler,
+} from "../../controllers/instagramController";
+import {
   createBusiness,
   getBusiness,
   getAllBusinesses,
@@ -260,5 +277,96 @@ competitorComparisonRoutes.forEach((path) => {
   router.get(path, requireBusinessAccess(), getCompetitorComparisonHandler);
 });
 
+// ── Instagram Data Ingestion & Analytics routes ───────────────
+const instagramAccountCollectionRoutes = [
+  "/v1/businesses/:id/instagram/accounts",
+  "/v1/businesses/:businessId/instagram/accounts",
+];
+instagramAccountCollectionRoutes.forEach((path) => {
+  router.post(
+    path,
+    requireBusinessAccess(),
+    requireRole(["owner", "admin"]),
+    validate(addInstagramAccountSchema),
+    addInstagramAccountHandler
+  );
+  router.get(
+    path,
+    requireBusinessAccess(),
+    validate(listInstagramAccountsQuerySchema),
+    listInstagramAccountsHandler
+  );
+});
+
+const instagramAccountItemRoutes = [
+  "/v1/businesses/:id/instagram/accounts/:accountId",
+  "/v1/businesses/:businessId/instagram/accounts/:accountId",
+];
+instagramAccountItemRoutes.forEach((path) => {
+  router.get(path, requireBusinessAccess(), getInstagramAccountHandler);
+  router.delete(
+    path,
+    requireBusinessAccess(),
+    requireRole(["owner", "admin"]),
+    deleteInstagramAccountHandler
+  );
+});
+
+const instagramSyncRoutes = [
+  "/v1/businesses/:id/instagram/accounts/:accountId/sync",
+  "/v1/businesses/:businessId/instagram/accounts/:accountId/sync",
+];
+instagramSyncRoutes.forEach((path) => {
+  router.post(
+    path,
+    requireBusinessAccess(),
+    requireRole(["owner", "admin"]),
+    triggerInstagramSyncHandler
+  );
+});
+
+const instagramSyncStatusRoutes = [
+  "/v1/businesses/:id/instagram/accounts/:accountId/sync-status",
+  "/v1/businesses/:businessId/instagram/accounts/:accountId/sync-status",
+];
+instagramSyncStatusRoutes.forEach((path) => {
+  router.get(path, requireBusinessAccess(), getInstagramSyncStatusHandler);
+});
+
+const instagramPostsRoutes = [
+  "/v1/businesses/:id/instagram/accounts/:accountId/posts",
+  "/v1/businesses/:businessId/instagram/accounts/:accountId/posts",
+];
+instagramPostsRoutes.forEach((path) => {
+  router.get(
+    path,
+    requireBusinessAccess(),
+    validate(listInstagramPostsQuerySchema),
+    listInstagramPostsHandler
+  );
+});
+
+const instagramCommentsRoutes = [
+  "/v1/businesses/:id/instagram/posts/:postId/comments",
+  "/v1/businesses/:businessId/instagram/posts/:postId/comments",
+];
+instagramCommentsRoutes.forEach((path) => {
+  router.get(
+    path,
+    requireBusinessAccess(),
+    validate(listInstagramCommentsQuerySchema),
+    listInstagramCommentsHandler
+  );
+});
+
+const instagramAnalyticsRoutes = [
+  "/v1/businesses/:id/instagram/accounts/:accountId/analytics",
+  "/v1/businesses/:businessId/instagram/accounts/:accountId/analytics",
+];
+instagramAnalyticsRoutes.forEach((path) => {
+  router.get(path, requireBusinessAccess(), getInstagramAnalyticsHandler);
+});
+
 export { router as businessRouter };
+
 

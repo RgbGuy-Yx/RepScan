@@ -14,7 +14,6 @@ import {
 import type { ReviewItem } from '../types/dashboard';
 import { useBusiness } from '../context/BusinessContext';
 import { businessApi } from '../api/businessApi';
-import googleIcon from '../assets/Google-modern-3D-icon-on-Premium-vector-PNG.avif';
 import { Select } from '../components/ui/Dropdown';
 
 interface ThemesViewProps {
@@ -25,7 +24,7 @@ interface LiveTheme {
   name: string;
   count: number;
   prevalence: number;
-  averageRating: number;
+  averageRating: number | null;
   positiveCount: number;
   neutralCount: number;
   negativeCount: number;
@@ -36,8 +35,11 @@ interface LiveTheme {
   };
 }
 
-function StarRating({ rating, max = 5 }: { rating: number; max?: number }) {
-  const safeRating = Math.max(0, Math.min(max, Number(rating) || 0));
+function StarRating({ rating, max = 5 }: { rating: number | string | null | undefined; max?: number }) {
+  if (rating === null || rating === undefined) return null;
+  const num = Number(rating);
+  if (isNaN(num) || num <= 0) return null;
+  const safeRating = Math.max(0, Math.min(max, num));
   return (
     <div className="flex items-center gap-0.5" aria-label={`${safeRating.toFixed(1)} stars`}>
       {Array.from({ length: max }).map((_, i) => {
@@ -87,22 +89,25 @@ export default function ThemesView({ onOpenProof }: ThemesViewProps) {
         const rawReviews = await businessApi.listReviews(activeBusiness.id, 1000, 0);
         if (!isMounted) return;
 
-        const mapped: ReviewItem[] = (rawReviews || []).map((r) => ({
-          id: r.id,
-          author: r.author || 'Verified Patient',
-          rating: Number(r.rating) || 5,
-          date: r.published_at
-            ? new Date(r.published_at).toLocaleDateString('en-US', {
+        const mapped: ReviewItem[] = (rawReviews || []).map((r) => {
+          const isIg = String(r.platform || '').toLowerCase().includes('instagram');
+          return {
+            id: r.id,
+            author: r.author || (isIg ? 'Instagram User' : 'Verified Patient'),
+            rating: isIg ? null : (r.rating !== null && r.rating !== undefined && !isNaN(Number(r.rating)) ? Number(r.rating) : null),
+            date: r.published_at
+              ? new Date(r.published_at).toLocaleDateString('en-US', {
                 month: 'short',
                 day: 'numeric',
                 year: 'numeric',
               })
-            : 'Recent',
-          platform: (String(r.platform || 'google').toLowerCase() as any),
-          content: r.content || '',
-          sentiment: (r.sentiment_label as any) || 'neutral',
-          themes: Array.isArray(r.themes) ? r.themes : [],
-        }));
+              : 'Recent',
+            platform: isIg ? 'instagram' : 'google',
+            content: r.content || '',
+            sentiment: (r.sentiment_label as any) || 'neutral',
+            themes: Array.isArray(r.themes) ? r.themes : [],
+          };
+        });
 
         setReviews(mapped);
       } catch (err) {
@@ -170,7 +175,7 @@ export default function ThemesView({ onOpenProof }: ThemesViewProps) {
         name,
         count: data.count,
         prevalence: Math.round((data.count / totalReviewsCount) * 100),
-        averageRating: data.ratingCount > 0 ? Number((data.ratingSum / data.ratingCount).toFixed(2)) : 5.0,
+        averageRating: data.ratingCount > 0 ? Number((data.ratingSum / data.ratingCount).toFixed(2)) : null,
         positiveCount: data.pos,
         neutralCount: data.neu,
         negativeCount: data.neg,
@@ -209,10 +214,10 @@ export default function ThemesView({ onOpenProof }: ThemesViewProps) {
       })
       .sort((a, b) => {
         if (themeSort === 'critical') {
-          return b.negativeCount - a.negativeCount || a.averageRating - b.averageRating;
+          return b.negativeCount - a.negativeCount || ((a.averageRating ?? 5) - (b.averageRating ?? 5));
         }
         if (themeSort === 'rating') {
-          return b.averageRating - a.averageRating;
+          return (b.averageRating ?? 0) - (a.averageRating ?? 0);
         }
         return b.count - a.count;
       });
@@ -385,21 +390,24 @@ export default function ThemesView({ onOpenProof }: ThemesViewProps) {
                         setSelectedTheme(theme.name);
                         setSentimentFilter('all');
                       }}
-                      className={`group p-2 rounded-lg border transition-all cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 ${
-                        isSelected
+                      className={`group p-2 rounded-lg border transition-all cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 ${isSelected
                           ? 'bg-zinc-900/90 border-zinc-500 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]'
                           : 'bg-zinc-900/30 border-zinc-800/80 hover:border-zinc-700 hover:bg-zinc-900/60'
-                      }`}
+                        }`}
                     >
                       {/* Theme Name & Rating */}
                       <div className="w-48 shrink-0 flex items-center justify-between pr-2">
                         <span className={`text-xs capitalize font-medium truncate ${isSelected ? 'text-white' : 'text-zinc-300'}`}>
                           {theme.name}
                         </span>
-                        <span className="text-[11px] font-mono text-zinc-500 flex items-center gap-1">
-                          {theme.averageRating.toFixed(1)}
-                          <Star className="w-2.5 h-2.5 text-amber-400 fill-amber-400" />
-                        </span>
+                        {theme.averageRating !== null && theme.averageRating !== undefined ? (
+                          <span className="text-[11px] font-mono text-zinc-500 flex items-center gap-1">
+                            {theme.averageRating.toFixed(1)}
+                            <Star className="w-2.5 h-2.5 text-amber-400 fill-amber-400" />
+                          </span>
+                        ) : (
+                          <span className="text-[10px] font-mono text-zinc-600">Unrated</span>
+                        )}
                       </div>
 
                       {/* Interactive Horizontal Bar Graph */}
@@ -486,22 +494,20 @@ export default function ThemesView({ onOpenProof }: ThemesViewProps) {
               <button
                 type="button"
                 onClick={() => setThemeFilterMode('all')}
-                className={`flex-1 py-1 px-2 rounded transition-colors text-center cursor-pointer ${
-                  themeFilterMode === 'all'
+                className={`flex-1 py-1 px-2 rounded transition-colors text-center cursor-pointer ${themeFilterMode === 'all'
                     ? 'bg-zinc-800 text-zinc-100 font-medium'
                     : 'text-zinc-400 hover:text-zinc-200'
-                }`}
+                  }`}
               >
                 All ({allThemes.length})
               </button>
               <button
                 type="button"
                 onClick={() => setThemeFilterMode('critical')}
-                className={`flex-1 py-1 px-2 rounded transition-colors text-center cursor-pointer flex items-center justify-center gap-1 ${
-                  themeFilterMode === 'critical'
+                className={`flex-1 py-1 px-2 rounded transition-colors text-center cursor-pointer flex items-center justify-center gap-1 ${themeFilterMode === 'critical'
                     ? 'bg-rose-950/50 text-rose-300 font-medium border border-rose-900/40'
                     : 'text-zinc-400 hover:text-zinc-200'
-                }`}
+                  }`}
               >
                 <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
                 Concerns ({criticalThemesCount})
@@ -509,11 +515,10 @@ export default function ThemesView({ onOpenProof }: ThemesViewProps) {
               <button
                 type="button"
                 onClick={() => setThemeFilterMode('praise')}
-                className={`flex-1 py-1 px-2 rounded transition-colors text-center cursor-pointer flex items-center justify-center gap-1 ${
-                  themeFilterMode === 'praise'
+                className={`flex-1 py-1 px-2 rounded transition-colors text-center cursor-pointer flex items-center justify-center gap-1 ${themeFilterMode === 'praise'
                     ? 'bg-emerald-950/50 text-emerald-300 font-medium border border-emerald-900/40'
                     : 'text-zinc-400 hover:text-zinc-200'
-                }`}
+                  }`}
               >
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                 Praise ({praiseThemesCount})
@@ -554,11 +559,10 @@ export default function ThemesView({ onOpenProof }: ThemesViewProps) {
                         setSelectedTheme(theme.name);
                         setSentimentFilter('all');
                       }}
-                      className={`p-3 rounded-lg border transition-all cursor-pointer space-y-2 ${
-                        isSelected
+                      className={`p-3 rounded-lg border transition-all cursor-pointer space-y-2 ${isSelected
                           ? 'bg-zinc-900 border-zinc-500 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]'
                           : 'bg-zinc-900/40 border-zinc-800/80 hover:border-zinc-700 hover:bg-zinc-900/70'
-                      }`}
+                        }`}
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
@@ -571,7 +575,7 @@ export default function ThemesView({ onOpenProof }: ThemesViewProps) {
                           <span className="text-zinc-400">{theme.count} mentions</span>
                           <span className="text-zinc-600 font-mono">/</span>
                           <span className="text-amber-400 flex items-center gap-0.5">
-                            {theme.averageRating.toFixed(1)}
+                            {theme.averageRating != null ? theme.averageRating.toFixed(1) : '—'}
                             <Star className="w-2.5 h-2.5 fill-amber-400" />
                           </span>
                         </div>
@@ -624,12 +628,18 @@ export default function ThemesView({ onOpenProof }: ThemesViewProps) {
 
                   <div className="flex items-center gap-3">
                     <div className="text-right">
-                      <div className="flex items-center gap-1 justify-end text-amber-400">
-                        <StarRating rating={currentThemeData.averageRating} />
-                        <span className="font-mono text-xs font-bold text-zinc-200 ml-1">
-                          {currentThemeData.averageRating.toFixed(2)}
+                      {currentThemeData.averageRating !== null && currentThemeData.averageRating !== undefined ? (
+                        <div className="flex items-center gap-1 justify-end text-amber-400">
+                          <StarRating rating={currentThemeData.averageRating} />
+                          <span className="font-mono text-xs font-bold text-zinc-200 ml-1">
+                            {currentThemeData.averageRating.toFixed(2)}
+                          </span>
+                        </div>
+                      ) : (
+                        <span className="text-[11px] font-mono text-zinc-500">
+                          Unrated (Social sentiment only)
                         </span>
-                      </div>
+                      )}
                       <span className="text-[10px] font-mono text-zinc-500 block mt-0.5">
                         {currentThemeData.count} total mentions
                       </span>
@@ -647,11 +657,10 @@ export default function ThemesView({ onOpenProof }: ThemesViewProps) {
                     {/* Positive Bar Box */}
                     <div
                       onClick={() => setSentimentFilter('positive')}
-                      className={`p-3 rounded-lg border transition-all cursor-pointer ${
-                        sentimentFilter === 'positive'
+                      className={`p-3 rounded-lg border transition-all cursor-pointer ${sentimentFilter === 'positive'
                           ? 'bg-emerald-950/40 border-emerald-500 shadow-[inset_0_1px_0_0_rgba(16,185,129,0.2)]'
                           : 'bg-zinc-900/40 border-zinc-800/80 hover:border-emerald-900/60'
-                      }`}
+                        }`}
                     >
                       <div className="flex items-center justify-between text-xs">
                         <span className="flex items-center gap-1.5 font-mono text-emerald-400">
@@ -676,11 +685,10 @@ export default function ThemesView({ onOpenProof }: ThemesViewProps) {
                     {/* Neutral Bar Box */}
                     <div
                       onClick={() => setSentimentFilter('neutral')}
-                      className={`p-3 rounded-lg border transition-all cursor-pointer ${
-                        sentimentFilter === 'neutral'
+                      className={`p-3 rounded-lg border transition-all cursor-pointer ${sentimentFilter === 'neutral'
                           ? 'bg-zinc-900 border-zinc-400 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1)]'
                           : 'bg-zinc-900/40 border-zinc-800/80 hover:border-zinc-700'
-                      }`}
+                        }`}
                     >
                       <div className="flex items-center justify-between text-xs">
                         <span className="flex items-center gap-1.5 font-mono text-zinc-400">
@@ -705,11 +713,10 @@ export default function ThemesView({ onOpenProof }: ThemesViewProps) {
                     {/* Negative Bar Box */}
                     <div
                       onClick={() => setSentimentFilter('negative')}
-                      className={`p-3 rounded-lg border transition-all cursor-pointer ${
-                        sentimentFilter === 'negative'
+                      className={`p-3 rounded-lg border transition-all cursor-pointer ${sentimentFilter === 'negative'
                           ? 'bg-rose-950/40 border-rose-500 shadow-[inset_0_1px_0_0_rgba(244,63,94,0.2)]'
                           : 'bg-zinc-900/40 border-zinc-800/80 hover:border-rose-900/60'
-                      }`}
+                        }`}
                     >
                       <div className="flex items-center justify-between text-xs">
                         <span className="flex items-center gap-1.5 font-mono text-rose-400">
@@ -741,22 +748,20 @@ export default function ThemesView({ onOpenProof }: ThemesViewProps) {
                       <button
                         type="button"
                         onClick={() => setSentimentFilter('all')}
-                        className={`px-3 py-1.5 rounded transition-colors cursor-pointer ${
-                          sentimentFilter === 'all'
+                        className={`px-3 py-1.5 rounded transition-colors cursor-pointer ${sentimentFilter === 'all'
                             ? 'bg-zinc-800 text-zinc-100 font-medium shadow-sm'
                             : 'text-zinc-400 hover:text-zinc-200'
-                        }`}
+                          }`}
                       >
                         All ({themeReviews.length})
                       </button>
                       <button
                         type="button"
                         onClick={() => setSentimentFilter('positive')}
-                        className={`px-3 py-1.5 rounded transition-colors cursor-pointer flex items-center gap-1.5 ${
-                          sentimentFilter === 'positive'
+                        className={`px-3 py-1.5 rounded transition-colors cursor-pointer flex items-center gap-1.5 ${sentimentFilter === 'positive'
                             ? 'bg-emerald-950/60 text-emerald-300 font-medium border border-emerald-900/60 shadow-sm'
                             : 'text-zinc-400 hover:text-zinc-200'
-                        }`}
+                          }`}
                       >
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                         Positive ({positiveThemeReviewsCount})
@@ -764,11 +769,10 @@ export default function ThemesView({ onOpenProof }: ThemesViewProps) {
                       <button
                         type="button"
                         onClick={() => setSentimentFilter('neutral')}
-                        className={`px-3 py-1.5 rounded transition-colors cursor-pointer flex items-center gap-1.5 ${
-                          sentimentFilter === 'neutral'
+                        className={`px-3 py-1.5 rounded transition-colors cursor-pointer flex items-center gap-1.5 ${sentimentFilter === 'neutral'
                             ? 'bg-zinc-800 text-zinc-200 font-medium border border-zinc-700/60 shadow-sm'
                             : 'text-zinc-400 hover:text-zinc-200'
-                        }`}
+                          }`}
                       >
                         <span className="w-1.5 h-1.5 rounded-full bg-zinc-400" />
                         Neutral ({neutralThemeReviewsCount})
@@ -776,11 +780,10 @@ export default function ThemesView({ onOpenProof }: ThemesViewProps) {
                       <button
                         type="button"
                         onClick={() => setSentimentFilter('negative')}
-                        className={`px-3 py-1.5 rounded transition-colors cursor-pointer flex items-center gap-1.5 ${
-                          sentimentFilter === 'negative'
+                        className={`px-3 py-1.5 rounded transition-colors cursor-pointer flex items-center gap-1.5 ${sentimentFilter === 'negative'
                             ? 'bg-rose-950/60 text-rose-300 font-medium border border-rose-900/60 shadow-sm'
                             : 'text-zinc-400 hover:text-zinc-200'
-                        }`}
+                          }`}
                       >
                         <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
                         Critical ({negativeThemeReviewsCount})
@@ -824,34 +827,57 @@ export default function ThemesView({ onOpenProof }: ThemesViewProps) {
                             <div className="flex items-center gap-2">
                               <span className="font-medium text-zinc-200">{rev.author}</span>
                               <span className="text-zinc-600 font-mono">/</span>
-                              <StarRating rating={rev.rating} />
-                              <span className="text-zinc-600 font-mono">/</span>
+                              {String(rev.platform).toLowerCase().includes('google') ? (
+                                rev.rating !== null && rev.rating !== undefined ? (
+                                  <>
+                                    <StarRating rating={rev.rating} />
+                                    <span className="text-[11px] font-mono text-zinc-400">
+                                      {Number(rev.rating).toFixed(1)} ★
+                                    </span>
+                                    <span className="text-zinc-600 font-mono">/</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <span className="text-[11px] font-mono text-zinc-500">Google (Unrated)</span>
+                                    <span className="text-zinc-600 font-mono">/</span>
+                                  </>
+                                )
+                              ) : (
+                                <>
+                                  <span className="text-[11px] font-mono text-zinc-500">Instagram Comment</span>
+                                  <span className="text-zinc-600 font-mono">/</span>
+                                </>
+                              )}
                               <span className="text-[11px] font-mono text-zinc-500">{rev.date}</span>
                               <span className="text-zinc-600 font-mono">/</span>
-                              <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-300 px-1.5 py-0.5 rounded border border-zinc-800 bg-zinc-900/60 inline-flex items-center gap-1">
-                                <img src={googleIcon} alt="Google" className="w-3 h-3 object-contain shrink-0" />
-                                <span>Google</span>
+                              <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-300 px-1.5 py-0.5 rounded border border-zinc-800 bg-zinc-900/60 inline-flex items-center gap-1.5">
+                                {String(rev.platform).toLowerCase().includes('google') ? (
+                                  <span>Google Review</span>
+                                ) : (
+                                  <span className="flex items-center gap-1 font-semibold">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 inline-block" />
+                                    <span>Instagram</span>
+                                  </span>
+                                )}
                               </span>
                             </div>
 
                             <div className="flex items-center gap-2">
                               <span
-                                className={`inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded border ${
-                                  rev.sentiment === 'positive'
+                                className={`inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded border ${rev.sentiment === 'positive'
                                     ? 'bg-emerald-950/30 text-emerald-300 border-emerald-900/40'
                                     : rev.sentiment === 'negative'
-                                    ? 'bg-rose-950/30 text-rose-300 border-rose-900/40'
-                                    : 'bg-zinc-900 text-zinc-400 border-zinc-800'
-                                }`}
+                                      ? 'bg-rose-950/30 text-rose-300 border-rose-900/40'
+                                      : 'bg-zinc-900 text-zinc-400 border-zinc-800'
+                                  }`}
                               >
                                 <span
-                                  className={`w-1.5 h-1.5 rounded-full ${
-                                    rev.sentiment === 'positive'
+                                  className={`w-1.5 h-1.5 rounded-full ${rev.sentiment === 'positive'
                                       ? 'bg-emerald-400'
                                       : rev.sentiment === 'negative'
-                                      ? 'bg-rose-400'
-                                      : 'bg-zinc-500'
-                                  }`}
+                                        ? 'bg-rose-400'
+                                        : 'bg-zinc-500'
+                                    }`}
                                 />
                                 <span className="capitalize">{rev.sentiment}</span>
                               </span>

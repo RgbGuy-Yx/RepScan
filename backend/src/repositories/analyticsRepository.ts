@@ -30,27 +30,50 @@ export async function getAnalyzedReviewsForPeriod(
   endDate: Date
 ): Promise<AnalyzedReviewRow[]> {
   const query = `
-    SELECT
-      r.id,
-      r.business_id,
-      r.platform,
-      r.rating::float AS rating,
-      COALESCE(r.published_at, r.created_at) AS effective_date,
-      r.published_at,
-      r.created_at,
-      r.content,
-      r.author,
-      r.source_url,
-      fa.sentiment_label,
-      fa.sentiment_score::float AS sentiment_score,
-      fa.themes,
-      fa.evidence
-    FROM raw_items r
-    LEFT JOIN feedback_analyses fa ON r.id = fa.raw_item_id
-    WHERE r.business_id = $1
-      AND COALESCE(r.published_at, r.created_at) >= $2
-      AND COALESCE(r.published_at, r.created_at) <= $3
-    ORDER BY COALESCE(r.published_at, r.created_at) DESC
+    SELECT * FROM (
+      SELECT
+        r.id,
+        r.business_id,
+        r.platform,
+        r.rating::float AS rating,
+        COALESCE(r.published_at, r.created_at) AS effective_date,
+        r.published_at,
+        r.created_at,
+        r.content,
+        r.author,
+        r.source_url,
+        fa.sentiment_label,
+        fa.sentiment_score::float AS sentiment_score,
+        fa.themes,
+        fa.evidence
+      FROM raw_items r
+      LEFT JOIN feedback_analyses fa ON r.id = fa.raw_item_id
+      WHERE r.business_id = $1
+
+      UNION ALL
+
+      SELECT
+        ic.id,
+        ic.business_id,
+        'instagram'::platform_type AS platform,
+        NULL::float AS rating,
+        COALESCE(ic.published_at, ic.created_at) AS effective_date,
+        ic.published_at,
+        ic.created_at,
+        ic.content,
+        ic.author_username AS author,
+        p.post_url AS source_url,
+        (ic.ai_analysis->>'sentiment_label')::varchar AS sentiment_label,
+        (ic.ai_analysis->>'sentiment_score')::float AS sentiment_score,
+        COALESCE(ic.ai_analysis->'themes', '[]'::jsonb) AS themes,
+        COALESCE(ic.ai_analysis->'evidence', '[]'::jsonb) AS evidence
+      FROM instagram_comments ic
+      LEFT JOIN instagram_posts p ON ic.instagram_post_id = p.id
+      WHERE ic.business_id = $1
+    ) combined
+    WHERE combined.effective_date >= $2
+      AND combined.effective_date <= $3
+    ORDER BY combined.effective_date DESC
   `;
 
   const result = await pool.query<AnalyzedReviewRow>(query, [businessId, startDate, endDate]);
@@ -68,6 +91,10 @@ export async function getConnectedPlatformsForBusiness(
     SELECT platform, is_active, last_scraped_at
     FROM platform_connections
     WHERE business_id = $1
+    UNION ALL
+    SELECT 'instagram'::platform_type AS platform, is_active, last_synced_at AS last_scraped_at
+    FROM instagram_accounts
+    WHERE business_id = $1
   `;
   const result = await pool.query<PlatformStatusRow>(query, [businessId]);
   return result.rows;
@@ -77,9 +104,15 @@ export async function getLatestReviewDateForBusiness(
   businessId: string
 ): Promise<Date | null> {
   const query = `
-    SELECT MAX(COALESCE(published_at, created_at)) AS latest_date
-    FROM raw_items
-    WHERE business_id = $1
+    SELECT MAX(latest_date) AS latest_date FROM (
+      SELECT MAX(COALESCE(published_at, created_at)) AS latest_date
+      FROM raw_items
+      WHERE business_id = $1
+      UNION ALL
+      SELECT MAX(COALESCE(published_at, created_at)) AS latest_date
+      FROM instagram_comments
+      WHERE business_id = $1
+    ) combined_dates
   `;
   const result = await pool.query<{ latest_date: Date | null }>(query, [businessId]);
   return result.rows[0]?.latest_date || null;

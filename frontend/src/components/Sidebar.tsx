@@ -35,6 +35,26 @@ const NAV_ITEMS: NavItem[] = [
 export default function Sidebar() {
   const { activeBusiness } = useBusiness();
   const location = useLocation();
+  const [hasInstagram, setHasInstagram] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!activeBusiness?.id) {
+      setHasInstagram(false);
+      return;
+    }
+    let isMounted = true;
+    import('../api/instagramApi')
+      .then(({ instagramApi }) => instagramApi.listAccounts(activeBusiness.id))
+      .then((accounts) => {
+        if (isMounted) setHasInstagram(accounts.length > 0);
+      })
+      .catch(() => {
+        if (isMounted) setHasInstagram(false);
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, [activeBusiness?.id]);
 
   return (
     <aside className="w-64 bg-zinc-950 border-r border-zinc-800/80 flex flex-col justify-between h-screen sticky top-0 select-none z-30 shrink-0">
@@ -136,20 +156,13 @@ export default function Sidebar() {
               <span className="w-4 h-4 rounded bg-zinc-900 text-zinc-400 font-mono font-bold text-[9px] flex items-center justify-center border border-zinc-800">
                 IG
               </span>
-              <span className="text-zinc-400">Instagram</span>
+              <span className={hasInstagram ? "text-zinc-200" : "text-zinc-400"}>Instagram</span>
             </div>
-            <span className="text-[10px] text-zinc-500 font-mono">OFF</span>
+            <span className={`text-[10px] font-mono ${hasInstagram ? "text-emerald-400 font-semibold" : "text-zinc-500"}`}>
+              {hasInstagram ? "LIVE" : "OFF"}
+            </span>
           </div>
 
-          <div className="flex items-center justify-between py-1 px-2 rounded-md text-zinc-400 hover:bg-zinc-900/60 transition-colors">
-            <div className="flex items-center gap-2">
-              <span className="w-4 h-4 rounded bg-zinc-900 text-zinc-400 font-mono font-bold text-[9px] flex items-center justify-center border border-zinc-800">
-                IN
-              </span>
-              <span className="text-zinc-400">LinkedIn</span>
-            </div>
-            <span className="text-[10px] text-zinc-500 font-mono">OFF</span>
-          </div>
         </div>
 
         {/* Add Platform Action */}

@@ -206,6 +206,12 @@ export default function DashboardSkeleton() {
               ))}
             </div>
           </div>
+
+          {/* Footer Skeleton */}
+          <div className="pt-3.5 border-t border-zinc-800/60 flex items-center justify-between">
+            <Skeleton className="h-3 w-28" />
+            <Skeleton className="h-3 w-16" />
+          </div>
         </div>
       </div>
 

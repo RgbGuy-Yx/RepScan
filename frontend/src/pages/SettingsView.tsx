@@ -14,8 +14,8 @@ import {
 } from 'lucide-react';
 import { useBusiness } from '../context/BusinessContext';
 import { businessApi, type PlatformConnection } from '../api/businessApi';
-import googleIcon from '../assets/Google-modern-3D-icon-on-Premium-vector-PNG.avif';
 import { Select } from '../components/ui/Dropdown';
+import InstagramIntegrationSection from '../components/instagram/InstagramIntegrationSection';
 
 export default function SettingsView() {
   const { activeBusiness, refreshBusinesses } = useBusiness();
@@ -38,7 +38,7 @@ export default function SettingsView() {
 
   // New connection form modal/input
   const [showAddPlatform, setShowAddPlatform] = useState(false);
-  const [newPlatformType, setNewPlatformType] = useState<'google' | 'instagram' | 'linkedin'>('google');
+  const [newPlatformType, setNewPlatformType] = useState<'google' | 'instagram'>('google');
   const [newSourceUrl, setNewSourceUrl] = useState('');
   const [isConnectingPlatform, setIsConnectingPlatform] = useState(false);
   const [connectError, setConnectError] = useState<string | null>(null);
@@ -202,23 +202,17 @@ export default function SettingsView() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
                 <label className="block text-[11px] text-zinc-400 mb-1">Channel Platform</label>
-                <Select<'google' | 'instagram' | 'linkedin'>
+                <Select<'google' | 'instagram'>
                   value={newPlatformType}
                   onChange={(val) => setNewPlatformType(val)}
                   options={[
                     {
                       value: 'google',
                       label: 'Google Reviews',
-                      icon: <img src={googleIcon} alt="Google" className="w-3.5 h-3.5 object-contain shrink-0" />,
                     },
                     {
                       value: 'instagram',
                       label: 'Instagram Comments',
-                      icon: <Globe className="w-3.5 h-3.5 text-zinc-400 shrink-0" />,
-                    },
-                    {
-                      value: 'linkedin',
-                      label: 'LinkedIn Feedback',
                       icon: <Globe className="w-3.5 h-3.5 text-zinc-400 shrink-0" />,
                     },
                   ]}
@@ -308,7 +302,7 @@ export default function SettingsView() {
                     }`}
                   >
                     {conn.platform === 'google_maps' ? (
-                      <img src={googleIcon} alt="Google" className="w-4 h-4 object-contain" />
+                      'G'
                     ) : conn.platform === 'instagram' ? (
                       'IG'
                     ) : (
@@ -379,7 +373,17 @@ export default function SettingsView() {
       </div>
 
       {/* ─────────────────────────────────────────────────────────────
-          SECTION 2: BUSINESS ENTITY PROFILE (EDITABLE IN POSTGRESQL)
+          SECTION 2: INSTAGRAM SOCIAL INGESTION & TELEMETRY
+          ───────────────────────────────────────────────────────────── */}
+      {activeBusiness?.id && (
+        <InstagramIntegrationSection
+          businessId={activeBusiness.id}
+          businessName={activeBusiness.name}
+        />
+      )}
+
+      {/* ─────────────────────────────────────────────────────────────
+          SECTION 3: BUSINESS ENTITY PROFILE (EDITABLE IN POSTGRESQL)
           ───────────────────────────────────────────────────────────── */}
       <div className="bg-zinc-900/60 rounded-lg border border-zinc-800/80 p-5 lg:p-6 space-y-5">
         <div className="flex items-center justify-between pb-4 border-b border-zinc-800/80">

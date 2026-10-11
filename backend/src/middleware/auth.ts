@@ -119,6 +119,15 @@ export function authenticate() {
         return;
       }
 
+      const headerUserEmail = (req.headers["x-user-email"] as string | undefined)?.trim();
+      const headerUserName = (req.headers["x-user-name"] as string | undefined)?.trim();
+      if (headerUserEmail && (!emailFromToken || emailFromToken.includes("@clerk.repscan.dev"))) {
+        emailFromToken = headerUserEmail;
+      }
+      if (headerUserName && !nameFromToken) {
+        nameFromToken = headerUserName;
+      }
+
       // Synchronize Clerk User into PostgreSQL
       let dbUser = await userRepo.findByAuthProviderId(clerkUserId);
 
@@ -153,6 +162,18 @@ export function authenticate() {
           } catch (wsErr) {
             logger.warn("Failed to auto-create personal workspace for new user:", wsErr);
           }
+        }
+      } else {
+        // If existing record has placeholder email or empty name, update with verified credentials
+        const hasPlaceholderEmail = dbUser.email.includes("@clerk.repscan.dev");
+        const shouldUpdateEmail = headerUserEmail && (hasPlaceholderEmail || !dbUser.email);
+        const shouldUpdateName = headerUserName && !dbUser.name;
+        if (shouldUpdateEmail || shouldUpdateName) {
+          dbUser = await userRepo.upsertFromClerk(
+            clerkUserId,
+            shouldUpdateEmail ? headerUserEmail! : dbUser.email,
+            shouldUpdateName ? headerUserName! : dbUser.name
+          );
         }
       }
 

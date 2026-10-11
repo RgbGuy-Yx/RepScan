@@ -28,73 +28,102 @@ export interface VerifiedRawItemRow {
   evidence: string[];
 }
 
-function buildFilterConditions(businessId: string, filters?: ChatFilters): { whereClause: string; values: unknown[] } {
-  const conditions: string[] = ["r.business_id = $1"];
-  const values: unknown[] = [businessId];
-  let paramIdx = 2;
+function buildFilterConditions(filters?: ChatFilters, startParamIdx: number = 2): { whereClause: string; values: unknown[]; nextParamIdx: number } {
+  const conditions: string[] = ["1=1"];
+  const values: unknown[] = [];
+  let paramIdx = startParamIdx;
 
   if (filters?.platform) {
-    conditions.push(`r.platform = $${paramIdx++}`);
+    conditions.push(`u.platform = $${paramIdx++}`);
     values.push(filters.platform);
   }
 
   if (filters?.start_date) {
-    conditions.push(`COALESCE(r.published_at, r.created_at) >= $${paramIdx++}`);
+    conditions.push(`COALESCE(u.published_at, u.created_at) >= $${paramIdx++}`);
     values.push(new Date(filters.start_date));
   }
 
   if (filters?.end_date) {
-    conditions.push(`COALESCE(r.published_at, r.created_at) <= $${paramIdx++}`);
+    conditions.push(`COALESCE(u.published_at, u.created_at) <= $${paramIdx++}`);
     values.push(new Date(filters.end_date));
   }
 
   if (filters?.min_rating !== undefined && filters?.min_rating !== null) {
-    conditions.push(`r.rating >= $${paramIdx++}`);
+    conditions.push(`u.rating >= $${paramIdx++}`);
     values.push(filters.min_rating);
   }
 
   if (filters?.max_rating !== undefined && filters?.max_rating !== null) {
-    conditions.push(`r.rating <= $${paramIdx++}`);
+    conditions.push(`u.rating <= $${paramIdx++}`);
     values.push(filters.max_rating);
   }
 
   if (filters?.sentiment) {
-    conditions.push(`fa.sentiment_label = $${paramIdx++}`);
+    conditions.push(`u.sentiment_label = $${paramIdx++}`);
     values.push(filters.sentiment);
   }
 
   if (filters?.theme) {
-    conditions.push(`fa.themes::text ILIKE $${paramIdx++}`);
+    conditions.push(`u.themes::text ILIKE $${paramIdx++}`);
     values.push(`%${filters.theme}%`);
   }
 
   return {
     whereClause: conditions.join(" AND "),
     values,
+    nextParamIdx: paramIdx,
   };
 }
+
+const UNIFIED_CTE = `
+  WITH unified_items AS (
+    SELECT r.id, r.business_id, r.platform, r.author, r.content, r.rating::float AS rating,
+           r.published_at, r.created_at, r.source_url,
+           fa.sentiment_label, fa.sentiment_score::float AS sentiment_score,
+           COALESCE(fa.themes, '[]'::jsonb) AS themes,
+           COALESCE(fa.evidence, '[]'::jsonb) AS evidence
+    FROM raw_items r
+    LEFT JOIN feedback_analyses fa ON r.id = fa.raw_item_id
+    WHERE r.business_id = $1
+
+    UNION ALL
+
+    SELECT ic.id, ic.business_id, 'instagram'::platform_type AS platform,
+           ic.author_username AS author, ic.content,
+           NULL::float AS rating,
+           ic.published_at, ic.created_at,
+           p.post_url AS source_url,
+           (ic.ai_analysis->>'sentiment_label')::varchar AS sentiment_label,
+           (ic.ai_analysis->>'sentiment_score')::float AS sentiment_score,
+           COALESCE(ic.ai_analysis->'themes', '[]'::jsonb) AS themes,
+           COALESCE(ic.ai_analysis->'evidence', '[]'::jsonb) AS evidence
+    FROM instagram_comments ic
+    LEFT JOIN instagram_posts p ON ic.instagram_post_id = p.id
+    WHERE ic.business_id = $1
+  )
+`;
 
 export async function getStructuredMetricsForFilters(
   businessId: string,
   filters?: ChatFilters
 ): Promise<StructuredMetricsRow> {
-  const { whereClause, values } = buildFilterConditions(businessId, filters);
+  const { whereClause, values } = buildFilterConditions(filters, 2);
 
   const query = `
+    ${UNIFIED_CTE}
     SELECT
-      COUNT(r.id)::int AS total_reviews,
-      ROUND(AVG(r.rating)::numeric, 2)::float AS average_rating,
-      COUNT(CASE WHEN fa.sentiment_label = 'positive' THEN 1 END)::int AS positive_count,
-      COUNT(CASE WHEN fa.sentiment_label = 'neutral' THEN 1 END)::int AS neutral_count,
-      COUNT(CASE WHEN fa.sentiment_label = 'negative' THEN 1 END)::int AS negative_count,
-      MIN(COALESCE(r.published_at, r.created_at)) AS min_date,
-      MAX(COALESCE(r.published_at, r.created_at)) AS max_date
-    FROM raw_items r
-    LEFT JOIN feedback_analyses fa ON r.id = fa.raw_item_id
+      COUNT(u.id)::int AS total_reviews,
+      ROUND(AVG(u.rating)::numeric, 2)::float AS average_rating,
+      COUNT(CASE WHEN u.sentiment_label = 'positive' THEN 1 END)::int AS positive_count,
+      COUNT(CASE WHEN u.sentiment_label = 'neutral' THEN 1 END)::int AS neutral_count,
+      COUNT(CASE WHEN u.sentiment_label = 'negative' THEN 1 END)::int AS negative_count,
+      MIN(COALESCE(u.published_at, u.created_at)) AS min_date,
+      MAX(COALESCE(u.published_at, u.created_at)) AS max_date
+    FROM unified_items u
     WHERE ${whereClause}
   `;
 
-  const result = await pool.query<StructuredMetricsRow>(query, values);
+  const result = await pool.query<StructuredMetricsRow>(query, [businessId, ...values]);
   return (
     result.rows[0] || {
       total_reviews: 0,
@@ -113,33 +142,32 @@ export async function getSampleReviewsForFilters(
   filters?: ChatFilters,
   limit: number = 10
 ): Promise<VerifiedRawItemRow[]> {
-  const { whereClause, values } = buildFilterConditions(businessId, filters);
-  const paramIdx = values.length + 1;
+  const { whereClause, values, nextParamIdx } = buildFilterConditions(filters, 2);
   values.push(limit);
 
   const query = `
+    ${UNIFIED_CTE}
     SELECT
-      r.id,
-      r.business_id,
-      r.platform,
-      r.author,
-      r.content,
-      r.rating::float AS rating,
-      r.published_at,
-      r.created_at,
-      r.source_url,
-      fa.sentiment_label,
-      fa.sentiment_score::float AS sentiment_score,
-      COALESCE(fa.themes, '[]'::jsonb) AS themes,
-      COALESCE(fa.evidence, '[]'::jsonb) AS evidence
-    FROM raw_items r
-    LEFT JOIN feedback_analyses fa ON r.id = fa.raw_item_id
+      u.id,
+      u.business_id,
+      u.platform,
+      u.author,
+      u.content,
+      u.rating::float AS rating,
+      u.published_at,
+      u.created_at,
+      u.source_url,
+      u.sentiment_label,
+      u.sentiment_score::float AS sentiment_score,
+      u.themes,
+      u.evidence
+    FROM unified_items u
     WHERE ${whereClause}
-    ORDER BY COALESCE(r.published_at, r.created_at) DESC
-    LIMIT $${paramIdx}
+    ORDER BY COALESCE(u.published_at, u.created_at) DESC
+    LIMIT $${nextParamIdx}
   `;
 
-  const result = await pool.query<VerifiedRawItemRow>(query, values);
+  const result = await pool.query<VerifiedRawItemRow>(query, [businessId, ...values]);
   return result.rows.map((row) => ({
     ...row,
     themes: Array.isArray(row.themes) ? row.themes : [],
@@ -154,23 +182,23 @@ export async function getRawItemsByIds(
   if (!rawItemIds.length) return [];
 
   const query = `
+    ${UNIFIED_CTE}
     SELECT
-      r.id,
-      r.business_id,
-      r.platform,
-      r.author,
-      r.content,
-      r.rating::float AS rating,
-      r.published_at,
-      r.created_at,
-      r.source_url,
-      fa.sentiment_label,
-      fa.sentiment_score::float AS sentiment_score,
-      COALESCE(fa.themes, '[]'::jsonb) AS themes,
-      COALESCE(fa.evidence, '[]'::jsonb) AS evidence
-    FROM raw_items r
-    LEFT JOIN feedback_analyses fa ON r.id = fa.raw_item_id
-    WHERE r.business_id = $1 AND r.id = ANY($2::uuid[])
+      u.id,
+      u.business_id,
+      u.platform,
+      u.author,
+      u.content,
+      u.rating::float AS rating,
+      u.published_at,
+      u.created_at,
+      u.source_url,
+      u.sentiment_label,
+      u.sentiment_score::float AS sentiment_score,
+      u.themes,
+      u.evidence
+    FROM unified_items u
+    WHERE u.id = ANY($2::uuid[])
   `;
 
   const result = await pool.query<VerifiedRawItemRow>(query, [businessId, rawItemIds]);

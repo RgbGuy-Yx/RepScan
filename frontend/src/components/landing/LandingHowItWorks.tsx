@@ -1,5 +1,4 @@
 import { Inbox, Cpu, BarChart2, ShieldCheck, CheckSquare } from 'lucide-react';
-import googleIcon from '../../assets/Google-modern-3D-icon-on-Premium-vector-PNG.avif';
 
 export default function LandingHowItWorks() {
   const steps = [
@@ -9,7 +8,6 @@ export default function LandingHowItWorks() {
       description: 'Ingest raw customer feedback across Google Maps, Instagram, and verified channels.',
       icon: Inbox,
       tag: 'Multi-Channel Pipeline',
-      isGoogle: true,
     },
     {
       step: '02',
@@ -50,10 +48,10 @@ export default function LandingHowItWorks() {
             Operational Workflow
           </span>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-zinc-100">
-            From raw customer reviews to closed-loop remediation.
+            From customer reviews to team actions.
           </h2>
           <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed font-sans">
-            A deterministic 5-step pipeline engineered to eradicate guesswork and operational blind spots.
+            A 5-step pipeline that collects reviews, isolates themes, and turns findings into assignable tasks.
           </p>
         </div>
 
@@ -69,11 +67,7 @@ export default function LandingHowItWorks() {
                 <div>
                   <div className="flex items-center justify-between mb-4">
                     <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-300 group-hover:text-emerald-400 group-hover:border-zinc-700 transition-colors">
-                      {item.isGoogle ? (
-                        <img src={googleIcon} alt="Google" className="w-4 h-4 object-contain" />
-                      ) : (
-                        <Icon className="w-4 h-4" />
-                      )}
+                      <Icon className="w-4 h-4" />
                     </div>
                     <span className="font-mono text-xs text-zinc-500 bg-zinc-900/80 px-2 py-0.5 rounded border border-zinc-800 tabular-nums">
                       {item.step}

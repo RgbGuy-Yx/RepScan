@@ -1,6 +1,5 @@
 import { ShieldCheck, ExternalLink, AlertCircle, FileText, CheckCircle2, Star } from 'lucide-react';
 import type { ProofItem } from '../../types';
-import googleIcon from '../../assets/Google-modern-3D-icon-on-Premium-vector-PNG.avif';
 
 interface LandingProofProps {
   onOpenProof?: (proof: ProofItem) => void;
@@ -67,10 +66,10 @@ export default function LandingProof({ onOpenProof }: LandingProofProps) {
             Verification Protocol
           </span>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-zinc-100">
-            Don't just take an AI's word for it.
+            Verify every insight with source citations.
           </h2>
           <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed font-sans">
-            Every analytical conclusion is grounded in verifiable evidence. Zero black-box summarization, zero synthetic fabrications.
+            Every conclusion links directly to the timestamped review that produced it.
           </p>
         </div>
 
@@ -135,7 +134,6 @@ export default function LandingProof({ onOpenProof }: LandingProofProps) {
                 <span className="text-zinc-500 text-[11px]">{sampleProof.date}</span>
                 <span className="text-zinc-600">/</span>
                 <span className="text-[10px] px-1.5 py-0.5 rounded border border-zinc-800 bg-zinc-900 text-zinc-300 inline-flex items-center gap-1">
-                  <img src={googleIcon} alt="Google" className="w-3 h-3 object-contain shrink-0" />
                   <span>Google</span>
                 </span>
               </div>

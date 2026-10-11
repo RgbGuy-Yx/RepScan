@@ -1,6 +1,6 @@
 import pool from "../services/database";
 
-export type Platform = "google" | "instagram" | "linkedin";
+export type Platform = "google" | "instagram";
 
 export interface PlatformConnection {
   id: string;

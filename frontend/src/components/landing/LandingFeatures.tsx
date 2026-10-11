@@ -20,14 +20,14 @@ export default function LandingFeatures() {
       icon: ShieldCheck,
       tag: 'Grounded Evidence',
       title: 'Can I trust it?',
-      description: 'Every insight is linked directly to raw customer review citations with verified statistical confidence.',
-      highlight: 'Zero AI Hallucination',
+      description: 'Every insight links directly to raw customer review citations with verified statistical confidence.',
+      highlight: 'Grounded Citations',
     },
     {
       icon: CheckSquare,
       tag: 'Operational Kanban',
       title: 'What should I do?',
-      description: 'Transforms high-signal customer feedback into accountable, assignable action items for your team.',
+      description: 'Transforms high-signal customer feedback into actionable tasks for your team.',
       highlight: 'Track from Open to Resolved',
     },
   ];
@@ -37,13 +37,13 @@ export default function LandingFeatures() {
       {/* Section Header */}
       <div className="max-w-2xl space-y-2">
         <span className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider block">
-          Core Value Proposition
+          Key Capabilities
         </span>
         <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-zinc-100">
-          Not another generic sentiment dashboard.
+          Track sentiment shifts, root causes, and customer proof.
         </h2>
         <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed font-sans">
-          RepScan goes beyond superficial star ratings. It detects velocity shifts, uncovers root causes, and grounds every conclusion in verifiable customer proof.
+          RepScan detects changes across review cycles and links every conclusion directly to customer reviews.
         </p>
       </div>
 

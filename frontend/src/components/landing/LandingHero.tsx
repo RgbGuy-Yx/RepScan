@@ -1,6 +1,5 @@
 import { ArrowRight, ShieldCheck } from 'lucide-react';
 import type { ProofItem } from '../../types';
-import googleIcon from '../../assets/Google-modern-3D-icon-on-Premium-vector-PNG.avif';
 import { CrowdCanvas } from '@/components/ui/skiper39';
 
 interface LandingHeroProps {
@@ -71,8 +70,8 @@ export default function LandingHero({ onLaunchApp, onOpenProof: _onOpenProof }: 
 
         {/* Live System Counter Strip */}
         <div className="mt-12 pt-6 flex flex-wrap items-center justify-center gap-6 border-t border-zinc-800/60 text-xs font-mono text-zinc-500">
-          <div className="flex items-center gap-2">
-            <img src={googleIcon} alt="Google" className="w-3.5 h-3.5 object-contain" />
+          <div className="flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-zinc-400" />
             <span>Google Maps Integration</span>
           </div>
           <div className="flex items-center gap-1.5">

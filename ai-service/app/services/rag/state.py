@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field, field_validator
 
 class ChatFilter(BaseModel):
     """Filters that can be applied to the RAG retrieval."""
-    platform: Literal["google", "instagram", "linkedin"] | None = None
+    platform: Literal["google", "instagram"] | None = None
     start_date: str | None = None
     end_date: str | None = None
     min_rating: float | None = Field(default=None, ge=1.0, le=5.0)
@@ -16,7 +16,7 @@ class ChatFilter(BaseModel):
 class SourceProof(BaseModel):
     """Show Proof evidence item referencing an authentic raw item."""
     raw_item_id: str = Field(description="Unique raw item UUID from the source database")
-    platform: str = Field(description="Platform source (e.g. google, instagram, linkedin)")
+    platform: str = Field(description="Platform source (e.g. google, instagram)")
     author: str | None = Field(default=None, description="Review author name")
     rating: float | None = Field(default=None, description="Rating score (1.0 to 5.0)")
     date: str | None = Field(default=None, description="Published or created date")

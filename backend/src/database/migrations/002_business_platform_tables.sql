@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS businesses (
 CREATE INDEX IF NOT EXISTS idx_businesses_name ON businesses (name);
 
 -- ── PlatformConnection ───────────────────────────────────────
-CREATE TYPE platform_type AS ENUM ('google', 'instagram', 'linkedin');
+CREATE TYPE platform_type AS ENUM ('google', 'instagram');
 
 CREATE TABLE IF NOT EXISTS platform_connections (
     id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),

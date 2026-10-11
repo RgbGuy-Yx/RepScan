@@ -9,6 +9,8 @@ export const config = {
   corsOrigins: process.env.CORS_ORIGINS?.split(",") || ["http://localhost:5173"],
   apifyToken: process.env.APIFY_API_TOKEN || "",
   googleReviewsActorId: process.env.APIFY_GOOGLE_REVIEWS_ACTOR_ID || "",
+  apifyInstagramActorId: process.env.APIFY_INSTAGRAM_ACTOR_ID || "apify/instagram-scraper",
+  instagramMaxPostsPerSync: parseInt(process.env.INSTAGRAM_MAX_POSTS_PER_SYNC || "50", 10),
   scrapeIntervalMinutes: parseInt(process.env.SCRAPE_INTERVAL_MINUTES || "60", 10),
   enableScheduler: process.env.ENABLE_SCHEDULED_SCRAPING === "true",
   clerkSecretKey: process.env.CLERK_SECRET_KEY || "",

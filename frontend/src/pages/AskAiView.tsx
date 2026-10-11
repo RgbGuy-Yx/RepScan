@@ -45,7 +45,7 @@ const PRESET_SUGGESTIONS = [
     category: 'Opportunities to Improve',
     icon: AlertTriangle,
     query: 'What are the most common customer complaints and how can we resolve them?',
-    description: 'Discover constructive feedback and areas we can elevate',
+    description: 'Find recurring customer complaints and areas to improve',
   },
   {
     category: 'Staff & Patient Care',
@@ -696,17 +696,20 @@ export default function AskAiView({ initialQuery }: AskAiViewProps) {
 
         const res = await businessApi.sendChat(activeBusiness.id, cleanText, history);
 
-        const reviewRefs: ReviewItem[] = (res.citations || []).map((c) => ({
-          id: c.id,
-          author: c.author || 'Verified Customer',
-          rating: c.rating || 5,
-          date: c.published_at ? new Date(c.published_at).toLocaleDateString() : 'Recent',
-          platform: (c.platform?.toLowerCase() as any) || 'google',
-          content: c.content,
-          sentiment: c.rating && c.rating <= 2 ? 'negative' : c.rating && c.rating >= 4 ? 'positive' : 'neutral',
-          themes: [],
-          sourceUrl: c.source_url || undefined,
-        }));
+        const reviewRefs: ReviewItem[] = (res.citations || []).map((c) => {
+          const isIg = String(c.platform || '').toLowerCase().includes('instagram');
+          return {
+            id: c.id,
+            author: c.author || (isIg ? 'Instagram User' : 'Verified Customer'),
+            rating: isIg ? null : (c.rating !== null && c.rating !== undefined ? Number(c.rating) : null),
+            date: c.published_at ? new Date(c.published_at).toLocaleDateString() : 'Recent',
+            platform: isIg ? 'instagram' : 'google',
+            content: c.content,
+            sentiment: 'neutral',
+            themes: [],
+            sourceUrl: c.source_url || undefined,
+          };
+        });
 
         const aiMsg: ChatMessage = {
           id: `a_${currentId}`,
@@ -946,7 +949,9 @@ export default function AskAiView({ initialQuery }: AskAiViewProps) {
                             title={`Open ${activeBusiness?.name || 'business'} reviews on Google Maps`}
                           >
                             <span className="font-medium text-zinc-200">{r.author}</span>
-                            <span className="text-amber-400">({r.rating}★)</span>
+                            {r.rating != null ? (
+                              <span className="text-amber-400">({r.rating}★)</span>
+                            ) : null}
                             <span className="text-zinc-500 capitalize">· {r.platform}</span>
                             <ArrowUpRight className="w-3.5 h-3.5 text-zinc-500 group-hover:text-zinc-200 transition-colors" />
                           </a>

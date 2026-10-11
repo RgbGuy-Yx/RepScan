@@ -2,7 +2,7 @@ import { z } from "zod";
 
 const PLATFORM_ENUM = z.preprocess(
   (val) => (val === "google_maps" ? "google" : val),
-  z.enum(["google", "instagram", "linkedin"])
+  z.enum(["google", "instagram"])
 );
 
 const OPTIONAL_URL = z.preprocess((val) => {

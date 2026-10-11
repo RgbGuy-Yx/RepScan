@@ -449,10 +449,10 @@ export async function getCompetitorComparison(
   // Fetch user's own business review metrics from PostgreSQL
   const ownMetrics = await ragRepo.getStructuredMetricsForFilters(businessId);
 
-  const bizRating = ownMetrics.average_rating != null ? Number(ownMetrics.average_rating) : 4.3;
-  const bizReviewCount = ownMetrics.total_reviews > 0 ? ownMetrics.total_reviews : 126;
-  const compRating = competitor.rating != null ? Number(competitor.rating) : 4.4;
-  const compReviewCount = competitor.review_count > 0 ? competitor.review_count : 1240;
+  const bizRating = ownMetrics.average_rating != null ? Number(ownMetrics.average_rating) : 0;
+  const bizReviewCount = ownMetrics.total_reviews || 0;
+  const compRating = competitor.rating != null ? Number(competitor.rating) : 0;
+  const compReviewCount = competitor.review_count || 0;
 
   const ratingDiff = Math.round((compRating - bizRating) * 100) / 100;
   const reviewCountDiff = compReviewCount - bizReviewCount;
@@ -468,35 +468,35 @@ export async function getCompetitorComparison(
   }
 
   // Business Sentiment Breakdown (calculated from real database metrics)
-  const totalBiz = Math.max(1, ownMetrics.total_reviews);
-  const bizPos = ownMetrics.positive_count > 0
+  const totalBiz = ownMetrics.total_reviews;
+  const bizPos = totalBiz > 0
     ? Math.round((ownMetrics.positive_count / totalBiz) * 100)
-    : Math.min(95, Math.max(10, Math.round(((bizRating || 4.3) / 5) * 100 * 0.95)));
-  const bizNeg = ownMetrics.negative_count > 0
+    : 0;
+  const bizNeg = totalBiz > 0
     ? Math.round((ownMetrics.negative_count / totalBiz) * 100)
-    : Math.max(5, Math.round((1 - (bizRating || 4.3) / 5) * 100 * 1.05));
-  const bizNeu = Math.max(0, 100 - bizPos - bizNeg);
+    : 0;
+  const bizNeu = totalBiz > 0 ? Math.max(0, 100 - bizPos - bizNeg) : 0;
 
   // Competitor Sentiment Breakdown (calculated empirically from Google Places rating & review volume)
-  const compPos = Math.min(98, Math.max(20, Math.round(Math.pow(compRating / 5, 1.8) * 100)));
-  const compNeg = Math.min(80, Math.max(2, Math.round(Math.pow((5 - compRating) / 5, 1.8) * 100)));
-  const compNeu = Math.max(0, 100 - compPos - compNeg);
+  const compPos = compRating > 0 ? Math.min(100, Math.max(0, Math.round(Math.pow(compRating / 5, 1.8) * 100))) : 0;
+  const compNeg = compRating > 0 ? Math.min(100, Math.max(0, Math.round(Math.pow((5 - compRating) / 5, 1.8) * 100))) : 0;
+  const compNeu = compRating > 0 ? Math.max(0, 100 - compPos - compNeg) : 0;
 
-  // 4-Month Rating Trends (e.g. Jul, Aug, Sep, Oct)
+  // 4-Month Rating Trends (only when ratings are present)
   const months = ["Jul", "Aug", "Sep", "Oct"];
-  const bizTrend = [
+  const bizTrend = bizRating > 0 ? [
     { month: months[0], rating: Math.max(1, Math.min(5, Math.round((bizRating - 0.2) * 10) / 10)) },
     { month: months[1], rating: Math.max(1, Math.min(5, Math.round((bizRating) * 10) / 10)) },
     { month: months[2], rating: Math.max(1, Math.min(5, Math.round((bizRating - 0.1) * 10) / 10)) },
     { month: months[3], rating: Math.max(1, Math.min(5, Math.round((bizRating) * 10) / 10)) },
-  ];
+  ] : [];
 
-  const compTrend = [
+  const compTrend = compRating > 0 ? [
     { month: months[0], rating: Math.max(1, Math.min(5, Math.round((compRating - 0.2) * 10) / 10)) },
     { month: months[1], rating: Math.max(1, Math.min(5, Math.round((compRating - 0.05) * 10) / 10)) },
     { month: months[2], rating: Math.max(1, Math.min(5, Math.round((compRating - 0.1) * 10) / 10)) },
     { month: months[3], rating: Math.max(1, Math.min(5, Math.round((compRating) * 10) / 10)) },
-  ];
+  ] : [];
 
   return {
     business: {

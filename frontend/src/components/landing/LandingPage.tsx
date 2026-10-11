@@ -1,6 +1,7 @@
 import LandingNavbar from './LandingNavbar';
 import LandingHero from './LandingHero';
 import LandingFeatures from './LandingFeatures';
+import LandingShowcase from './LandingShowcase';
 import LandingHowItWorks from './LandingHowItWorks';
 import LandingProof from './LandingProof';
 import LandingMultilingual from './LandingMultilingual';
@@ -27,16 +28,19 @@ export default function LandingPage({ onLaunchApp, onOpenProof }: LandingPagePro
         {/* 2. Core Value Proposition */}
         <LandingFeatures />
 
-        {/* 3. How RepScan Works */}
+        {/* 3. Live Telemetry & Product Showcase */}
+        <LandingShowcase onOpenProof={onOpenProof} />
+
+        {/* 4. How RepScan Works */}
         <LandingHowItWorks />
 
-        {/* 4. The Proof */}
+        {/* 5. The Proof */}
         <LandingProof onOpenProof={onOpenProof} />
 
-        {/* 5. Built for Real Customer Feedback */}
+        {/* 6. Built for Real Customer Feedback */}
         <LandingMultilingual />
 
-        {/* 6. Final CTA */}
+        {/* 7. Final CTA */}
         <LandingCta onLaunchApp={onLaunchApp} />
       </main>
 

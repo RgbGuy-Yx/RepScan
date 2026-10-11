@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { useAuth, useClerk } from '@clerk/clerk-react';
+import { useAuth, useClerk, useUser } from '@clerk/clerk-react';
 import { apiClient } from '../api/client';
 import {
   workspaceApi,
@@ -49,9 +49,31 @@ const BusinessContext = createContext<BusinessContextType | undefined>(undefined
 function useBusinessDataLogic(
   authLoaded: boolean,
   signedIn: boolean,
-  clerkGetToken?: () => Promise<string | null>
+  clerkGetToken?: () => Promise<string | null>,
+  clerkUser?: any
 ) {
-  const [userProfile, setUserProfile] = useState<BusinessContextType['userProfile']>(null);
+  const clerkEmail =
+    clerkUser?.primaryEmailAddress?.emailAddress ||
+    clerkUser?.emailAddresses?.[0]?.emailAddress ||
+    null;
+
+  const clerkDisplayName =
+    clerkUser?.fullName ||
+    [clerkUser?.firstName, clerkUser?.lastName].filter(Boolean).join(' ') ||
+    clerkUser?.username ||
+    (clerkEmail ? clerkEmail.split('@')[0] : null);
+
+  const [userProfile, setUserProfile] = useState<BusinessContextType['userProfile']>(() => {
+    if (clerkUser) {
+      return {
+        id: clerkUser.id,
+        auth_provider_id: clerkUser.id,
+        email: clerkEmail || '',
+        name: clerkDisplayName,
+      };
+    }
+    return null;
+  });
   const [workspaces, setWorkspaces] = useState<Array<Workspace & { role: WorkspaceRole }>>([]);
   const [activeWorkspace, setActiveWorkspaceState] = useState<(Workspace & { role: WorkspaceRole }) | null>(null);
   const [businesses, setBusinesses] = useState<Business[]>([]);
@@ -59,7 +81,7 @@ function useBusinessDataLogic(
   const [isLoading, setIsLoading] = useState(true);
   const [needsOnboarding, setNeedsOnboarding] = useState(false);
 
-  // Set token provider on apiClient
+  // Set token & user info providers on apiClient
   useEffect(() => {
     if (clerkGetToken) {
       apiClient.setTokenProvider(async () => {
@@ -72,7 +94,28 @@ function useBusinessDataLogic(
     } else {
       apiClient.setTokenProvider(() => null);
     }
-  }, [clerkGetToken]);
+
+    if (clerkEmail || clerkDisplayName) {
+      apiClient.setUserInfoProvider(() => ({
+        email: clerkEmail,
+        name: clerkDisplayName,
+      }));
+    } else {
+      apiClient.setUserInfoProvider(() => null);
+    }
+  }, [clerkGetToken, clerkEmail, clerkDisplayName]);
+
+  // Immediately synchronize Clerk user details whenever clerkUser updates
+  useEffect(() => {
+    if (signedIn && clerkUser) {
+      setUserProfile((prev) => ({
+        id: prev?.id || clerkUser.id,
+        auth_provider_id: prev?.auth_provider_id || clerkUser.id,
+        email: clerkEmail || prev?.email || '',
+        name: clerkDisplayName || prev?.name || null,
+      }));
+    }
+  }, [signedIn, clerkUser, clerkEmail, clerkDisplayName]);
 
   // Synchronize workspace context with apiClient
   useEffect(() => {
@@ -93,7 +136,15 @@ function useBusinessDataLogic(
         workspaceApi.getAuthProfile().catch(() => ({ user: null, workspaces: [] })),
         businessApi.getAllBusinesses().catch(() => []),
       ]);
-      setUserProfile(profile.user);
+
+      const mergedUser = {
+        id: profile.user?.id || clerkUser?.id || 'user',
+        auth_provider_id: profile.user?.auth_provider_id || clerkUser?.id || '',
+        email: clerkEmail || (profile.user?.email && !profile.user.email.includes('@clerk.repscan.dev') ? profile.user.email : clerkEmail || 'user@example.com'),
+        name: clerkDisplayName || profile.user?.name || null,
+      };
+
+      setUserProfile(mergedUser);
       setWorkspaces(profile.workspaces || []);
       setBusinesses(allBusinesses || []);
 
@@ -224,11 +275,13 @@ function useBusinessDataLogic(
 // 1. Clerk-enabled provider (only rendered within ClerkProvider)
 export const ClerkBusinessProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const clerkAuth = useAuth();
+  const { user: clerkUser } = useUser();
   const { signOut } = useClerk();
   const data = useBusinessDataLogic(
     clerkAuth.isLoaded,
     Boolean(clerkAuth.isSignedIn),
-    () => clerkAuth.getToken()
+    () => clerkAuth.getToken(),
+    clerkUser
   );
 
   const handleLogout = async () => {

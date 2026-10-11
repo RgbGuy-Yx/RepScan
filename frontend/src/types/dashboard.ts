@@ -7,14 +7,14 @@ export type PageId =
   | 'competitors'
   | 'settings';
 
-export type PlatformType = 'google' | 'instagram' | 'linkedin';
+export type PlatformType = 'google' | 'instagram';
 
 export type SentimentType = 'positive' | 'neutral' | 'negative';
 
 export interface ReviewItem {
   id: string;
   author: string;
-  rating: number;
+  rating: number | null;
   date: string;
   platform: PlatformType;
   content: string;

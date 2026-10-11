@@ -5,6 +5,7 @@ export interface ApiRequestOptions extends RequestInit {
 class ApiClient {
   private baseUrl: string;
   private tokenProvider: (() => Promise<string | null> | string | null) | null = null;
+  private userInfoProvider: (() => { email?: string | null; name?: string | null } | null) | null = null;
   private currentWorkspaceId: string | null = null;
 
   constructor() {
@@ -13,6 +14,10 @@ class ApiClient {
 
   public setTokenProvider(provider: () => Promise<string | null> | string | null) {
     this.tokenProvider = provider;
+  }
+
+  public setUserInfoProvider(provider: () => { email?: string | null; name?: string | null } | null) {
+    this.userInfoProvider = provider;
   }
 
   public setWorkspaceId(workspaceId: string | null) {
@@ -40,6 +45,21 @@ class ApiClient {
         }
       } catch (err) {
         console.warn('Failed to retrieve auth token for request:', err);
+      }
+    }
+
+    // Attach user profile headers if known
+    if (this.userInfoProvider) {
+      try {
+        const info = this.userInfoProvider();
+        if (info?.email && !headers.has('x-user-email')) {
+          headers.set('x-user-email', info.email);
+        }
+        if (info?.name && !headers.has('x-user-name')) {
+          headers.set('x-user-name', info.name);
+        }
+      } catch {
+        // Ignore header provider errors
       }
     }
 

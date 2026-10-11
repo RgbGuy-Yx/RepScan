@@ -28,6 +28,7 @@ const RADIUS_OPTIONS = [
 ];
 
 const CATEGORY_OPTIONS = [
+  { value: '', label: 'All Categories' },
   { value: 'skin_care_clinic', label: 'Skin Care Clinic' },
   { value: 'beauty_salon', label: 'Beauty Salon' },
   { value: 'spa', label: 'Day Spa' },
@@ -37,6 +38,7 @@ const CATEGORY_OPTIONS = [
   { value: 'restaurant', label: 'Restaurant' },
   { value: 'cafe', label: 'Café & Bakery' },
   { value: 'gym', label: 'Fitness & Gym' },
+  { value: 'store', label: 'Retail Store' },
 ];
 
 const SORT_OPTIONS = [
@@ -51,7 +53,7 @@ export default function CompetitorsView() {
 
   // Filters State
   const [selectedRadius, setSelectedRadius] = useState<string>('5000');
-  const [selectedCategory, setSelectedCategory] = useState<string>('skin_care_clinic');
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [selectedSort, setSelectedSort] = useState<string>('distance');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [timeframe, setTimeframe] = useState<string>('Last 3 months');
@@ -323,7 +325,7 @@ export default function CompetitorsView() {
   }, [competitors, searchQuery, selectedSort]);
 
   const selectedCategoryLabel =
-    CATEGORY_OPTIONS.find((c) => c.value === selectedCategory)?.label || 'Skin Care Clinic';
+    CATEGORY_OPTIONS.find((c) => c.value === selectedCategory)?.label || 'All Categories';
   const selectedSortLabel =
     SORT_OPTIONS.find((s) => s.value === selectedSort)?.label || 'Distance';
 
@@ -349,7 +351,7 @@ export default function CompetitorsView() {
               <div className="w-5 h-5 rounded-md bg-[#5e6ad2]/20 text-[#828cf0] flex items-center justify-center text-[10px] font-bold">
                 {activeBusiness?.name?.charAt(0) || 'B'}
               </div>
-              <span className="truncate max-w-[160px]">{activeBusiness?.name || "Sowmya's Skin Laser Clinic"}</span>
+              <span className="truncate max-w-[160px]">{activeBusiness?.name || 'Select Business'}</span>
               <ChevronDown className="w-3.5 h-3.5 text-zinc-500" />
             </button>
 
@@ -426,7 +428,7 @@ export default function CompetitorsView() {
                 ) : (
                   resolvedLocation?.address
                     ? resolvedLocation.address.split(',')[0]
-                    : activeBusiness?.location || activeBusiness?.name || "Sowmya's Skin Laser Clinic"
+                    : activeBusiness?.location || activeBusiness?.name || 'Location pending'
                 )}
               </span>
             </div>

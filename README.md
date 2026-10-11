@@ -84,7 +84,6 @@ npm run dev
 
 - `google`
 - `instagram`
-- `linkedin`
 
 #### Request/Response Examples
 
@@ -209,7 +208,7 @@ Response (200):
 ```json
 {
   "status": "error",
-  "message": "Validation error: Platform must be one of: google, instagram, linkedin"
+  "message": "Validation error: Platform must be one of: google, instagram"
 }
 ```
 
@@ -260,6 +259,8 @@ npm run test:watch # Watch mode
 | `CORS_ORIGINS` | Allowed origins (comma-separated) | `http://localhost:5173` |
 | `APIFY_API_TOKEN` | Apify API token | (empty) |
 | `APIFY_GOOGLE_REVIEWS_ACTOR_ID` | Google Reviews Apify actor ID | (empty) |
+| `APIFY_INSTAGRAM_ACTOR_ID` | Instagram Apify Actor | `apify/instagram-scraper` |
+| `INSTAGRAM_MAX_POSTS_PER_SYNC` | Max posts per account sync | `50` |
 
 ### AI Service (.env)
 

@@ -87,6 +87,43 @@ export async function checkAIServiceHealth(): Promise<boolean> {
   }
 }
 
+async function postToAIService<T>(
+  endpoint: string,
+  payload: unknown,
+  timeoutMs: number,
+  fallbackError = "The AI service is currently undergoing maintenance. Please try again shortly."
+): Promise<T> {
+  let response: globalThis.Response;
+  try {
+    response = await fetch(`${config.aiServiceUrl}${endpoint}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(timeoutMs),
+    });
+  } catch (err) {
+    logger.error(`AI service connection error for ${endpoint}:`, err);
+    throw new AppError("The AI service is currently undergoing maintenance. Please try again shortly.", 503);
+  }
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    logger.warn(`AI service ${endpoint} failed (${response.status}): ${errorText}`);
+    let cleanMessage = fallbackError;
+    try {
+      const parsed = JSON.parse(errorText);
+      if (parsed.message && typeof parsed.message === "string" && !parsed.message.includes("{") && !parsed.message.includes("failed:")) {
+        cleanMessage = parsed.message;
+      }
+    } catch {
+      // Use clean message
+    }
+    throw new AppError(cleanMessage, response.status >= 500 ? response.status : 502);
+  }
+
+  return (await response.json()) as T;
+}
+
 export async function processFeedback(items: PendingRawItem[]): Promise<ProcessedFeedback[]> {
   if (!items.length) return [];
 
@@ -95,27 +132,12 @@ export async function processFeedback(items: PendingRawItem[]): Promise<Processe
 
   for (let i = 0; i < items.length; i += BATCH_SIZE) {
     const chunk = items.slice(i, i + BATCH_SIZE);
+    const body = await postToAIService<{ items?: ProcessedFeedback[] }>(
+      "/api/v1/feedback/process",
+      { items: chunk },
+      180_000
+    );
 
-    let response: globalThis.Response;
-    try {
-      response = await fetch(`${config.aiServiceUrl}/api/v1/feedback/process`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ items: chunk }),
-        signal: AbortSignal.timeout(180_000),
-      });
-    } catch (err) {
-      logger.error(`AI processing connection error for batch of ${chunk.length} items:`, err);
-      throw new AppError("The AI service is currently undergoing maintenance. Please try again shortly.", 503);
-    }
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      logger.error(`AI processing failed (${response.status}): ${errorText}`);
-      throw new AppError("The AI service is currently undergoing maintenance. Please try again shortly.", response.status >= 500 ? response.status : 502);
-    }
-
-    const body = (await response.json()) as { items?: ProcessedFeedback[] };
     if (!body.items || body.items.length !== chunk.length) {
       throw new AppError("AI processing service returned an incomplete response", 502);
     }
@@ -129,24 +151,12 @@ export async function processFeedback(items: PendingRawItem[]): Promise<Processe
 export async function generateBriefSummary(
   payload: GenerateBriefSummaryPayload
 ): Promise<BriefSummaryResult> {
-  let response: globalThis.Response;
-  try {
-    response = await fetch(`${config.aiServiceUrl}/api/v1/briefs/summarize`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-      signal: AbortSignal.timeout(120_000),
-    });
-  } catch (err) {
-    throw new AppError("The AI service is currently undergoing maintenance. Please try again shortly.", 503);
-  }
+  const data = await postToAIService<BriefSummaryResult>(
+    "/api/v1/briefs/summarize",
+    payload,
+    120_000
+  );
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new AppError("The AI service is currently undergoing maintenance. Please try again shortly.", response.status >= 500 ? response.status : 502);
-  }
-
-  const data = (await response.json()) as BriefSummaryResult;
   if (!data || !data.summary_text || typeof data.summary_text !== "string" || !data.summary_text.trim()) {
     throw new AppError("AI service returned an invalid brief summary structure", 502);
   }
@@ -159,34 +169,12 @@ export async function generateBriefSummary(
 }
 
 export async function executeRagChat(payload: RagChatServicePayload): Promise<RagChatResult> {
-  let response: globalThis.Response;
-  try {
-    response = await fetch(`${config.aiServiceUrl}/api/v1/chat`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-      signal: AbortSignal.timeout(120_000),
-    });
-  } catch (err) {
-    throw new AppError("The AI service is currently undergoing maintenance. Please try again shortly.", 503);
-  }
+  const data = await postToAIService<RagChatResult>(
+    "/api/v1/chat",
+    payload,
+    120_000
+  );
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    logger.warn(`AI chat service returned status ${response.status}: ${errorText}`);
-    let cleanMessage = "The AI service is currently undergoing maintenance. Please try again shortly.";
-    try {
-      const parsed = JSON.parse(errorText);
-      if (parsed.message && typeof parsed.message === "string" && !parsed.message.includes("{") && !parsed.message.includes("failed:")) {
-        cleanMessage = parsed.message;
-      }
-    } catch {
-      // Use clean message
-    }
-    throw new AppError(cleanMessage, response.status >= 500 ? response.status : 502);
-  }
-
-  const data = (await response.json()) as RagChatResult;
   if (!data || typeof data.answer !== "string") {
     throw new AppError("AI service returned an invalid chat response structure", 502);
   }
@@ -261,26 +249,13 @@ export interface ReportAIBriefResult {
 export async function generateReportAIBrief(
   payload: ReportAIBriefPayload
 ): Promise<ReportAIBriefResult> {
-  let response: globalThis.Response;
-  try {
-    response = await fetch(`${config.aiServiceUrl}/api/v1/reports/ai-brief`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-      signal: AbortSignal.timeout(120_000),
-    });
-  } catch (err) {
-    logger.error("AI service connection failed during report brief generation:", err);
-    throw new AppError("The AI service is currently undergoing maintenance. Please try again shortly.", 503);
-  }
+  const data = await postToAIService<ReportAIBriefResult>(
+    "/api/v1/reports/ai-brief",
+    payload,
+    120_000,
+    "Failed to generate AI report brief. Please try again shortly."
+  );
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    logger.error(`AI service reports/ai-brief returned ${response.status}: ${errorText}`);
-    throw new AppError("Failed to generate AI report brief. Please try again shortly.", response.status >= 500 ? response.status : 502);
-  }
-
-  const data = (await response.json()) as ReportAIBriefResult;
   if (!data || !data.summary || typeof data.summary !== "string") {
     throw new AppError("AI service returned an invalid report brief structure", 502);
   }

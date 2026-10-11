@@ -1,14 +1,14 @@
 import { X, CheckCircle2 } from 'lucide-react';
 import type { ReviewItem } from '../types/dashboard';
 import type { ProofItem } from '../types';
-import googleIcon from '../assets/Google-modern-3D-icon-on-Premium-vector-PNG.avif';
 
 interface ProofModalProps {
   item: ReviewItem | ProofItem | null;
   onClose: () => void;
 }
 
-function StarRating({ rating }: { rating: number }) {
+function StarRating({ rating }: { rating: number | null | undefined }) {
+  if (rating === null || rating === undefined) return null;
   const safeRating = Math.max(0, Math.min(5, Number(rating) || 0));
   return (
     <div className="flex items-center gap-0.5">
@@ -88,10 +88,28 @@ export default function ProofModal({ item, onClose }: ProofModalProps) {
               <span className="font-medium text-zinc-200">{author}</span>
               <span className="font-mono text-[11px] text-zinc-500">{date}</span>
             </div>
-            <div className="flex items-center gap-2">
-              <StarRating rating={rating} />
-              <span className="text-zinc-400 font-mono text-[11px] font-medium">{Number(rating).toFixed(1)} / 5.0</span>
-            </div>
+            {String(platform).toLowerCase().includes('google') ? (
+              rating !== null && rating !== undefined ? (
+                <div className="flex items-center gap-2">
+                  <StarRating rating={rating} />
+                  <span className="text-zinc-400 font-mono text-[11px] font-medium">
+                    {Number(rating).toFixed(1)} / 5.0 (Google Review)
+                  </span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <span className="text-zinc-500 font-mono text-[11px]">
+                    Google Review • Unrated
+                  </span>
+                </div>
+              )
+            ) : (
+              <div className="flex items-center gap-2">
+                <span className="text-zinc-500 font-mono text-[11px]">
+                  Instagram Comment • Sentiment Classified (No Star Rating)
+                </span>
+              </div>
+            )}
             <p className="text-xs text-zinc-300 leading-relaxed pt-1 font-sans">
               "{content}"
             </p>
@@ -113,10 +131,7 @@ export default function ProofModal({ item, onClose }: ProofModalProps) {
               <span className="flex items-center gap-1.5">
                 <span>Channel:</span>
                 {String(platform).toLowerCase().includes('google') ? (
-                  <strong className="text-zinc-200 font-medium inline-flex items-center gap-1">
-                    <img src={googleIcon} alt="Google" className="w-3.5 h-3.5 object-contain" />
-                    <span>Google</span>
-                  </strong>
+                  <strong className="text-zinc-200 font-medium">Google</strong>
                 ) : (
                   <strong className="text-zinc-300 font-medium">{platform}</strong>
                 )}

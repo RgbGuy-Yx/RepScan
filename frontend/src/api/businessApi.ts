@@ -4,7 +4,7 @@ import type { Business, CreateBusinessPayload } from './workspaceApi';
 export interface PlatformConnection {
   id: string;
   business_id: string;
-  platform: 'google_maps' | 'instagram' | 'linkedin';
+  platform: 'google_maps' | 'instagram';
   status: 'active' | 'paused' | 'error' | 'pending';
   place_id?: string;
   source_url?: string;
@@ -162,7 +162,7 @@ export const businessApi = {
 
   async connectPlatform(
     businessId: string,
-    platform: 'google' | 'google_maps' | 'instagram' | 'linkedin',
+    platform: 'google' | 'google_maps' | 'instagram',
     config: { placeId?: string; placeName?: string; sourceUrl?: string }
   ): Promise<PlatformConnection> {
     const normalizedPlatform = platform === 'google_maps' ? 'google' : platform;
@@ -190,8 +190,9 @@ export const businessApi = {
     );
   },
 
-  async listReviews(businessId: string, limit = 1000, offset = 0): Promise<ReviewItemData[]> {
-    return apiClient.get<ReviewItemData[]>(`/v1/businesses/${businessId}/reviews?limit=${limit}&offset=${offset}`);
+  async listReviews(businessId: string, limit = 1000, offset = 0, platform?: string): Promise<ReviewItemData[]> {
+    const platformParam = platform && platform !== 'all' ? `&platform=${encodeURIComponent(platform)}` : '';
+    return apiClient.get<ReviewItemData[]>(`/v1/businesses/${businessId}/reviews?limit=${limit}&offset=${offset}${platformParam}`);
   },
 
   async getWeeklyAnalytics(businessId: string): Promise<WeeklyAnalyticsData> {
@@ -235,16 +236,19 @@ export const businessApi = {
       history,
     });
 
-    const rawCitations = data.citations || data.sources || [];
-    const citations = rawCitations.map((c: any) => ({
-      id: c.raw_item_id || c.id || `cit_${Math.random()}`,
-      author: c.author || 'Verified Customer',
-      rating: c.rating ?? 5,
-      content: c.excerpt || c.content || '',
-      published_at: c.date || c.published_at || new Date().toISOString(),
-      platform: c.platform || 'google',
-      source_url: c.source_url || null,
-    }));
+    const rawCitations = Array.isArray(data?.citations) ? data.citations : [];
+    const citations = rawCitations.map((c: any) => {
+      const isIg = String(c.platform || '').toLowerCase().includes('instagram');
+      return {
+        id: c.raw_item_id || c.id || `cit_${Math.random()}`,
+        author: c.author || (isIg ? 'Instagram User' : 'Verified Customer'),
+        rating: isIg ? null : (c.rating !== null && c.rating !== undefined ? Number(c.rating) : null),
+        content: c.excerpt || c.content || '',
+        published_at: c.date || c.published_at || new Date().toISOString(),
+        platform: isIg ? 'instagram' : 'google',
+        source_url: c.source_url || null,
+      };
+    });
 
     return {
       answer: data.answer || '',

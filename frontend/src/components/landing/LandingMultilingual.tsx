@@ -1,5 +1,3 @@
-import googleIcon from '../../assets/Google-modern-3D-icon-on-Premium-vector-PNG.avif';
-
 export default function LandingMultilingual() {
   const languageCards = [
     {
@@ -47,7 +45,7 @@ export default function LandingMultilingual() {
               RepScan natively understands Indian regional languages and code-mixed reviews including Hinglish, Telugu-English, and Tamil-English.
             </p>
             <p className="text-zinc-300">
-              Original regional phrases are preserved alongside verifiable semantic translations so authentic sentiment and clinical context are never lost in translation.
+              Original regional phrases are displayed alongside English translations so your team can verify the exact wording.
             </p>
           </div>
         </div>
@@ -64,10 +62,7 @@ export default function LandingMultilingual() {
                   <span className="font-mono text-[10px] uppercase tracking-wider text-zinc-400 bg-zinc-900 px-2 py-0.5 rounded border border-zinc-800">
                     {card.badge}
                   </span>
-                  <span className="text-[11px] font-mono text-zinc-400 inline-flex items-center gap-1.5">
-                    {card.isGoogle && (
-                      <img src={googleIcon} alt="Google" className="w-3.5 h-3.5 object-contain shrink-0" />
-                    )}
+                  <span className="text-[11px] font-mono text-zinc-400">
                     <span>{card.platform}</span>
                   </span>
                 </div>

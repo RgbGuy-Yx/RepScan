@@ -3,7 +3,7 @@ export interface ProofItem {
   author: string;
   date: string;
   rating: number;
-  platform: 'Google Reviews' | 'Instagram' | 'LinkedIn';
+  platform: 'Google Reviews' | 'Instagram';
   excerpt: string;
   highlight: string;
   rawId: string;

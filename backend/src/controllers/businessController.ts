@@ -67,8 +67,9 @@ export async function listBusinessReviews(
     const businessId = req.params.id;
     const limit = parseInt(req.query.limit as string) || 50;
     const offset = parseInt(req.query.offset as string) || 0;
+    const platform = typeof req.query.platform === 'string' ? req.query.platform : undefined;
     const feedbackRepo = await import("../repositories/feedbackRepository");
-    const reviews = await feedbackRepo.findReviewsByBusinessId(businessId, limit, offset);
+    const reviews = await feedbackRepo.findReviewsByBusinessId(businessId, limit, offset, platform);
     res.json({ status: "success", data: reviews });
   } catch (err) {
     next(err);

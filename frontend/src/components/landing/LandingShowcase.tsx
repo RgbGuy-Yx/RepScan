@@ -30,10 +30,10 @@ export default function LandingShowcase({ onOpenProof }: LandingShowcaseProps) {
               Interactive Telemetry Preview
             </span>
             <h2 className="text-3xl sm:text-4xl font-semibold tracking-[-0.03em] text-[#f7f8f8]">
-              The product does the heavy lifting.
+              Turn reviews into clear priorities.
             </h2>
             <p className="mt-2 text-sm text-[#8a8f98] max-w-xl">
-              Inspect how RepScan transforms raw customer opinions into verified operational directives.
+              Inspect how RepScan groups customer feedback into verified themes and actions.
             </p>
           </div>
 
@@ -42,33 +42,30 @@ export default function LandingShowcase({ onOpenProof }: LandingShowcaseProps) {
             <button
               type="button"
               onClick={() => setActiveTab('what-changed')}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all ${
-                activeTab === 'what-changed'
+              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all ${activeTab === 'what-changed'
                   ? 'bg-[#18191a] text-[#f7f8f8] border border-[#34343a] shadow-xs'
                   : 'text-[#8a8f98] hover:text-[#f7f8f8]'
-              }`}
+                }`}
             >
               Signal Anomalies
             </button>
             <button
               type="button"
               onClick={() => setActiveTab('grounding')}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all ${
-                activeTab === 'grounding'
+              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all ${activeTab === 'grounding'
                   ? 'bg-[#18191a] text-[#f7f8f8] border border-[#34343a] shadow-xs'
                   : 'text-[#8a8f98] hover:text-[#f7f8f8]'
-              }`}
+                }`}
             >
               Proof Grounding
             </button>
             <button
               type="button"
               onClick={() => setActiveTab('executive-reports')}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all ${
-                activeTab === 'executive-reports'
+              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all ${activeTab === 'executive-reports'
                   ? 'bg-[#18191a] text-[#f7f8f8] border border-[#34343a] shadow-xs'
                   : 'text-[#8a8f98] hover:text-[#f7f8f8]'
-              }`}
+                }`}
             >
               Executive Reports
             </button>
@@ -267,7 +264,7 @@ export default function LandingShowcase({ onOpenProof }: LandingShowcaseProps) {
 
           {/* Bottom Card Footer */}
           <div className="pt-4 mt-6 border-t border-[#23252a] flex items-center justify-between text-xs text-[#8a8f98]">
-            <span>Active Dataset: 248 verified customer reviews from Google, Instagram, and LinkedIn</span>
+            <span>Active Dataset: 248 verified customer reviews from Google and Instagram</span>
             <span className="font-mono text-[11px] text-[#62666d]">Deterministic PostgreSQL Engine</span>
           </div>
         </div>

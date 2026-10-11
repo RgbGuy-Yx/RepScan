@@ -4,7 +4,6 @@ import {
   LogOut,
   LayoutDashboard,
   Settings,
-  Globe,
   ChevronDown,
 } from 'lucide-react';
 import { useBusiness } from '../context/BusinessContext';
@@ -14,7 +13,7 @@ interface UserProfileMenuProps {
 }
 
 export default function UserProfileMenu({ align = 'right' }: UserProfileMenuProps) {
-  const { userProfile, logout, isAuthenticated } = useBusiness();
+  const { userProfile, logout } = useBusiness();
   const [isOpen, setIsOpen] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -63,8 +62,10 @@ export default function UserProfileMenu({ align = 'right' }: UserProfileMenuProp
     ? userProfile.email.charAt(0).toUpperCase()
     : 'U';
 
-  const displayName = userProfile?.name || 'RepScan Operator';
-  const displayEmail = userProfile?.email || (isAuthenticated ? 'user@repscan.dev' : 'Offline');
+  const displayName =
+    userProfile?.name ||
+    (userProfile?.email ? userProfile.email.split('@')[0] : 'User');
+  const displayEmail = userProfile?.email || '';
 
   return (
     <div
@@ -115,9 +116,11 @@ export default function UserProfileMenu({ align = 'right' }: UserProfileMenuProp
                 Live
               </span>
             </div>
-            <p className="text-[11px] text-zinc-500 truncate font-mono">
-              {displayEmail}
-            </p>
+            {displayEmail ? (
+              <p className="text-[11px] text-zinc-500 truncate font-mono">
+                {displayEmail}
+              </p>
+            ) : null}
           </div>
 
           {/* Quick Route Links */}
@@ -138,15 +141,6 @@ export default function UserProfileMenu({ align = 'right' }: UserProfileMenuProp
             >
               <Settings className="w-3.5 h-3.5 text-zinc-400" />
               <span>Workspace Settings</span>
-            </Link>
-
-            <Link
-              to="/"
-              onClick={() => setIsOpen(false)}
-              className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-medium text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900 transition-colors"
-            >
-              <Globe className="w-3.5 h-3.5 text-zinc-400" />
-              <span>Public Website</span>
             </Link>
           </div>
 

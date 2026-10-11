@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import type { CompetitorItem, CompetitorComparisonData, TrackedCompetitor } from '../../api/competitorApi';
 import { competitorApi } from '../../api/competitorApi';
 import { fetchCompetitorDetails, type DetailedCompetitorData } from '../../services/googleMapsService';
+import InstagramIntegrationSection from '../instagram/InstagramIntegrationSection';
 import {
   MapPin,
   Globe,
@@ -35,7 +36,8 @@ type TabType =
   | 'sentiment'
   | 'themes'
   | 'comparison'
-  | 'feedback';
+  | 'feedback'
+  | 'instagram';
 
 export default function CompetitorDetailPanel({
   businessId,
@@ -140,8 +142,8 @@ export default function CompetitorDetailPanel({
       .replace(/\b\w/g, (char) => char.toUpperCase());
   };
 
-  const rating = details?.rating ?? competitor.rating ?? 4.4;
-  const reviewCount = details?.review_count ?? competitor.review_count ?? 1240;
+  const rating = details?.rating ?? competitor.rating ?? null;
+  const reviewCount = details?.review_count ?? competitor.review_count ?? 0;
   const website = details?.website ?? competitor.website;
   const address = details?.address ?? competitor.address;
   const googleMapsUrl = details?.google_maps_url ?? competitor.google_maps_url;
@@ -149,34 +151,74 @@ export default function CompetitorDetailPanel({
   const photoUrl = details?.photo_url ?? competitor.photo_url;
   const photoAttributions = details?.photo_attributions ?? competitor.photo_attributions;
 
-  // Realtime comparison metrics
-  const bizRating = comparison?.business?.rating ?? 4.3;
-  const bizReviewCount = comparison?.business?.review_count ?? 126;
-  const bizPositive = comparison?.business?.positive_sentiment ?? 82;
-  const bizNeutral = comparison?.business?.neutral_sentiment ?? 16;
-  const bizNegative = comparison?.business?.negative_sentiment ?? 18;
-  const bizGrowth = comparison?.business?.review_growth ?? 12;
+  // Realtime comparison metrics (Zero hardcoding)
+  const bizRating = comparison?.business?.rating ?? null;
+  const bizReviewCount = comparison?.business?.review_count ?? 0;
+  const bizPositive = comparison?.business?.positive_sentiment ?? null;
+  const bizNeutral = comparison?.business?.neutral_sentiment ?? null;
+  const bizNegative = comparison?.business?.negative_sentiment ?? null;
+  const bizGrowth = comparison?.business?.review_growth ?? null;
 
-  const compPositive = comparison?.competitor?.positive_sentiment ?? 88;
-  const compNeutral = comparison?.competitor?.neutral_sentiment ?? 10;
-  const compNegative = comparison?.competitor?.negative_sentiment ?? 12;
-  const compGrowth = comparison?.competitor?.review_growth ?? 18;
-  const compDelta = comparison?.competitor?.rating_delta ?? 0.2;
+  const compPositive = comparison?.competitor?.positive_sentiment ?? null;
+  const compNeutral = comparison?.competitor?.neutral_sentiment ?? null;
+  const compNegative = comparison?.competitor?.negative_sentiment ?? null;
+  const compGrowth = comparison?.competitor?.review_growth ?? null;
+  const compDelta = comparison?.competitor?.rating_delta ?? null;
 
   // Trend data
-  const ratingTrendBiz = comparison?.business?.rating_trend || [
-    { month: 'Jul', rating: 4.1 },
-    { month: 'Aug', rating: 4.3 },
-    { month: 'Sep', rating: 4.2 },
-    { month: 'Oct', rating: 4.3 },
-  ];
+  const ratingTrendBiz = comparison?.business?.rating_trend || [];
+  const ratingTrendComp = comparison?.competitor?.rating_trend || [];
 
-  const ratingTrendComp = comparison?.competitor?.rating_trend || [
-    { month: 'Jul', rating: 4.2 },
-    { month: 'Aug', rating: 4.4 },
-    { month: 'Sep', rating: 4.3 },
-    { month: 'Oct', rating: 4.4 },
-  ];
+  // Dynamic extraction of themes from verified Google customer reviews
+  const dynamicThemes = useMemo(() => {
+    const reviews = details?.reviews || [];
+    if (!reviews || reviews.length === 0) return [];
+
+    const TOPIC_PATTERNS = [
+      { id: 'service', label: 'Customer Service & Staff', keywords: ['staff', 'service', 'team', 'helpful', 'friendly', 'rude', 'behaviour', 'reception', 'polite'] },
+      { id: 'quality', label: 'Quality & Experience', keywords: ['quality', 'result', 'effective', 'treatment', 'work', 'outcome', 'expert', 'doctor', 'professional', 'food', 'taste', 'ambience'] },
+      { id: 'cleanliness', label: 'Atmosphere & Cleanliness', keywords: ['clean', 'hygiene', 'ambience', 'atmosphere', 'environment', 'facility', 'modern'] },
+      { id: 'pricing', label: 'Pricing & Value', keywords: ['price', 'cost', 'expensive', 'affordable', 'value', 'money', 'charge', 'package'] },
+      { id: 'speed', label: 'Wait Times & Scheduling', keywords: ['wait', 'time', 'appointment', 'fast', 'quick', 'delay', 'schedule', 'queue'] },
+      { id: 'communication', label: 'Communication & Transparency', keywords: ['explain', 'clear', 'communication', 'listen', 'transparent', 'guide'] },
+    ];
+
+    const results: Array<{ theme: string; pos: number; neg: number; mentions: number }> = [];
+
+    for (const topic of TOPIC_PATTERNS) {
+      let mentions = 0;
+      let posCount = 0;
+      let negCount = 0;
+
+      for (const rev of reviews) {
+        const text = (rev.text || '').toLowerCase();
+        const matches = topic.keywords.some((kw) => text.includes(kw));
+        if (matches) {
+          mentions += 1;
+          if ((rev.rating || 0) >= 4) {
+            posCount += 1;
+          } else if ((rev.rating || 0) <= 2) {
+            negCount += 1;
+          }
+        }
+      }
+
+      if (mentions > 0) {
+        const decidedTotal = Math.max(1, posCount + negCount);
+        const pos = Math.round((posCount / decidedTotal) * 100);
+        const neg = 100 - pos;
+        results.push({
+          theme: topic.label,
+          pos,
+          neg,
+          mentions,
+        });
+      }
+    }
+
+    results.sort((a, b) => b.mentions - a.mentions);
+    return results;
+  }, [details?.reviews]);
 
   return (
     <div className="w-full bg-[#0f1011] rounded-2xl border border-zinc-800/80 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)] overflow-hidden flex flex-col text-zinc-100">
@@ -254,14 +296,18 @@ export default function CompetitorDetailPanel({
             <div className="flex items-center gap-1.5 mb-1">
               <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
               <span className="text-base font-bold text-zinc-100 font-mono">
-                {rating.toFixed(1)}
+                {rating != null ? rating.toFixed(1) : '–'}
               </span>
             </div>
             <div className="flex items-center justify-between text-[11px]">
               <span className="text-zinc-500">Rating</span>
-              <span className="text-emerald-400 font-semibold flex items-center font-mono">
-                ↑ +{compDelta.toFixed(1)}
-              </span>
+              {compDelta != null ? (
+                <span className={`font-semibold flex items-center font-mono ${compDelta >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                  {compDelta >= 0 ? `+${compDelta.toFixed(1)}` : `${compDelta.toFixed(1)}`}
+                </span>
+              ) : (
+                <span className="text-zinc-600 font-mono">–</span>
+              )}
             </div>
           </div>
 
@@ -272,9 +318,13 @@ export default function CompetitorDetailPanel({
             </div>
             <div className="flex items-center justify-between text-[11px]">
               <span className="text-zinc-500">Total Reviews</span>
-              <span className="text-emerald-400 font-semibold flex items-center font-mono">
-                ↑ +{compGrowth}%
-              </span>
+              {compGrowth != null ? (
+                <span className="text-emerald-400 font-semibold flex items-center font-mono">
+                  +{compGrowth}%
+                </span>
+              ) : (
+                <span className="text-zinc-600 font-mono">–</span>
+              )}
             </div>
           </div>
 
@@ -283,14 +333,18 @@ export default function CompetitorDetailPanel({
             <div className="flex items-center gap-1.5 mb-1">
               <Smile className="w-4 h-4 text-emerald-400" />
               <span className="text-base font-bold text-zinc-100 font-mono">
-                {compPositive}%
+                {compPositive != null ? `${compPositive}%` : '–'}
               </span>
             </div>
             <div className="flex items-center justify-between text-[11px]">
               <span className="text-zinc-500">Positive Sentiment</span>
-              <span className="text-emerald-400 font-semibold flex items-center font-mono">
-                ↑ +6%
-              </span>
+              {compPositive != null && bizPositive != null ? (
+                <span className={`font-semibold flex items-center font-mono ${compPositive >= bizPositive ? 'text-emerald-400' : 'text-amber-400'}`}>
+                  {compPositive >= bizPositive ? `+${compPositive - bizPositive}%` : `${compPositive - bizPositive}%`}
+                </span>
+              ) : (
+                <span className="text-zinc-600 font-mono">–</span>
+              )}
             </div>
           </div>
 
@@ -299,14 +353,18 @@ export default function CompetitorDetailPanel({
             <div className="flex items-center gap-1.5 mb-1">
               <Frown className="w-4 h-4 text-rose-400" />
               <span className="text-base font-bold text-zinc-100 font-mono">
-                {compNegative}%
+                {compNegative != null ? `${compNegative}%` : '–'}
               </span>
             </div>
             <div className="flex items-center justify-between text-[11px]">
               <span className="text-zinc-500">Negative Sentiment</span>
-              <span className="text-emerald-400 font-semibold flex items-center font-mono">
-                ↓ -6%
-              </span>
+              {compNegative != null && bizNegative != null ? (
+                <span className={`font-semibold flex items-center font-mono ${compNegative <= bizNegative ? 'text-emerald-400' : 'text-rose-400'}`}>
+                  {compNegative <= bizNegative ? `${compNegative - bizNegative}%` : `+${compNegative - bizNegative}%`}
+                </span>
+              ) : (
+                <span className="text-zinc-600 font-mono">–</span>
+              )}
             </div>
           </div>
         </div>
@@ -373,6 +431,7 @@ export default function CompetitorDetailPanel({
           { id: 'themes', label: 'Themes' },
           { id: 'comparison', label: 'Comparison' },
           { id: 'feedback', label: 'Customer Feedback' },
+          { id: 'instagram', label: 'Instagram' },
         ].map((tab) => {
           const isActive = activeTab === tab.id;
           return (
@@ -430,10 +489,10 @@ export default function CompetitorDetailPanel({
                         Average Rating
                       </span>
                       <span className="font-bold text-zinc-100 text-right font-mono">
-                        {bizRating.toFixed(1)}
+                        {bizRating != null ? bizRating.toFixed(1) : '–'}
                       </span>
                       <span className="font-bold text-zinc-100 text-right font-mono">
-                        {rating.toFixed(1)}
+                        {rating != null ? rating.toFixed(1) : '–'}
                       </span>
                     </div>
 
@@ -458,10 +517,10 @@ export default function CompetitorDetailPanel({
                         Positive Sentiment
                       </span>
                       <span className="font-bold text-zinc-100 text-right font-mono">
-                        {bizPositive}%
+                        {bizPositive != null ? `${bizPositive}%` : '–'}
                       </span>
                       <span className="font-bold text-zinc-100 text-right font-mono">
-                        {compPositive}%
+                        {compPositive != null ? `${compPositive}%` : '–'}
                       </span>
                     </div>
 
@@ -472,10 +531,10 @@ export default function CompetitorDetailPanel({
                         Negative Sentiment
                       </span>
                       <span className="font-bold text-zinc-100 text-right font-mono">
-                        {bizNegative}%
+                        {bizNegative != null ? `${bizNegative}%` : '–'}
                       </span>
                       <span className="font-bold text-zinc-100 text-right font-mono">
-                        {compNegative}%
+                        {compNegative != null ? `${compNegative}%` : '–'}
                       </span>
                     </div>
 
@@ -486,10 +545,10 @@ export default function CompetitorDetailPanel({
                         Review Growth (3m)
                       </span>
                       <span className="font-bold text-emerald-400 text-right font-mono">
-                        +{bizGrowth}%
+                        {bizGrowth != null ? `+${bizGrowth}%` : '–'}
                       </span>
                       <span className="font-bold text-emerald-400 text-right font-mono">
-                        +{compGrowth}%
+                        {compGrowth != null ? `+${compGrowth}%` : '–'}
                       </span>
                     </div>
                   </div>
@@ -504,76 +563,87 @@ export default function CompetitorDetailPanel({
                   Rating Trend Comparison
                 </h3>
 
-                <div className="h-44 w-full relative pt-2">
-                  <svg className="w-full h-full overflow-visible" viewBox="0 0 300 130">
-                    {/* Horizontal Grid lines 5.0, 4.0, 3.0, 2.0, 1.0 */}
-                    {[
-                      { y: 15, label: '5.0' },
-                      { y: 40, label: '4.0' },
-                      { y: 65, label: '3.0' },
-                      { y: 90, label: '2.0' },
-                      { y: 115, label: '1.0' },
-                    ].map((grid, i) => (
-                      <g key={i}>
-                        <text x="0" y={grid.y + 3} fill="#71717a" fontSize="9" textAnchor="start" fontFamily="monospace">
-                          {grid.label}
-                        </text>
-                        <line x1="28" y1={grid.y} x2="295" y2={grid.y} stroke="#27272a" strokeWidth="1" strokeDasharray="2 2" />
-                      </g>
-                    ))}
-
-                    {/* Month Labels along X axis */}
-                    {['Jul', 'Aug', 'Sep', 'Oct'].map((m, i) => (
-                      <text
-                        key={i}
-                        x={65 + i * 70}
-                        y="128"
-                        fill="#a1a1aa"
-                        fontSize="9.5"
-                        textAnchor="middle"
-                        fontFamily="monospace"
-                      >
-                        {m}
-                      </text>
-                    ))}
-
-                    {/* Blue/Indigo Line: Your Business */}
-                    {(() => {
-                      const points = ratingTrendBiz.map((pt, idx) => {
-                        const x = 65 + idx * 70;
-                        const y = 115 - ((pt.rating - 1.0) / 4.0) * 100;
-                        return { x, y };
-                      });
-                      const d = points.reduce((acc, p, i) => (i === 0 ? `M ${p.x} ${p.y}` : `${acc} L ${p.x} ${p.y}`), '');
-                      return (
-                        <g>
-                          <path d={d} fill="none" stroke="#5e6ad2" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                          {points.map((p, i) => (
-                            <circle key={i} cx={p.x} cy={p.y} r="3.5" fill="#5e6ad2" stroke="#0f1011" strokeWidth="2" />
-                          ))}
+                {ratingTrendBiz.length === 0 && ratingTrendComp.length === 0 ? (
+                  <div className="h-44 w-full flex flex-col items-center justify-center text-center p-4 space-y-1.5">
+                    <TrendingUp className="w-5 h-5 text-zinc-600" />
+                    <p className="text-xs text-zinc-400">Historical trend data pending</p>
+                    <p className="text-[11px] text-zinc-600 font-mono">Syncing review history across periods...</p>
+                  </div>
+                ) : (
+                  <div className="h-44 w-full relative pt-2">
+                    <svg className="w-full h-full overflow-visible" viewBox="0 0 300 130">
+                      {/* Horizontal Grid lines 5.0, 4.0, 3.0, 2.0, 1.0 */}
+                      {[
+                        { y: 15, label: '5.0' },
+                        { y: 40, label: '4.0' },
+                        { y: 65, label: '3.0' },
+                        { y: 90, label: '2.0' },
+                        { y: 115, label: '1.0' },
+                      ].map((grid, i) => (
+                        <g key={i}>
+                          <text x="0" y={grid.y + 3} fill="#71717a" fontSize="9" textAnchor="start" fontFamily="monospace">
+                            {grid.label}
+                          </text>
+                          <line x1="28" y1={grid.y} x2="295" y2={grid.y} stroke="#27272a" strokeWidth="1" strokeDasharray="2 2" />
                         </g>
-                      );
-                    })()}
+                      ))}
 
-                    {/* Rose Line: Competitor */}
-                    {(() => {
-                      const points = ratingTrendComp.map((pt, idx) => {
-                        const x = 65 + idx * 70;
-                        const y = 115 - ((pt.rating - 1.0) / 4.0) * 100;
-                        return { x, y };
-                      });
-                      const d = points.reduce((acc, p, i) => (i === 0 ? `M ${p.x} ${p.y}` : `${acc} L ${p.x} ${p.y}`), '');
-                      return (
-                        <g>
-                          <path d={d} fill="none" stroke="#f43f5e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                          {points.map((p, i) => (
-                            <circle key={i} cx={p.x} cy={p.y} r="3.5" fill="#f43f5e" stroke="#0f1011" strokeWidth="2" />
-                          ))}
-                        </g>
-                      );
-                    })()}
-                  </svg>
-                </div>
+                      {/* Month Labels along X axis */}
+                      {ratingTrendBiz.concat(ratingTrendComp).length > 0 &&
+                        ['Jul', 'Aug', 'Sep', 'Oct'].map((m, i) => (
+                          <text
+                            key={i}
+                            x={65 + i * 70}
+                            y="128"
+                            fill="#a1a1aa"
+                            fontSize="9.5"
+                            textAnchor="middle"
+                            fontFamily="monospace"
+                          >
+                            {m}
+                          </text>
+                        ))}
+
+                      {/* Blue/Indigo Line: Your Business */}
+                      {ratingTrendBiz.length > 0 &&
+                        (() => {
+                          const points = ratingTrendBiz.map((pt, idx) => {
+                            const x = 65 + idx * 70;
+                            const y = 115 - ((pt.rating - 1.0) / 4.0) * 100;
+                            return { x, y };
+                          });
+                          const d = points.reduce((acc, p, i) => (i === 0 ? `M ${p.x} ${p.y}` : `${acc} L ${p.x} ${p.y}`), '');
+                          return (
+                            <g>
+                              <path d={d} fill="none" stroke="#5e6ad2" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                              {points.map((p, i) => (
+                                <circle key={i} cx={p.x} cy={p.y} r="3.5" fill="#5e6ad2" stroke="#0f1011" strokeWidth="2" />
+                              ))}
+                            </g>
+                          );
+                        })()}
+
+                      {/* Rose Line: Competitor */}
+                      {ratingTrendComp.length > 0 &&
+                        (() => {
+                          const points = ratingTrendComp.map((pt, idx) => {
+                            const x = 65 + idx * 70;
+                            const y = 115 - ((pt.rating - 1.0) / 4.0) * 100;
+                            return { x, y };
+                          });
+                          const d = points.reduce((acc, p, i) => (i === 0 ? `M ${p.x} ${p.y}` : `${acc} L ${p.x} ${p.y}`), '');
+                          return (
+                            <g>
+                              <path d={d} fill="none" stroke="#f43f5e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                              {points.map((p, i) => (
+                                <circle key={i} cx={p.x} cy={p.y} r="3.5" fill="#f43f5e" stroke="#0f1011" strokeWidth="2" />
+                              ))}
+                            </g>
+                          );
+                        })()}
+                    </svg>
+                  </div>
+                )}
               </div>
 
               {/* Bottom Legend */}
@@ -596,71 +666,79 @@ export default function CompetitorDetailPanel({
                   Sentiment Comparison
                 </h3>
 
-                {/* Grouped Bars Area */}
-                <div className="h-44 w-full flex items-end justify-around px-2 pt-2 border-b border-zinc-800 pb-2">
-                  {/* Category 1: Positive */}
-                  <div className="flex flex-col items-center gap-1.5">
-                    <div className="flex items-end gap-1.5 h-32">
-                      <div className="flex flex-col items-center">
-                        <span className="text-[10px] font-bold text-zinc-300 font-mono mb-1">{bizPositive}%</span>
-                        <div
-                          className="w-6 rounded-t-md bg-[#5e6ad2] transition-all duration-500 shadow-sm shadow-[#5e6ad2]/20"
-                          style={{ height: `${(bizPositive / 100) * 110}px` }}
-                        />
-                      </div>
-                      <div className="flex flex-col items-center">
-                        <span className="text-[10px] font-bold text-zinc-300 font-mono mb-1">{compPositive}%</span>
-                        <div
-                          className="w-6 rounded-t-md bg-rose-500 transition-all duration-500 shadow-sm shadow-rose-500/20"
-                          style={{ height: `${(compPositive / 100) * 110}px` }}
-                        />
-                      </div>
-                    </div>
-                    <span className="text-[11px] font-medium text-zinc-400">Positive</span>
+                {bizPositive == null && compPositive == null ? (
+                  <div className="h-44 w-full flex flex-col items-center justify-center text-center p-4 space-y-1.5">
+                    <Smile className="w-5 h-5 text-zinc-600" />
+                    <p className="text-xs text-zinc-400">Sentiment comparison pending</p>
+                    <p className="text-[11px] text-zinc-600 font-mono">Syncing competitor review analytics...</p>
                   </div>
+                ) : (
+                  /* Grouped Bars Area */
+                  <div className="h-44 w-full flex items-end justify-around px-2 pt-2 border-b border-zinc-800 pb-2">
+                    {/* Category 1: Positive */}
+                    <div className="flex flex-col items-center gap-1.5">
+                      <div className="flex items-end gap-1.5 h-32">
+                        <div className="flex flex-col items-center">
+                          <span className="text-[10px] font-bold text-zinc-300 font-mono mb-1">{bizPositive ?? 0}%</span>
+                          <div
+                            className="w-6 rounded-t-md bg-[#5e6ad2] transition-all duration-500 shadow-sm shadow-[#5e6ad2]/20"
+                            style={{ height: `${((bizPositive ?? 0) / 100) * 110}px` }}
+                          />
+                        </div>
+                        <div className="flex flex-col items-center">
+                          <span className="text-[10px] font-bold text-zinc-300 font-mono mb-1">{compPositive ?? 0}%</span>
+                          <div
+                            className="w-6 rounded-t-md bg-rose-500 transition-all duration-500 shadow-sm shadow-rose-500/20"
+                            style={{ height: `${((compPositive ?? 0) / 100) * 110}px` }}
+                          />
+                        </div>
+                      </div>
+                      <span className="text-[11px] font-medium text-zinc-400">Positive</span>
+                    </div>
 
-                  {/* Category 2: Neutral */}
-                  <div className="flex flex-col items-center gap-1.5">
-                    <div className="flex items-end gap-1.5 h-32">
-                      <div className="flex flex-col items-center">
-                        <span className="text-[10px] font-bold text-zinc-300 font-mono mb-1">{bizNeutral}%</span>
-                        <div
-                          className="w-6 rounded-t-md bg-[#5e6ad2]/70 transition-all duration-500"
-                          style={{ height: `${(bizNeutral / 100) * 110}px` }}
-                        />
+                    {/* Category 2: Neutral */}
+                    <div className="flex flex-col items-center gap-1.5">
+                      <div className="flex items-end gap-1.5 h-32">
+                        <div className="flex flex-col items-center">
+                          <span className="text-[10px] font-bold text-zinc-300 font-mono mb-1">{bizNeutral ?? 0}%</span>
+                          <div
+                            className="w-6 rounded-t-md bg-[#5e6ad2]/70 transition-all duration-500"
+                            style={{ height: `${((bizNeutral ?? 0) / 100) * 110}px` }}
+                          />
+                        </div>
+                        <div className="flex flex-col items-center">
+                          <span className="text-[10px] font-bold text-zinc-300 font-mono mb-1">{compNeutral ?? 0}%</span>
+                          <div
+                            className="w-6 rounded-t-md bg-rose-500/70 transition-all duration-500"
+                            style={{ height: `${((compNeutral ?? 0) / 100) * 110}px` }}
+                          />
+                        </div>
                       </div>
-                      <div className="flex flex-col items-center">
-                        <span className="text-[10px] font-bold text-zinc-300 font-mono mb-1">{compNeutral}%</span>
-                        <div
-                          className="w-6 rounded-t-md bg-rose-500/70 transition-all duration-500"
-                          style={{ height: `${(compNeutral / 100) * 110}px` }}
-                        />
-                      </div>
+                      <span className="text-[11px] font-medium text-zinc-400">Neutral</span>
                     </div>
-                    <span className="text-[11px] font-medium text-zinc-400">Neutral</span>
-                  </div>
 
-                  {/* Category 3: Negative */}
-                  <div className="flex flex-col items-center gap-1.5">
-                    <div className="flex items-end gap-1.5 h-32">
-                      <div className="flex flex-col items-center">
-                        <span className="text-[10px] font-bold text-zinc-300 font-mono mb-1">{bizNegative}%</span>
-                        <div
-                          className="w-6 rounded-t-md bg-[#5e6ad2]/50 transition-all duration-500"
-                          style={{ height: `${(bizNegative / 100) * 110}px` }}
-                        />
+                    {/* Category 3: Negative */}
+                    <div className="flex flex-col items-center gap-1.5">
+                      <div className="flex items-end gap-1.5 h-32">
+                        <div className="flex flex-col items-center">
+                          <span className="text-[10px] font-bold text-zinc-300 font-mono mb-1">{bizNegative ?? 0}%</span>
+                          <div
+                            className="w-6 rounded-t-md bg-[#5e6ad2]/50 transition-all duration-500"
+                            style={{ height: `${((bizNegative ?? 0) / 100) * 110}px` }}
+                          />
+                        </div>
+                        <div className="flex flex-col items-center">
+                          <span className="text-[10px] font-bold text-zinc-300 font-mono mb-1">{compNegative ?? 0}%</span>
+                          <div
+                            className="w-6 rounded-t-md bg-rose-500/50 transition-all duration-500"
+                            style={{ height: `${((compNegative ?? 0) / 100) * 110}px` }}
+                          />
+                        </div>
                       </div>
-                      <div className="flex flex-col items-center">
-                        <span className="text-[10px] font-bold text-zinc-300 font-mono mb-1">{compNegative}%</span>
-                        <div
-                          className="w-6 rounded-t-md bg-rose-500/50 transition-all duration-500"
-                          style={{ height: `${(compNegative / 100) * 110}px` }}
-                        />
-                      </div>
+                      <span className="text-[11px] font-medium text-zinc-400">Negative</span>
                     </div>
-                    <span className="text-[11px] font-medium text-zinc-400">Negative</span>
                   </div>
-                </div>
+                )}
               </div>
 
               {/* Bottom Legend */}
@@ -740,47 +818,53 @@ export default function CompetitorDetailPanel({
         {activeTab === 'sentiment' && (
           <div className="p-6 rounded-xl border border-zinc-800/80 bg-zinc-900/40 space-y-6">
             <h3 className="text-xs font-mono uppercase tracking-wider text-zinc-300">Sentiment Distribution Comparison</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div className="p-4 rounded-lg bg-zinc-900/60 border border-zinc-800 space-y-3">
-                <span className="text-xs font-semibold text-[#828cf0] block">{businessName}</span>
-                <div className="space-y-2 text-xs">
-                  <div className="flex justify-between">
-                    <span className="text-zinc-400">Positive</span>
-                    <span className="font-bold text-emerald-400 font-mono">{bizPositive}%</span>
-                  </div>
-                  <div className="h-2 rounded-full bg-zinc-800 overflow-hidden">
-                    <div className="h-full bg-emerald-400" style={{ width: `${bizPositive}%` }}></div>
-                  </div>
-                  <div className="flex justify-between pt-1">
-                    <span className="text-zinc-400">Negative</span>
-                    <span className="font-bold text-rose-400 font-mono">{bizNegative}%</span>
-                  </div>
-                  <div className="h-2 rounded-full bg-zinc-800 overflow-hidden">
-                    <div className="h-full bg-rose-500" style={{ width: `${bizNegative}%` }}></div>
+            {bizPositive != null || compPositive != null ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="p-4 rounded-lg bg-zinc-900/60 border border-zinc-800 space-y-3">
+                  <span className="text-xs font-semibold text-[#828cf0] block">{businessName}</span>
+                  <div className="space-y-2 text-xs">
+                    <div className="flex justify-between">
+                      <span className="text-zinc-400">Positive</span>
+                      <span className="font-bold text-emerald-400 font-mono">{bizPositive ?? 0}%</span>
+                    </div>
+                    <div className="h-2 rounded-full bg-zinc-800 overflow-hidden">
+                      <div className="h-full bg-emerald-400" style={{ width: `${bizPositive ?? 0}%` }}></div>
+                    </div>
+                    <div className="flex justify-between pt-1">
+                      <span className="text-zinc-400">Negative</span>
+                      <span className="font-bold text-rose-400 font-mono">{bizNegative ?? 0}%</span>
+                    </div>
+                    <div className="h-2 rounded-full bg-zinc-800 overflow-hidden">
+                      <div className="h-full bg-rose-500" style={{ width: `${bizNegative ?? 0}%` }}></div>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="p-4 rounded-lg bg-zinc-900/60 border border-zinc-800 space-y-3">
-                <span className="text-xs font-semibold text-rose-400 block">{competitor.name}</span>
-                <div className="space-y-2 text-xs">
-                  <div className="flex justify-between">
-                    <span className="text-zinc-400">Positive</span>
-                    <span className="font-bold text-emerald-400 font-mono">{compPositive}%</span>
-                  </div>
-                  <div className="h-2 rounded-full bg-zinc-800 overflow-hidden">
-                    <div className="h-full bg-emerald-400" style={{ width: `${compPositive}%` }}></div>
-                  </div>
-                  <div className="flex justify-between pt-1">
-                    <span className="text-zinc-400">Negative</span>
-                    <span className="font-bold text-rose-400 font-mono">{compNegative}%</span>
-                  </div>
-                  <div className="h-2 rounded-full bg-zinc-800 overflow-hidden">
-                    <div className="h-full bg-rose-500" style={{ width: `${compNegative}%` }}></div>
+                <div className="p-4 rounded-lg bg-zinc-900/60 border border-zinc-800 space-y-3">
+                  <span className="text-xs font-semibold text-rose-400 block">{competitor.name}</span>
+                  <div className="space-y-2 text-xs">
+                    <div className="flex justify-between">
+                      <span className="text-zinc-400">Positive</span>
+                      <span className="font-bold text-emerald-400 font-mono">{compPositive ?? 0}%</span>
+                    </div>
+                    <div className="h-2 rounded-full bg-zinc-800 overflow-hidden">
+                      <div className="h-full bg-emerald-400" style={{ width: `${compPositive ?? 0}%` }}></div>
+                    </div>
+                    <div className="flex justify-between pt-1">
+                      <span className="text-zinc-400">Negative</span>
+                      <span className="font-bold text-rose-400 font-mono">{compNegative ?? 0}%</span>
+                    </div>
+                    <div className="h-2 rounded-full bg-zinc-800 overflow-hidden">
+                      <div className="h-full bg-rose-500" style={{ width: `${compNegative ?? 0}%` }}></div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            ) : (
+              <div className="py-12 text-center text-xs text-zinc-500 font-mono">
+                Sentiment distribution data is pending analysis for this competitor.
+              </div>
+            )}
           </div>
         )}
 
@@ -788,28 +872,27 @@ export default function CompetitorDetailPanel({
         {activeTab === 'themes' && (
           <div className="p-6 rounded-xl border border-zinc-800/80 bg-zinc-900/40 space-y-4">
             <h3 className="text-xs font-mono uppercase tracking-wider text-zinc-300">Key Themes & Topic Highlights</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {[
-                { theme: 'Doctor Consultation & Expertise', pos: 94, neg: 6, mentions: 342 },
-                { theme: 'Clinic Cleanliness & Ambience', pos: 91, neg: 9, mentions: 284 },
-                { theme: 'Staff Hospitality & Courtesy', pos: 86, neg: 14, mentions: 215 },
-                { theme: 'Treatment Efficacy & Results', pos: 89, neg: 11, mentions: 198 },
-                { theme: 'Waiting Time & Appointment Scheduling', pos: 68, neg: 32, mentions: 154 },
-                { theme: 'Pricing Transparency & Packages', pos: 72, neg: 28, mentions: 121 },
-              ].map((t, idx) => (
-                <div key={idx} className="p-3.5 rounded-lg bg-zinc-900/60 border border-zinc-800 space-y-2">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="font-semibold text-zinc-200">{t.theme}</span>
-                    <span className="text-[10px] text-zinc-500 font-mono">{t.mentions} mentions</span>
+            {dynamicThemes.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {dynamicThemes.map((t, idx) => (
+                  <div key={idx} className="p-3.5 rounded-lg bg-zinc-900/60 border border-zinc-800 space-y-2">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-semibold text-zinc-200">{t.theme}</span>
+                      <span className="text-[10px] text-zinc-500 font-mono">{t.mentions} {t.mentions === 1 ? 'mention' : 'mentions'}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-[11px] font-mono">
+                      <span className="text-emerald-400 font-semibold">{t.pos}% positive</span>
+                      <span className="text-zinc-600">•</span>
+                      <span className="text-rose-400 font-semibold">{t.neg}% negative</span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2 text-[11px] font-mono">
-                    <span className="text-emerald-400 font-semibold">{t.pos}% pos</span>
-                    <span className="text-zinc-600">•</span>
-                    <span className="text-rose-400 font-semibold">{t.neg}% neg</span>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="py-12 text-center text-xs text-zinc-500 font-mono">
+                {isLoadingDetails ? 'Analyzing reviews for themes...' : 'No verified customer review theme mentions extracted yet for this place.'}
+              </div>
+            )}
           </div>
         )}
 
@@ -830,10 +913,14 @@ export default function CompetitorDetailPanel({
                 <tbody className="divide-y divide-zinc-800/60 text-zinc-300">
                   <tr>
                     <td className="py-3 font-medium text-zinc-400">Customer Rating</td>
-                    <td className="py-3 font-bold font-mono">{bizRating.toFixed(1)} ★</td>
-                    <td className="py-3 font-bold font-mono">{rating.toFixed(1)} ★</td>
+                    <td className="py-3 font-bold font-mono">{bizRating != null ? `${bizRating.toFixed(1)} ★` : '–'}</td>
+                    <td className="py-3 font-bold font-mono">{rating != null ? `${rating.toFixed(1)} ★` : '–'}</td>
                     <td className="py-3 font-bold text-rose-400 font-mono">
-                      {rating >= bizRating ? `+${(rating - bizRating).toFixed(1)} ★` : `-${(bizRating - rating).toFixed(1)} ★`}
+                      {rating != null && bizRating != null
+                        ? rating >= bizRating
+                          ? `+${(rating - bizRating).toFixed(1)} ★`
+                          : `-${(bizRating - rating).toFixed(1)} ★`
+                        : '–'}
                     </td>
                   </tr>
                   <tr>
@@ -841,23 +928,29 @@ export default function CompetitorDetailPanel({
                     <td className="py-3 font-mono">{bizReviewCount.toLocaleString()}</td>
                     <td className="py-3 font-mono">{reviewCount.toLocaleString()}</td>
                     <td className="py-3 font-mono text-emerald-400">
-                      +{Math.abs(reviewCount - bizReviewCount).toLocaleString()}
+                      {reviewCount >= bizReviewCount
+                        ? `+${(reviewCount - bizReviewCount).toLocaleString()}`
+                        : `-${(bizReviewCount - reviewCount).toLocaleString()}`}
                     </td>
                   </tr>
                   <tr>
                     <td className="py-3 font-medium text-zinc-400">Positive Ratio</td>
-                    <td className="py-3 font-mono">{bizPositive}%</td>
-                    <td className="py-3 font-mono">{compPositive}%</td>
+                    <td className="py-3 font-mono">{bizPositive != null ? `${bizPositive}%` : '–'}</td>
+                    <td className="py-3 font-mono">{compPositive != null ? `${compPositive}%` : '–'}</td>
                     <td className="py-3 font-mono text-emerald-400">
-                      +{compPositive - bizPositive}%
+                      {compPositive != null && bizPositive != null
+                        ? `${compPositive >= bizPositive ? '+' : ''}${compPositive - bizPositive}%`
+                        : '–'}
                     </td>
                   </tr>
                   <tr>
                     <td className="py-3 font-medium text-zinc-400">Negative Ratio</td>
-                    <td className="py-3 font-mono">{bizNegative}%</td>
-                    <td className="py-3 font-mono">{compNegative}%</td>
+                    <td className="py-3 font-mono">{bizNegative != null ? `${bizNegative}%` : '–'}</td>
+                    <td className="py-3 font-mono">{compNegative != null ? `${compNegative}%` : '–'}</td>
                     <td className="py-3 font-mono text-rose-400">
-                      -{bizNegative - compNegative}%
+                      {compNegative != null && bizNegative != null
+                        ? `${compNegative <= bizNegative ? '' : '+'}${compNegative - bizNegative}%`
+                        : '–'}
                     </td>
                   </tr>
                 </tbody>
@@ -888,6 +981,17 @@ export default function CompetitorDetailPanel({
                 No customer feedback snippets available.
               </div>
             )}
+          </div>
+        )}
+
+        {/* TAB 7: INSTAGRAM TELEMETRY */}
+        {activeTab === 'instagram' && (
+          <div className="space-y-4">
+            <InstagramIntegrationSection
+              businessId={businessId}
+              businessName={competitor.name}
+              competitorId={trackedRecord?.id || null}
+            />
           </div>
         )}
       </div>

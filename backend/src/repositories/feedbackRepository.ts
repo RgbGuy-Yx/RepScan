@@ -116,8 +116,90 @@ export interface ReviewWithAnalysis {
 export async function findReviewsByBusinessId(
   businessId: string,
   limit = 50,
-  offset = 0
+  offset = 0,
+  platform?: string
 ): Promise<ReviewWithAnalysis[]> {
+  const normPlatform = platform ? platform.trim().toLowerCase() : undefined;
+
+  let query: string;
+  let params: any[];
+
+  if (normPlatform === 'google') {
+    query = `
+      SELECT r.id, r.business_id, 'google'::platform_type AS platform, r.author, r.content,
+             r.rating::numeric(2,1) AS rating,
+             r.published_at, r.source_url, r.language,
+             fa.sentiment_label, fa.sentiment_score,
+             COALESCE(fa.themes, '[]'::jsonb) as themes,
+             COALESCE(fa.evidence, '[]'::jsonb) as evidence,
+             r.created_at
+      FROM raw_items r
+      LEFT JOIN feedback_analyses fa ON fa.raw_item_id = r.id
+      WHERE r.business_id = $1 AND r.platform = 'google'
+      ORDER BY r.published_at DESC NULLS LAST, r.created_at DESC
+      LIMIT $2 OFFSET $3
+    `;
+    params = [businessId, limit, offset];
+  } else if (normPlatform === 'instagram') {
+    query = `
+      SELECT ic.id, ic.business_id, 'instagram'::platform_type AS platform,
+             ic.author_username AS author, ic.content,
+             NULL::numeric(2,1) AS rating,
+             ic.published_at,
+             p.post_url AS source_url,
+             'en'::varchar(32) AS language,
+             (ic.ai_analysis->>'sentiment_label')::varchar(16) AS sentiment_label,
+             (ic.ai_analysis->>'sentiment_score')::numeric(4,3) AS sentiment_score,
+             COALESCE(ic.ai_analysis->'themes', '[]'::jsonb) as themes,
+             COALESCE(ic.ai_analysis->'evidence', '[]'::jsonb) as evidence,
+             ic.created_at
+      FROM instagram_comments ic
+      LEFT JOIN instagram_posts p ON ic.instagram_post_id = p.id
+      WHERE ic.business_id = $1
+      ORDER BY ic.published_at DESC NULLS LAST, ic.created_at DESC
+      LIMIT $2 OFFSET $3
+    `;
+    params = [businessId, limit, offset];
+  } else {
+    query = `
+      SELECT combined.id, combined.business_id, combined.platform, combined.author, combined.content,
+              combined.rating, combined.published_at, combined.source_url, combined.language,
+              combined.sentiment_label, combined.sentiment_score, combined.themes, combined.evidence
+      FROM (
+        SELECT r.id, r.business_id, 'google'::platform_type AS platform, r.author, r.content,
+               r.rating::numeric(2,1) AS rating,
+               r.published_at, r.source_url, r.language,
+               fa.sentiment_label, fa.sentiment_score,
+               COALESCE(fa.themes, '[]'::jsonb) as themes,
+               COALESCE(fa.evidence, '[]'::jsonb) as evidence,
+               r.created_at
+        FROM raw_items r
+        LEFT JOIN feedback_analyses fa ON fa.raw_item_id = r.id
+        WHERE r.business_id = $1 AND r.platform = 'google'
+
+        UNION ALL
+
+        SELECT ic.id, ic.business_id, 'instagram'::platform_type AS platform,
+               ic.author_username AS author, ic.content,
+               NULL::numeric(2,1) AS rating,
+               ic.published_at,
+               p.post_url AS source_url,
+               'en'::varchar(32) AS language,
+               (ic.ai_analysis->>'sentiment_label')::varchar(16) AS sentiment_label,
+               (ic.ai_analysis->>'sentiment_score')::numeric(4,3) AS sentiment_score,
+               COALESCE(ic.ai_analysis->'themes', '[]'::jsonb) as themes,
+               COALESCE(ic.ai_analysis->'evidence', '[]'::jsonb) as evidence,
+               ic.created_at
+        FROM instagram_comments ic
+        LEFT JOIN instagram_posts p ON ic.instagram_post_id = p.id
+        WHERE ic.business_id = $1
+      ) combined
+      ORDER BY combined.published_at DESC NULLS LAST, combined.created_at DESC
+      LIMIT $2 OFFSET $3
+    `;
+    params = [businessId, limit, offset];
+  }
+
   const result = await pool.query<{
     id: string;
     business_id: string;
@@ -132,25 +214,17 @@ export async function findReviewsByBusinessId(
     sentiment_score: number | null;
     themes: any;
     evidence: any;
-  }>(
-    `SELECT r.id, r.business_id, r.platform, r.author, r.content, r.rating,
-            r.published_at, r.source_url, r.language,
-            fa.sentiment_label, fa.sentiment_score,
-            COALESCE(fa.themes, '[]'::jsonb) as themes,
-            COALESCE(fa.evidence, '[]'::jsonb) as evidence
-     FROM raw_items r
-     LEFT JOIN feedback_analyses fa ON fa.raw_item_id = r.id
-     WHERE r.business_id = $1
-     ORDER BY r.published_at DESC NULLS LAST, r.created_at DESC
-     LIMIT $2 OFFSET $3`,
-    [businessId, limit, offset]
-  );
+  }>(query, params);
 
-  return result.rows.map((row) => ({
-    ...row,
-    rating: row.rating !== null ? Number(row.rating) : null,
-    themes: Array.isArray(row.themes) ? row.themes : typeof row.themes === 'string' ? JSON.parse(row.themes) : [],
-    evidence: Array.isArray(row.evidence) ? row.evidence : typeof row.evidence === 'string' ? JSON.parse(row.evidence) : [],
-  }));
+  return result.rows.map((row) => {
+    const isInstagram = String(row.platform).toLowerCase().includes('instagram');
+    return {
+      ...row,
+      platform: isInstagram ? ('instagram' as Platform) : ('google' as Platform),
+      rating: isInstagram ? null : (row.rating !== null && row.rating !== undefined ? Number(row.rating) : null),
+      themes: Array.isArray(row.themes) ? row.themes : typeof row.themes === 'string' ? JSON.parse(row.themes) : [],
+      evidence: Array.isArray(row.evidence) ? row.evidence : typeof row.evidence === 'string' ? JSON.parse(row.evidence) : [],
+    };
+  });
 }
 

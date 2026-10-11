@@ -6,7 +6,7 @@ export const chatMessageSchema = z.object({
 });
 
 export const chatFiltersSchema = z.object({
-  platform: z.enum(["google", "instagram", "linkedin"]).optional(),
+  platform: z.enum(["google", "instagram"]).optional(),
   start_date: z.string().datetime({ offset: true }).or(z.string().regex(/^\d{4}-\d{2}-\d{2}/)).optional(),
   end_date: z.string().datetime({ offset: true }).or(z.string().regex(/^\d{4}-\d{2}-\d{2}/)).optional(),
   min_rating: z.number().min(1).max(5).optional(),

@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { SignIn, SignUp } from '@clerk/clerk-react';
 import { dark } from '@clerk/themes';
 import { ArrowLeft, ArrowRight, Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { useBusiness } from '../context/BusinessContext';
 
 interface AuthViewProps {
   initialMode?: 'sign-in' | 'sign-up';
@@ -21,8 +22,20 @@ export default function AuthView({
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
+  const { isAuthenticated, isAuthLoaded } = useBusiness();
 
   const hasClerkKey = Boolean(import.meta.env.VITE_CLERK_PUBLISHABLE_KEY);
+
+  // If already authenticated, redirect to /dashboard immediately
+  useEffect(() => {
+    if (isAuthLoaded && isAuthenticated) {
+      if (onAuthSuccess) {
+        onAuthSuccess();
+      } else {
+        navigate('/dashboard', { replace: true });
+      }
+    }
+  }, [isAuthLoaded, isAuthenticated, onAuthSuccess, navigate]);
 
   const handleModeChange = (newMode: 'sign-in' | 'sign-up') => {
     setMode(newMode);
@@ -37,7 +50,7 @@ export default function AuthView({
       if (onAuthSuccess) {
         onAuthSuccess();
       } else {
-        navigate('/dashboard');
+        navigate('/dashboard', { replace: true });
       }
     }, 600);
   };
@@ -132,6 +145,8 @@ export default function AuthView({
                 {mode === 'sign-in' ? (
                   <SignIn
                     routing="hash"
+                    forceRedirectUrl="/dashboard"
+                    fallbackRedirectUrl="/dashboard"
                     appearance={{
                       baseTheme: dark,
                       variables: {
@@ -160,6 +175,8 @@ export default function AuthView({
                 ) : (
                   <SignUp
                     routing="hash"
+                    forceRedirectUrl="/dashboard"
+                    fallbackRedirectUrl="/dashboard"
                     appearance={{
                       baseTheme: dark,
                       variables: {
