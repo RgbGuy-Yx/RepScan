@@ -489,7 +489,8 @@ export const instagramService = {
         }
       }
 
-      // 2. Classify posts: separate business-authored promotional posts from customer reviews
+      // 2. Classify posts: categorize marketing & content topics for context only
+      // Business posts are never treated as customer reviews; no sentiment is assigned
       const pendingPosts = await instagramRepo.findPendingAIPosts(accountId, 50);
 
       for (const p of pendingPosts) {
@@ -502,31 +503,17 @@ export const instagramService = {
         }
 
         const isPromotional = this.isBusinessPromotionalCaption(p.caption);
+        const contentTopics = this.extractKeywords(p.caption);
 
-        if (isPromotional) {
-          // Label promotional content clearly; engagement is not sentiment
-          await instagramRepo.updatePostAIAnalysis(p.id, {
-            status: "analyzed",
-            analysis: {
-              classification: "business_promotional",
-              note: "Business-authored promotional or announcement post. Not counted towards customer sentiment.",
-              themes: this.extractKeywords(p.caption),
-            },
-          });
-        } else {
-          // Attempt customer feedback analysis on eligible post caption
-          const sentiment = this.heuristicalSentiment(p.caption);
-          await instagramRepo.updatePostAIAnalysis(p.id, {
-            status: "analyzed",
-            analysis: {
-              classification: "customer_perspective",
-              sentiment_label: sentiment.label,
-              sentiment_score: sentiment.score,
-              themes: sentiment.themes,
-              evidence: [p.caption.slice(0, 100)],
-            },
-          });
-        }
+        await instagramRepo.updatePostAIAnalysis(p.id, {
+          status: "analyzed",
+          analysis: {
+            classification: isPromotional ? "business_promotional" : "business_content",
+            note: "Business-authored post. Used for engagement and topic context only; not counted towards customer sentiment.",
+            topics: contentTopics,
+            hashtags: p.hashtags || [],
+          },
+        });
       }
     } catch (err: any) {
       logger.error("Error running AI analysis pipeline for Instagram:", err);
@@ -728,20 +715,14 @@ export const instagramService = {
       };
     }
 
-    // Aggregate themes
-    const themeCounts: Record<string, { count: number; positive: number; negative: number }> = {};
-    for (const p of postsResult.posts) {
-      const themes = (p.ai_analysis?.themes as string[]) || [];
-      for (const t of themes) {
-        if (!themeCounts[t]) themeCounts[t] = { count: 0, positive: 0, negative: 0 };
-        themeCounts[t].count++;
-      }
-    }
-
-    const topThemes = Object.entries(themeCounts)
-      .map(([theme, counts]) => ({ theme, mentions: counts.count }))
-      .sort((a, b) => b.mentions - a.mentions)
-      .slice(0, 5);
+    // Aggregate recurring themes strictly from customer comments (true customer sentiment!)
+    const commentThemes = await instagramRepo.getAccountCommentThemes(accountId, 10);
+    const topThemes = commentThemes.map((ct) => ({
+      theme: ct.theme,
+      mentions: ct.count,
+      positive_count: ct.positive_count,
+      negative_count: ct.negative_count,
+    })).slice(0, 5);
 
     const aiInsights = {
       insufficient_data: !hasEnoughData,

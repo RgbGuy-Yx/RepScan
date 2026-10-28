@@ -849,3 +849,54 @@ export async function getAccountAggregates(accountId: string) {
     commentSentiment: analyzedCommentsRes.rows[0],
   };
 }
+
+export interface CommentThemeMetric {
+  theme: string;
+  count: number;
+  positive_count: number;
+  negative_count: number;
+  neutral_count: number;
+}
+
+export async function getAccountCommentThemes(
+  accountId: string,
+  limit = 20
+): Promise<CommentThemeMetric[]> {
+  const result = await pool.query<{
+    theme: string;
+    count: string;
+    positive_count: string;
+    negative_count: string;
+    neutral_count: string;
+  }>(
+    `
+    SELECT
+      theme,
+      COUNT(*)::int as count,
+      COUNT(CASE WHEN (ai_analysis->>'sentiment_label') = 'positive' THEN 1 END)::int as positive_count,
+      COUNT(CASE WHEN (ai_analysis->>'sentiment_label') = 'negative' THEN 1 END)::int as negative_count,
+      COUNT(CASE WHEN (ai_analysis->>'sentiment_label') = 'neutral' THEN 1 END)::int as neutral_count
+    FROM (
+      SELECT
+        jsonb_array_elements_text(ai_analysis->'themes') as theme,
+        ai_analysis
+      FROM instagram_comments
+      WHERE instagram_account_id = $1
+        AND ai_analysis_status = 'analyzed'
+        AND jsonb_typeof(ai_analysis->'themes') = 'array'
+    ) sub
+    GROUP BY theme
+    ORDER BY count DESC
+    LIMIT $2
+    `,
+    [accountId, limit]
+  );
+
+  return result.rows.map((r) => ({
+    theme: r.theme,
+    count: parseInt(r.count, 10),
+    positive_count: parseInt(r.positive_count, 10),
+    negative_count: parseInt(r.negative_count, 10),
+    neutral_count: parseInt(r.neutral_count, 10),
+  }));
+}

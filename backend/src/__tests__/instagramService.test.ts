@@ -222,6 +222,7 @@ describe("Instagram Integration Test Suite", () => {
 
       (instagramRepo.listSnapshotsByAccount as jest.Mock).mockResolvedValueOnce([]);
       (instagramRepo.listPostsByAccount as jest.Mock).mockResolvedValueOnce({ posts: [], total: 0 });
+      (instagramRepo.getAccountCommentThemes as jest.Mock).mockResolvedValueOnce([]);
 
       const analytics = await instagramService.getAccountAnalytics(businessId, accountId);
 
@@ -270,12 +271,13 @@ describe("Instagram Integration Test Suite", () => {
         },
       ]);
       (instagramRepo.listPostsByAccount as jest.Mock).mockResolvedValueOnce({
-        posts: [
-          { ai_analysis: { themes: ["Quality & Craft", "Customer Service"] } },
-          { ai_analysis: { themes: ["Quality & Craft"] } },
-        ],
+        posts: [],
         total: 2,
       });
+      (instagramRepo.getAccountCommentThemes as jest.Mock).mockResolvedValueOnce([
+        { theme: "Quality & Craft", count: 2, positive_count: 2, negative_count: 0, neutral_count: 0 },
+        { theme: "Customer Service", count: 1, positive_count: 1, negative_count: 0, neutral_count: 0 },
+      ]);
 
       const analytics = await instagramService.getAccountAnalytics(businessId, accountId);
 

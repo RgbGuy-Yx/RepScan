@@ -1,271 +1,338 @@
-import { useState } from 'react';
-import { ArrowUp, ArrowDown, ExternalLink, ShieldCheck, Download } from 'lucide-react';
+import { useEffect, useRef } from 'react';
+import { CheckCircle2, Quote, ArrowUpRight } from 'lucide-react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import type { ProofItem } from '../../types';
+
+gsap.registerPlugin(ScrollTrigger);
 
 interface LandingShowcaseProps {
   onOpenProof: (proof: ProofItem) => void;
 }
 
-export default function LandingShowcase({ onOpenProof }: LandingShowcaseProps) {
-  const [activeTab, setActiveTab] = useState<'what-changed' | 'grounding' | 'executive-reports'>('what-changed');
+interface EvidenceCard {
+  id: string;
+  badge: string;
+  badgeColor: string;
+  quote: string;
+  author: string;
+  role: string;
+  avatarUrl: string;
+  proof: ProofItem;
+}
 
-  const sampleProof: ProofItem = {
-    theme: 'Staff Behaviour (Peak-Hour Table Queueing)',
-    author: 'Neha Kapoor',
-    date: 'Sep 17, 2026',
-    rating: 2,
-    platform: 'Google Reviews',
-    excerpt: 'Waited 45 minutes for a table even with prior reservation. Hostess refused to acknowledge the delay and was dismissive.',
-    highlight: 'Waited 45 minutes for a table',
-    rawId: 'rev_9a41c28f',
-  };
+export default function LandingShowcase({ onOpenProof }: LandingShowcaseProps) {
+  const sectionRef = useRef<HTMLElement>(null);
+
+  const column1Cards: EvidenceCard[] = [
+    {
+      id: 'c1',
+      badge: '↓ 45 MIN WAIT DROPPED',
+      badgeColor: 'text-emerald-400 bg-emerald-950/40 border-emerald-800/40',
+      quote:
+        'Wait times during peak Friday evening hours exceeded 45 minutes past scheduled appointment slots. RepScan isolated the bottleneck within 48 hours and tethered it to 14 Google reviews. We rescheduled check-in slots and patient complaints vanished.',
+      author: 'Dr. Rahul Sharma',
+      role: 'Apex Healthcare • 8 months on RepScan',
+      avatarUrl: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=100&auto=format&fit=crop&q=80',
+      proof: {
+        theme: 'Clinical Consultation Latency & Waiting Queue',
+        author: 'Rahul Sharma',
+        date: 'Sep 29, 2026',
+        rating: 2,
+        platform: 'Google Reviews',
+        excerpt:
+          'The clinic was extremely clean and doctor was polite, but wait times exceeded 45 minutes past our scheduled appointment slot. Need better scheduling coordination.',
+        highlight: 'wait times exceeded 45 minutes',
+        rawId: 'rev_08a9d4_fq849',
+      },
+    },
+    {
+      id: 'c2',
+      badge: 'INDIC NLU RESOLVED',
+      badgeColor: 'text-amber-300 bg-amber-950/40 border-amber-800/40',
+      quote:
+        'Our patients write in Hinglish and Telugu-English: "Doctor consultation chaala baavundi but billing bahut slow tha". Other tools labelled this "Neutral". RepScan accurately isolated the pharmacy dispatch delay as a critical operational fix.',
+      author: 'Sunita Varma',
+      role: 'Apollo Wellness • 6 months on RepScan',
+      avatarUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&auto=format&fit=crop&q=80',
+      proof: {
+        theme: 'Pharmacy Billing Dispatch Speed',
+        author: 'Sunita Varma',
+        date: 'Oct 04, 2026',
+        rating: 3,
+        platform: 'Google Reviews',
+        excerpt:
+          'Doctor consultation chaala baavundi, skin allergy cleared quickly. But pharmacy billing bahut slow tha, took 35 minutes.',
+        highlight: 'pharmacy billing bahut slow tha',
+        rawId: 'rev_9f830b_in552',
+      },
+    },
+  ];
+
+  const column2Cards: EvidenceCard[] = [
+    {
+      id: 'c3',
+      badge: '+28% RETENTION LIFT',
+      badgeColor: 'text-sky-400 bg-sky-950/40 border-sky-800/40',
+      quote:
+        'Instead of drowning in 800 disjointed Instagram comments, our management receives a weekly mathematical anomaly report. We verified our menu revisions had eliminated unexpected service charge complaints within 72 hours.',
+      author: 'Arjun Mehta',
+      role: 'Brew & Co. Operations • 1 year on RepScan',
+      avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80',
+      proof: {
+        theme: 'Service Charge Transparency & Menu Pricing',
+        author: 'Arjun Mehta',
+        date: 'Oct 08, 2026',
+        rating: 5,
+        platform: 'Instagram',
+        excerpt:
+          'Updated menu clearly mentions service charge upfront now. Food was fantastic as always, great job team!',
+        highlight: 'Updated menu clearly mentions service charge upfront',
+        rawId: 'rev_27f10a_ig902',
+      },
+    },
+    {
+      id: 'c4',
+      badge: 'ZERO HALLUCINATIONS',
+      badgeColor: 'text-emerald-400 bg-emerald-950/40 border-emerald-800/40',
+      quote:
+        'Every single metric is tethered to a raw citation and database UUID. Our executive board trusts RepScan because the RAG agent never invents praise or conceals negative spikes. Every sentence is auditable.',
+      author: 'Priya Nair',
+      role: 'Chief Experience Officer • 4 months on RepScan',
+      avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80',
+      proof: {
+        theme: 'Auditability & Deterministic Citation Grounding',
+        author: 'Priya Nair',
+        date: 'Sep 21, 2026',
+        rating: 5,
+        platform: 'Google Reviews',
+        excerpt:
+          'Clean, deterministic reports with zero hallucinations. We can present this data to directors with 100% confidence.',
+        highlight: 'deterministic reports with zero hallucinations',
+        rawId: 'rev_66d41c_cx104',
+      },
+    },
+  ];
+
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return;
+    }
+
+    const ctx = gsap.context(() => {
+      // Animate left editorial panel
+      gsap.from('.gsap-showcase-left', {
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: 'top 75%',
+          toggleActions: 'play none none none',
+          once: true,
+        },
+        y: 30,
+        opacity: 0,
+        duration: 0.8,
+        ease: 'power3.out',
+      });
+
+      // Animate right cards with staggered timing
+      gsap.from('.gsap-showcase-card', {
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: 'top 70%',
+          toggleActions: 'play none none none',
+          once: true,
+        },
+        y: 40,
+        opacity: 0,
+        duration: 0.8,
+        stagger: 0.12,
+        ease: 'power3.out',
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
 
   return (
-    <section id="telemetry" className="py-24 border-t border-[#23252a] bg-[#010102]">
-      <div className="max-w-6xl mx-auto px-6 lg:px-8">
-        {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-          <div>
-            <span className="text-[11px] font-semibold text-[#8a8f98] uppercase tracking-[0.06em] block mb-2">
-              Interactive Telemetry Preview
+    <section
+      ref={sectionRef}
+      id="telemetry"
+      className="py-28 max-w-7xl mx-auto px-6 lg:px-8 border-t border-[#23252a] bg-[#010102]"
+    >
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+        {/* Left Column: Reference Layout Typography & Social Proof */}
+        <div className="gsap-showcase-left lg:col-span-5 space-y-7 lg:sticky lg:top-28">
+          {/* Eyebrow Pill */}
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#0f1011] border border-[#23252a] text-xs font-mono shadow-xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+            <span className="text-zinc-300 font-medium tracking-wider uppercase text-[11px]">
+              PROVEN RESULTS
             </span>
-            <h2 className="text-3xl sm:text-4xl font-semibold tracking-[-0.03em] text-[#f7f8f8]">
-              Turn reviews into clear priorities.
-            </h2>
-            <p className="mt-2 text-sm text-[#8a8f98] max-w-xl">
-              Inspect how RepScan groups customer feedback into verified themes and actions.
-            </p>
           </div>
 
-          {/* Linear Pill Tabs (pricing-tab-default vs pricing-tab-selected) */}
-          <div className="inline-flex items-center p-1 rounded-full bg-[#0f1011] border border-[#23252a] self-start md:self-auto">
-            <button
-              type="button"
-              onClick={() => setActiveTab('what-changed')}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all ${activeTab === 'what-changed'
-                  ? 'bg-[#18191a] text-[#f7f8f8] border border-[#34343a] shadow-xs'
-                  : 'text-[#8a8f98] hover:text-[#f7f8f8]'
-                }`}
-            >
-              Signal Anomalies
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab('grounding')}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all ${activeTab === 'grounding'
-                  ? 'bg-[#18191a] text-[#f7f8f8] border border-[#34343a] shadow-xs'
-                  : 'text-[#8a8f98] hover:text-[#f7f8f8]'
-                }`}
-            >
-              Proof Grounding
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab('executive-reports')}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all ${activeTab === 'executive-reports'
-                  ? 'bg-[#18191a] text-[#f7f8f8] border border-[#34343a] shadow-xs'
-                  : 'text-[#8a8f98] hover:text-[#f7f8f8]'
-                }`}
-            >
-              Executive Reports
-            </button>
+          {/* Headline Pairing: Geometric Sans + Editorial Italic Serif */}
+          <h2 className="font-sans text-3xl sm:text-5xl lg:text-[3.25rem] font-semibold tracking-[-0.035em] text-[#f7f8f8] leading-[1.08] text-balance">
+            Turn reviews into clear priorities.
+            <span className="font-serif italic font-normal text-zinc-400 block mt-2">
+              Proven by evidence.
+            </span>
+          </h2>
+
+          {/* Editorial Paragraph */}
+          <p className="text-sm sm:text-base text-[#8a8f98] leading-relaxed font-sans max-w-md">
+            We don't do vague sentiment summaries or hallucinated advice. Every operational anomaly
+            is mathematically detected, isolated to the shift or service facet, and tethered to
+            timestamped customer citations.
+          </p>
+
+          {/* Avatar Pile + Star Rating Social Proof */}
+          <div className="pt-2 flex items-center gap-4">
+            <div className="flex -space-x-2.5 overflow-hidden">
+              <img
+                className="inline-block h-9 w-9 rounded-full ring-2 ring-[#010102] object-cover"
+                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"
+                alt="Customer"
+              />
+              <img
+                className="inline-block h-9 w-9 rounded-full ring-2 ring-[#010102] object-cover"
+                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80"
+                alt="Customer"
+              />
+              <img
+                className="inline-block h-9 w-9 rounded-full ring-2 ring-[#010102] object-cover"
+                src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=100&auto=format&fit=crop&q=80"
+                alt="Customer"
+              />
+              <img
+                className="inline-block h-9 w-9 rounded-full ring-2 ring-[#010102] object-cover"
+                src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&auto=format&fit=crop&q=80"
+                alt="Customer"
+              />
+            </div>
+
+            <div className="space-y-0.5">
+              <div className="flex items-center gap-0.5 text-amber-400 text-xs">
+                {'★★★★★'}
+              </div>
+              <p className="text-[12px] font-mono text-zinc-400">
+                <strong className="text-zinc-200 font-medium">4.8/5</strong> from 1,400+ verified citations
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* Product Screenshot Panel Card */}
-        <div className="rounded-2xl bg-[#0f1011] border border-[#23252a] p-4 sm:p-7 shadow-[0_24px_70px_rgba(0,0,0,0.95),inset_0_1px_0_0_rgba(255,255,255,0.06)] min-h-[420px] flex flex-col justify-between">
-          {activeTab === 'what-changed' && (
-            <div className="space-y-6">
-              <div className="flex items-center justify-between pb-3 border-b border-[#23252a]">
-                <div>
-                  <h3 className="text-sm font-semibold text-[#f7f8f8]">
-                    What Changed This Week? (Statistical Anomaly Detection)
-                  </h3>
-                  <p className="text-xs text-[#8a8f98] mt-0.5">
-                    Week-over-week velocity changes exceeding the 2σ variance threshold
-                  </p>
+        {/* Right Side: Staggered 2-Column Grid (Reference Image Structure) */}
+        <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-5 items-start">
+          {/* Column 1 */}
+          <div className="space-y-5">
+            {column1Cards.map((card) => (
+              <div
+                key={card.id}
+                onClick={() => onOpenProof(card.proof)}
+                className="gsap-showcase-card group p-6 rounded-2xl bg-[#0f1011] border border-[#23252a] hover:border-zinc-700/80 transition-all duration-200 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03),0_12px_32px_rgba(0,0,0,0.5)] cursor-pointer flex flex-col justify-between relative overflow-hidden"
+              >
+                {/* Subtle Quote Watermark */}
+                <div className="absolute top-5 right-5 text-zinc-800 pointer-events-none group-hover:text-zinc-700/60 transition-colors">
+                  <Quote className="w-6 h-6 stroke-1 rotate-180" />
                 </div>
-                <span className="font-mono text-[11px] text-[#4ade80] bg-[#27a644]/10 px-2 py-0.5 rounded border border-[#27a644]/25">
-                  CI: 95%
-                </span>
-              </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="p-4 rounded-xl bg-[#141516] border border-[#23252a] space-y-2">
+                <div className="space-y-4">
+                  {/* Top Metric Badge */}
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-rose-400 flex items-center gap-1">
-                      <ArrowUp className="w-3.5 h-3.5" /> +267% Spike
+                    <span
+                      className={`font-mono text-[10px] tracking-wider uppercase font-semibold px-2.5 py-1 rounded-md border ${card.badgeColor}`}
+                    >
+                      {card.badge}
                     </span>
-                    <span className="text-[10px] text-[#62666d] font-mono">p=0.003</span>
                   </div>
-                  <h4 className="text-sm font-semibold text-[#f7f8f8]">Food Temperature Latency</h4>
-                  <p className="text-xs text-[#8a8f98] leading-relaxed">
-                    11 reviews mentioned cold delivery or lukewarm entrees, concentrated during Friday 8–10 PM rushes.
-                  </p>
-                  <div className="pt-2 text-[11px] text-[#62666d] border-t border-[#23252a]">
-                    Root: Heated holding cabinet failure
-                  </div>
-                </div>
 
-                <div className="p-4 rounded-xl bg-[#141516] border border-[#23252a] space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-rose-400 flex items-center gap-1">
-                      <ArrowUp className="w-3.5 h-3.5" /> +150% Spike
-                    </span>
-                    <span className="text-[10px] text-[#62666d] font-mono">p=0.012</span>
-                  </div>
-                  <h4 className="text-sm font-semibold text-[#f7f8f8]">Hostess Table Delays</h4>
-                  <p className="text-xs text-[#8a8f98] leading-relaxed">
-                    Reserved table hold times exceeded 45 minutes, triggering 8 one-star reviews on Google Places.
-                  </p>
-                  <div className="pt-2 text-[11px] text-[#62666d] border-t border-[#23252a]">
-                    Root: Reservation overbooking
-                  </div>
-                </div>
-
-                <div className="p-4 rounded-xl bg-[#141516] border border-[#23252a] space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-[#4ade80] flex items-center gap-1">
-                      <ArrowDown className="w-3.5 h-3.5" /> -86% Decline
-                    </span>
-                    <span className="text-[10px] text-[#62666d] font-mono">p=0.001</span>
-                  </div>
-                  <h4 className="text-sm font-semibold text-[#f7f8f8]">Billing Disputes</h4>
-                  <p className="text-xs text-[#8a8f98] leading-relaxed">
-                    Complaints regarding unexpected service charges dropped to zero after menu card revisions.
-                  </p>
-                  <div className="pt-2 text-[11px] text-[#4ade80] border-t border-[#23252a]">
-                    Status: Resolved corrective action
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'grounding' && (
-            <div className="space-y-6">
-              <div className="flex items-center justify-between pb-3 border-b border-[#23252a]">
-                <div>
-                  <h3 className="text-sm font-semibold text-[#f7f8f8]">
-                    Grounded Proof Verification Inspector
-                  </h3>
-                  <p className="text-xs text-[#8a8f98] mt-0.5">
-                    Click any citation to verify raw relational database records
+                  {/* Quote Body */}
+                  <p className="font-sans text-[13px] text-zinc-300 leading-relaxed font-normal">
+                    &ldquo;{card.quote}&rdquo;
                   </p>
                 </div>
-                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-[#27a644]/10 text-xs text-[#4ade80] border border-[#27a644]/25">
-                  <ShieldCheck className="w-3.5 h-3.5" />
-                  <span>Zero Hallucinations Guarantee</span>
-                </div>
-              </div>
 
-              <div className="p-5 rounded-xl bg-[#141516] border border-[#23252a] space-y-3">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-semibold text-[#f7f8f8]">{sampleProof.author}</span>
-                      <span className="text-xs text-[#62666d]">·</span>
-                      <span className="text-xs text-[#8a8f98]">{sampleProof.date}</span>
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#18191a] border border-[#23252a] text-[#8a8f98]">
-                        {sampleProof.platform}
-                      </span>
-                    </div>
-
-                    <div className="text-amber-400 text-xs flex items-center gap-1 mt-1">
-                      {'★'.repeat(sampleProof.rating)}
-                      <span className="text-[#62666d]">({sampleProof.rating}.0)</span>
+                {/* Author Metadata Footer */}
+                <div className="mt-6 pt-4 border-t border-[#23252a] flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={card.avatarUrl}
+                      alt={card.author}
+                      className="w-8 h-8 rounded-full object-cover border border-zinc-800"
+                    />
+                    <div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-sans text-xs font-semibold text-[#f7f8f8]">
+                          {card.author}
+                        </span>
+                        <CheckCircle2 className="w-3.5 h-3.5 text-sky-400 fill-sky-400/20" />
+                      </div>
+                      <p className="font-sans text-[11px] text-[#8a8f98]">{card.role}</p>
                     </div>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={() => onOpenProof(sampleProof)}
-                    className="linear-btn-secondary text-xs h-8 px-3 flex items-center gap-1.5"
-                  >
-                    <span>Inspect Raw Record</span>
-                    <ExternalLink className="w-3.5 h-3.5 text-[#8a8f98]" />
-                  </button>
-                </div>
-
-                <p className="text-xs sm:text-sm text-[#d0d6e0] leading-relaxed pt-1 font-sans">
-                  “{sampleProof.excerpt}”
-                </p>
-
-                <div className="pt-2.5 border-t border-[#23252a] flex flex-wrap items-center justify-between text-xs text-[#62666d]">
-                  <span className="text-[#8a8f98]">Extracted Classification: <strong>{sampleProof.theme}</strong></span>
-                  <span className="font-mono text-[11px] text-[#8a8f98]">Source UUID: {sampleProof.rawId}</span>
+                  <span className="opacity-0 group-hover:opacity-100 transition-opacity text-zinc-400 hover:text-zinc-200">
+                    <ArrowUpRight className="w-4 h-4" />
+                  </span>
                 </div>
               </div>
-            </div>
-          )}
+            ))}
+          </div>
 
-          {activeTab === 'executive-reports' && (
-            <div className="space-y-6">
-              <div className="flex items-center justify-between pb-3 border-b border-[#23252a]">
-                <div>
-                  <h3 className="text-sm font-semibold text-[#f7f8f8]">
-                    Weekly Executive Intelligence Reports
-                  </h3>
-                  <p className="text-xs text-[#8a8f98] mt-0.5">
-                    Concise reputation briefs with deterministic deltas and one-click PDF export
+          {/* Column 2: Staggered Offset */}
+          <div className="space-y-5 sm:translate-y-8">
+            {column2Cards.map((card) => (
+              <div
+                key={card.id}
+                onClick={() => onOpenProof(card.proof)}
+                className="gsap-showcase-card group p-6 rounded-2xl bg-[#0f1011] border border-[#23252a] hover:border-zinc-700/80 transition-all duration-200 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03),0_12px_32px_rgba(0,0,0,0.5)] cursor-pointer flex flex-col justify-between relative overflow-hidden"
+              >
+                {/* Subtle Quote Watermark */}
+                <div className="absolute top-5 right-5 text-zinc-800 pointer-events-none group-hover:text-zinc-700/60 transition-colors">
+                  <Quote className="w-6 h-6 stroke-1 rotate-180" />
+                </div>
+
+                <div className="space-y-4">
+                  {/* Top Metric Badge */}
+                  <div className="flex items-center justify-between">
+                    <span
+                      className={`font-mono text-[10px] tracking-wider uppercase font-semibold px-2.5 py-1 rounded-md border ${card.badgeColor}`}
+                    >
+                      {card.badge}
+                    </span>
+                  </div>
+
+                  {/* Quote Body */}
+                  <p className="font-sans text-[13px] text-zinc-300 leading-relaxed font-normal">
+                    &ldquo;{card.quote}&rdquo;
                   </p>
                 </div>
-                <span className="text-xs px-2.5 py-1 rounded-md bg-[#141516] border border-[#23252a] text-[#d0d6e0] flex items-center gap-1.5">
-                  <Download className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>PDF Export Ready</span>
-                </span>
-              </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="p-4 rounded-xl bg-[#141516] border border-[#23252a] space-y-2">
-                  <div className="flex items-center justify-between text-[11px]">
-                    <span className="px-1.5 py-0.5 rounded font-medium bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-[10px]">
-                      KPI VELOCITY
-                    </span>
-                    <span className="text-[#62666d] font-mono">Trailing 7d</span>
+                {/* Author Metadata Footer */}
+                <div className="mt-6 pt-4 border-t border-[#23252a] flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={card.avatarUrl}
+                      alt={card.author}
+                      className="w-8 h-8 rounded-full object-cover border border-zinc-800"
+                    />
+                    <div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-sans text-xs font-semibold text-[#f7f8f8]">
+                          {card.author}
+                        </span>
+                        <CheckCircle2 className="w-3.5 h-3.5 text-sky-400 fill-sky-400/20" />
+                      </div>
+                      <p className="font-sans text-[11px] text-[#8a8f98]">{card.role}</p>
+                    </div>
                   </div>
-                  <h4 className="text-xs font-semibold text-[#f7f8f8]">4.6★ Average Rating (+0.3★ Shift)</h4>
-                  <p className="text-[11.5px] text-[#8a8f98]">Calculated deterministically in PostgreSQL with 0 hallucination</p>
-                  <div className="text-[10px] text-emerald-400 pt-1 border-t border-[#23252a]">
-                    Sample Size: 142 Verified Reviews
-                  </div>
-                </div>
 
-                <div className="p-4 rounded-xl bg-[#141516] border border-[#23252a] space-y-2">
-                  <div className="flex items-center justify-between text-[11px]">
-                    <span className="px-1.5 py-0.5 rounded font-medium bg-[#5e6ad2]/15 text-[#828fff] border border-[#5e6ad2]/30 text-[10px]">
-                      AI BRIEF SYNOPSIS
-                    </span>
-                    <span className="text-[#828fff]">Mistral-7B</span>
-                  </div>
-                  <h4 className="text-xs font-semibold text-[#f7f8f8]">Staff Professionalism Momentum</h4>
-                  <p className="text-[11.5px] text-[#8a8f98]">Care quality praise surged by 18% week-over-week across Google Reviews</p>
-                  <div className="text-[10px] text-[#62666d] pt-1 border-t border-[#23252a]">
-                    Grounded with 3 Direct Quotes
-                  </div>
-                </div>
-
-                <div className="p-4 rounded-xl bg-[#141516] border border-[#23252a] space-y-2">
-                  <div className="flex items-center justify-between text-[11px]">
-                    <span className="px-1.5 py-0.5 rounded font-medium bg-amber-500/15 text-amber-400 border border-amber-500/30 text-[10px]">
-                      OPERATIONAL FOCUS
-                    </span>
-                    <span className="text-amber-400 font-mono">Priority 1</span>
-                  </div>
-                  <h4 className="text-xs font-semibold text-[#f7f8f8]">Weekend Wait Times Buffer</h4>
-                  <p className="text-[11.5px] text-[#8a8f98]">1 complaint identified regarding peak Saturday arrival bottlenecks</p>
-                  <div className="text-[10px] text-amber-400 pt-1 border-t border-[#23252a]">
-                    Automated Root-Cause Flagged
-                  </div>
+                  <span className="opacity-0 group-hover:opacity-100 transition-opacity text-zinc-400 hover:text-zinc-200">
+                    <ArrowUpRight className="w-4 h-4" />
+                  </span>
                 </div>
               </div>
-            </div>
-          )}
-
-          {/* Bottom Card Footer */}
-          <div className="pt-4 mt-6 border-t border-[#23252a] flex items-center justify-between text-xs text-[#8a8f98]">
-            <span>Active Dataset: 248 verified customer reviews from Google and Instagram</span>
-            <span className="font-mono text-[11px] text-[#62666d]">Deterministic PostgreSQL Engine</span>
+            ))}
           </div>
         </div>
       </div>

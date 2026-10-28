@@ -37,11 +37,9 @@ export default function LandingFooter({ onLaunchApp: _onLaunchApp }: LandingFoot
             Product
           </span>
           <ul className="space-y-2 text-xs text-zinc-400">
-            <li><a href="#core-value" className="hover:text-zinc-100 transition-colors">Core Value</a></li>
-            <li><a href="#how-it-works" className="hover:text-zinc-100 transition-colors">How It Works</a></li>
-            <li><a href="#the-proof" className="hover:text-zinc-100 transition-colors">The Proof</a></li>
-            <li><a href="#multilingual" className="hover:text-zinc-100 transition-colors">Multilingual AI</a></li>
-            <li><a href="#telemetry" className="hover:text-zinc-100 transition-colors">Telemetry &amp; Reports</a></li>
+            <li><a href="#telemetry" className="hover:text-zinc-100 transition-colors">Proven Results</a></li>
+            <li><a href="#architecture" className="hover:text-zinc-100 transition-colors">Architecture</a></li>
+            <li><a href="#system" className="hover:text-zinc-100 transition-colors">Engine Specs</a></li>
           </ul>
         </div>
 

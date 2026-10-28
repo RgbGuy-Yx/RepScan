@@ -1,10 +1,7 @@
 import LandingNavbar from './LandingNavbar';
 import LandingHero from './LandingHero';
-import LandingFeatures from './LandingFeatures';
 import LandingShowcase from './LandingShowcase';
-import LandingHowItWorks from './LandingHowItWorks';
-import LandingProof from './LandingProof';
-import LandingMultilingual from './LandingMultilingual';
+import LandingArchitecture from './LandingArchitecture';
 import LandingCta from './LandingCta';
 import LandingFooter from './LandingFooter';
 import type { ProofItem } from '../../types';
@@ -16,35 +13,26 @@ interface LandingPageProps {
 
 export default function LandingPage({ onLaunchApp, onOpenProof }: LandingPageProps) {
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 selection:bg-zinc-800 selection:text-zinc-100">
+    <div className="min-h-screen bg-[#010102] text-[#f7f8f8] selection:bg-zinc-800 selection:text-zinc-100 font-sans antialiased">
       {/* Sticky Top Nav */}
       <LandingNavbar onLaunchApp={onLaunchApp} />
 
       {/* Main Content */}
       <main id="main-content">
-        {/* 1. Hero */}
+        {/* Act 1: The Thesis & Live Telemetry Inspector */}
         <LandingHero onLaunchApp={onLaunchApp} onOpenProof={onOpenProof} />
 
-        {/* 2. Core Value Proposition */}
-        <LandingFeatures />
-
-        {/* 3. Live Telemetry & Product Showcase */}
+        {/* Act 2: Proven by Evidence (User's Reference Staggered Masonry Layout) */}
         <LandingShowcase onOpenProof={onOpenProof} />
 
-        {/* 4. How RepScan Works */}
-        <LandingHowItWorks />
+        {/* Act 3: Core Architecture (Multi-dialect NLU, 2σ Math, Grounded Citations) */}
+        <LandingArchitecture onOpenProof={onOpenProof} />
 
-        {/* 5. The Proof */}
-        <LandingProof onOpenProof={onOpenProof} />
-
-        {/* 6. Built for Real Customer Feedback */}
-        <LandingMultilingual />
-
-        {/* 7. Final CTA */}
+        {/* Act 4: The Closed Loop & Minimalist Studio Action */}
         <LandingCta onLaunchApp={onLaunchApp} />
       </main>
 
-      {/* Dense Footer */}
+      {/* Dense Studio Footer */}
       <LandingFooter onLaunchApp={onLaunchApp} />
     </div>
   );

@@ -270,7 +270,10 @@ const CrowdCanvas = ({
       initCrowd();
     };
 
+    let initialized = false;
     const init = () => {
+      if (initialized) return;
+      initialized = true;
       createPeeps();
       resize();
       gsap.ticker.add(render);
@@ -294,6 +297,7 @@ const CrowdCanvas = ({
       ro?.disconnect();
       window.removeEventListener("resize", handleResize);
       gsap.ticker.remove(render);
+      img.onload = null;
       crowd.forEach((peep) => {
         if (peep.walk) peep.walk.kill();
       });

@@ -36,18 +36,12 @@ export default function LandingNavbar(_props: LandingNavbarProps = {}) {
         </Link>
 
         {/* Primary Nav Links */}
-        <nav className="hidden md:flex items-center gap-5 text-xs text-zinc-400 font-medium" aria-label="Main Navigation">
-          <a href="#core-value" className="hover:text-zinc-100 transition-colors">
-            Value
+        <nav className="hidden md:flex items-center gap-6 text-xs text-zinc-400 font-medium font-sans" aria-label="Main Navigation">
+          <a href="#telemetry" className="hover:text-zinc-100 transition-colors">
+            Evidence
           </a>
-          <a href="#how-it-works" className="hover:text-zinc-100 transition-colors">
-            How It Works
-          </a>
-          <a href="#the-proof" className="hover:text-zinc-100 transition-colors">
-            The Proof
-          </a>
-          <a href="#multilingual" className="hover:text-zinc-100 transition-colors">
-            Languages
+          <a href="#architecture" className="hover:text-zinc-100 transition-colors">
+            Architecture
           </a>
         </nav>
       </div>
@@ -99,32 +93,18 @@ export default function LandingNavbar(_props: LandingNavbarProps = {}) {
         <div className="md:hidden fixed inset-0 top-14 z-50 bg-zinc-950/98 backdrop-blur-2xl p-6 flex flex-col justify-between border-t border-zinc-800">
           <nav className="flex flex-col gap-4 text-sm font-medium text-zinc-300">
             <a
-              href="#core-value"
+              href="#telemetry"
               onClick={() => setMobileMenuOpen(false)}
               className="py-2.5 border-b border-zinc-800 hover:text-white"
             >
-              Value
+              Evidence
             </a>
             <a
-              href="#how-it-works"
+              href="#architecture"
               onClick={() => setMobileMenuOpen(false)}
               className="py-2.5 border-b border-zinc-800 hover:text-white"
             >
-              How It Works
-            </a>
-            <a
-              href="#the-proof"
-              onClick={() => setMobileMenuOpen(false)}
-              className="py-2.5 border-b border-zinc-800 hover:text-white"
-            >
-              The Proof
-            </a>
-            <a
-              href="#multilingual"
-              onClick={() => setMobileMenuOpen(false)}
-              className="py-2.5 border-b border-zinc-800 hover:text-white"
-            >
-              Languages
+              Architecture
             </a>
           </nav>
 
