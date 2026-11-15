@@ -2,12 +2,18 @@ import pg from "pg";
 import { config } from "../config";
 import { logger } from "../config/logger";
 
-const pool = new pg.Pool({
+const poolConfig: pg.PoolConfig = {
   connectionString: config.databaseUrl,
-  max: 10,
+  max: config.databasePoolMax,
   idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 5000,
-});
+  connectionTimeoutMillis: config.databaseConnectionTimeoutMs,
+};
+
+if (config.databaseSsl) {
+  poolConfig.ssl = config.databaseSsl;
+}
+
+const pool = new pg.Pool(poolConfig);
 
 pool.on("error", (err) => {
   logger.error("Unexpected database pool error:", err);
@@ -19,7 +25,8 @@ export async function checkDatabaseConnection(): Promise<boolean> {
     await client.query("SELECT 1");
     client.release();
     return true;
-  } catch {
+  } catch (err) {
+    logger.error("Database connection check failed:", err);
     return false;
   }
 }

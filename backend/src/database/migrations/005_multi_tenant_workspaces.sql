@@ -22,19 +22,19 @@ DO $$
 BEGIN
     IF EXISTS (
         SELECT 1 FROM information_schema.columns 
-        WHERE table_name = 'users' AND column_name = 'notification_preferences'
+        WHERE table_schema = current_schema() AND table_name = 'users' AND column_name = 'notification_preferences'
     ) THEN
         ALTER TABLE users ALTER COLUMN notification_preferences DROP NOT NULL;
     END IF;
     IF EXISTS (
         SELECT 1 FROM information_schema.columns 
-        WHERE table_name = 'users' AND column_name = 'ai_preferences'
+        WHERE table_schema = current_schema() AND table_name = 'users' AND column_name = 'ai_preferences'
     ) THEN
         ALTER TABLE users ALTER COLUMN ai_preferences DROP NOT NULL;
     END IF;
     IF EXISTS (
         SELECT 1 FROM information_schema.columns 
-        WHERE table_name = 'users' AND column_name = 'updated_at'
+        WHERE table_schema = current_schema() AND table_name = 'users' AND column_name = 'updated_at'
     ) THEN
         ALTER TABLE users ALTER COLUMN updated_at DROP NOT NULL;
     END IF;

@@ -1,0 +1,18 @@
+# RepScan AI Service Dependencies
+# Compatible with Python 3.11+
+# Mirrors pyproject.toml with production requirements
+
+fastapi>=0.111.0
+uvicorn[standard]>=0.30.0
+pydantic-settings>=2.3.0
+python-dotenv>=1.0.1
+chromadb>=0.5.0
+langchain-core>=1.6.3
+langchain-mistralai>=1.1.6
+langchain-chroma>=1.1.0
+langchain-voyageai>=0.4.1
+langgraph>=1.2.11
+jinja2>=3.1.6
+matplotlib>=3.11.2
+weasyprint>=70.0
+httpx>=0.27.0

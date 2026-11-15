@@ -3,7 +3,23 @@ import path from "path";
 import pool from "./database";
 import { logger } from "../config/logger";
 
-const MIGRATIONS_DIR = path.join(__dirname, "../database/migrations");
+function getMigrationsDir(): string {
+  const candidates = [
+    path.join(__dirname, "../database/migrations"),
+    path.join(__dirname, "../../src/database/migrations"),
+    path.join(process.cwd(), "src/database/migrations"),
+    path.join(process.cwd(), "backend/src/database/migrations"),
+    path.join(process.cwd(), "Repscan/backend/src/database/migrations"),
+  ];
+  for (const candidate of candidates) {
+    if (fs.existsSync(candidate)) {
+      return candidate;
+    }
+  }
+  return path.join(__dirname, "../database/migrations");
+}
+
+const MIGRATIONS_DIR = getMigrationsDir();
 
 async function ensureMigrationsTable(): Promise<void> {
   await pool.query(`
@@ -36,16 +52,23 @@ export async function runMigrations(): Promise<void> {
     const sql = fs.readFileSync(filePath, "utf-8");
 
     logger.info(`Applying migration: ${file}`);
-    await pool.query("BEGIN");
+    const client = await pool.connect();
     try {
-      await pool.query(sql);
-      await pool.query("INSERT INTO schema_migrations (filename) VALUES ($1)", [file]);
-      await pool.query("COMMIT");
+      await client.query("BEGIN");
+      await client.query(sql);
+      await client.query("INSERT INTO schema_migrations (filename) VALUES ($1)", [file]);
+      await client.query("COMMIT");
       logger.info(`Migration applied: ${file}`);
     } catch (err) {
-      await pool.query("ROLLBACK");
+      try {
+        await client.query("ROLLBACK");
+      } catch (rollbackErr) {
+        logger.error(`Rollback failed for migration: ${file}`, rollbackErr);
+      }
       logger.error(`Migration failed: ${file}`, err);
       throw err;
+    } finally {
+      client.release();
     }
   }
 }
