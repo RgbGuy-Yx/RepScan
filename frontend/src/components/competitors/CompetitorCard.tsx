@@ -25,15 +25,15 @@ export default function CompetitorCard({
     <div
       id={`competitor-card-${competitor.place_id}`}
       onClick={() => onSelect(competitor)}
-      className={`group relative p-3 rounded-xl border transition-all duration-200 cursor-pointer select-none active:scale-[0.985] ${
+      className={`group relative p-3.5 rounded-2xl border transition-all duration-200 cursor-pointer select-none active:scale-[0.985] ${
         isSelected
-          ? 'bg-zinc-900/90 border-[#5e6ad2] shadow-lg shadow-[#5e6ad2]/15 ring-1 ring-[#5e6ad2]'
-          : 'bg-[#0f1011]/80 hover:bg-zinc-900/60 border-zinc-800/80 hover:border-zinc-700/80'
+          ? 'bg-[#1f1f1f] border-[#4ade80] shadow-sm ring-1 ring-[#4ade80]'
+          : 'bg-[#171717] hover:bg-[#1f1f1f] border-[#262626] hover:border-[#404040]'
       }`}
     >
       <div className="flex items-center gap-3">
         {/* Competitor Thumbnail */}
-        <div className="w-11 h-11 rounded-lg bg-zinc-900 border border-zinc-800 shrink-0 overflow-hidden flex items-center justify-center relative">
+        <div className="w-11 h-11 rounded-xl bg-[#141414] border border-[#262626] shrink-0 overflow-hidden flex items-center justify-center relative">
           {competitor.photo_url ? (
             <img
               src={competitor.photo_url}
@@ -42,17 +42,17 @@ export default function CompetitorCard({
               loading="lazy"
             />
           ) : (
-            <Building2 className="w-5 h-5 text-zinc-600" />
+            <Building2 className="w-5 h-5 text-[#737373]" />
           )}
           {competitor.tracked && (
-            <div className="absolute top-1 right-1 w-2 h-2 rounded-full bg-emerald-400 ring-2 ring-zinc-950" />
+            <div className="absolute top-1 right-1 w-2 h-2 rounded-full bg-emerald-400 ring-2 ring-[#0a0a0a]" />
           )}
         </div>
 
         {/* Competitor Main Info */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5">
-            <h4 className="text-xs font-semibold text-zinc-100 truncate group-hover:text-white transition-colors">
+            <h4 className="text-xs font-semibold text-white truncate transition-colors">
               {competitor.name}
             </h4>
             {competitor.tracked && (
@@ -61,7 +61,7 @@ export default function CompetitorCard({
               </span>
             )}
           </div>
-          <p className="text-[11px] text-zinc-400 truncate mt-0.5">
+          <p className="text-[11px] text-[#a3a3a3] truncate mt-0.5">
             {formatCategory(competitor.primary_type)}
           </p>
         </div>
@@ -70,10 +70,10 @@ export default function CompetitorCard({
         <div className="flex items-center gap-2.5 shrink-0 text-xs">
           {competitor.distance_km != null && (
             <div
-              className={`flex items-center gap-1 px-2 py-0.5 rounded-md font-mono text-[10.5px] tabular-nums ${
+              className={`flex items-center gap-1 px-2.5 py-0.5 rounded-full font-mono text-[10.5px] tabular-nums ${
                 isNearby
                   ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                  : 'text-zinc-400 bg-zinc-900/60 border border-zinc-800/80'
+                  : 'text-[#a3a3a3] bg-[#141414] border border-[#262626]'
               }`}
             >
               <MapPin className="w-2.5 h-2.5 text-current shrink-0" />
@@ -81,18 +81,18 @@ export default function CompetitorCard({
             </div>
           )}
 
-          <div className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-zinc-900/70 border border-zinc-800/80 font-mono text-xs tabular-nums">
+          <div className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#141414] border border-[#262626] font-mono text-xs tabular-nums">
             <Star className="w-3 h-3 text-amber-400 fill-amber-400 shrink-0" />
-            <span className="font-semibold text-zinc-200">
+            <span className="font-semibold text-white">
               {competitor.rating ? competitor.rating.toFixed(1) : '–'}
             </span>
           </div>
 
-          <span className="text-[11px] text-zinc-500 font-mono tabular-nums hidden sm:inline">
+          <span className="text-[11px] text-[#737373] font-mono tabular-nums hidden sm:inline">
             ({competitor.review_count.toLocaleString()})
           </span>
 
-          <ChevronRight className="w-4 h-4 text-zinc-600 group-hover:text-zinc-300 transition-colors" />
+          <ChevronRight className="w-4 h-4 text-[#737373] group-hover:text-white transition-colors" />
         </div>
       </div>
     </div>

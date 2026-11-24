@@ -143,18 +143,18 @@ export default function SettingsView() {
   };
 
   return (
-    <div className="p-6 lg:p-8 max-w-5xl mx-auto space-y-6">
+    <div className="p-6 lg:p-8 max-w-5xl mx-auto space-y-7 animate-in fade-in duration-300">
       {/* Top Section Header */}
-      <div className="border-b border-zinc-800/80 pb-5">
-        <div className="flex items-center gap-2 mb-1">
-          <span className="text-[10px] uppercase font-mono font-medium tracking-wider text-zinc-500">
+      <div className="border-b border-[#262626] pb-5">
+        <div className="flex items-center gap-2 mb-1.5">
+          <span className="text-[10px] uppercase font-mono font-medium tracking-wider text-[#a3a3a3] bg-[#1f1f1f] px-2.5 py-0.5 rounded-full border border-[#262626]">
             Telemetry Configuration
           </span>
         </div>
-        <h2 className="text-lg font-semibold text-zinc-100 tracking-tight">
+        <h1 className="font-serif font-light text-2xl sm:text-3xl text-white tracking-[-0.02em]">
           Platform Connections & Workspace Settings
-        </h2>
-        <p className="text-xs text-zinc-400 mt-1">
+        </h1>
+        <p className="text-xs text-[#a3a3a3] mt-1">
           Manage live review crawlers, multi-tenant workspace metadata, and business properties in PostgreSQL.
         </p>
       </div>
@@ -162,14 +162,14 @@ export default function SettingsView() {
       {/* ─────────────────────────────────────────────────────────────
           SECTION 1: CONNECTED DATA SOURCES & SCRAPER PIPELINE
           ───────────────────────────────────────────────────────────── */}
-      <div className="bg-zinc-900/60 rounded-lg border border-zinc-800/80 p-5 lg:p-6 space-y-5">
-        <div className="flex flex-wrap items-center justify-between pb-4 border-b border-zinc-800/80 gap-3">
+      <div className="bg-[#171717] rounded-2xl border border-[#262626] p-5 lg:p-6 space-y-5 shadow-sm">
+        <div className="flex flex-wrap items-center justify-between pb-4 border-b border-[#262626] gap-3">
           <div>
-            <h3 className="text-xs font-semibold text-zinc-100 flex items-center gap-2">
-              <Key className="w-3.5 h-3.5 text-zinc-400" />
+            <h3 className="text-xs font-semibold text-white flex items-center gap-2">
+              <Key className="w-3.5 h-3.5 text-[#4ade80]" />
               Active Review Sources for {activeBusiness?.name || 'Business'}
             </h3>
-            <p className="text-[11px] text-zinc-400 mt-0.5">
+            <p className="text-[11px] text-[#a3a3a3] mt-0.5">
               Live channels ingest raw customer feedback directly into PostgreSQL.
             </p>
           </div>
@@ -177,9 +177,9 @@ export default function SettingsView() {
           <button
             type="button"
             onClick={() => setShowAddPlatform(!showAddPlatform)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-zinc-100 hover:bg-white text-zinc-950 transition-colors active:scale-[0.98] cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white hover:bg-zinc-200 text-[#0a0a0a] transition-all active:scale-[0.98] cursor-pointer shadow-sm"
           >
-            <Plus className="w-3.5 h-3.5" />
+            <Plus className="w-3.5 h-3.5 text-[#0a0a0a]" />
             <span>Connect Channel</span>
           </button>
         </div>
@@ -188,11 +188,11 @@ export default function SettingsView() {
         {showAddPlatform && (
           <form
             onSubmit={handleConnectPlatform}
-            className="p-4 rounded-md bg-zinc-950 border border-zinc-800/80 space-y-3"
+            className="p-5 rounded-2xl bg-[#141414] border border-[#262626] space-y-3.5"
           >
             <div className="flex items-center justify-between">
-              <h4 className="text-xs font-medium text-zinc-200">Connect Ingestion Channel</h4>
-              <span className="text-[10px] font-mono text-zinc-500">POSTGRESQL SYNC</span>
+              <h4 className="font-serif font-light text-sm text-white">Connect Ingestion Channel</h4>
+              <span className="text-[10px] font-mono text-[#737373]">POSTGRESQL SYNC</span>
             </div>
 
             {connectError && (
@@ -201,7 +201,7 @@ export default function SettingsView() {
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
-                <label className="block text-[11px] text-zinc-400 mb-1">Channel Platform</label>
+                <label className="block text-[11px] text-[#a3a3a3] mb-1.5 font-mono">Channel Platform</label>
                 <Select<'google' | 'instagram'>
                   value={newPlatformType}
                   onChange={(val) => setNewPlatformType(val)}
@@ -213,7 +213,7 @@ export default function SettingsView() {
                     {
                       value: 'instagram',
                       label: 'Instagram Comments',
-                      icon: <Globe className="w-3.5 h-3.5 text-zinc-400 shrink-0" />,
+                      icon: <Globe className="w-3.5 h-3.5 text-[#a3a3a3] shrink-0" />,
                     },
                   ]}
                   size="sm"
@@ -222,7 +222,7 @@ export default function SettingsView() {
               </div>
 
               <div className="sm:col-span-2">
-                <label className="block text-[11px] text-zinc-400 mb-1">
+                <label className="block text-[11px] text-[#a3a3a3] mb-1.5 font-mono">
                   Listing URL or Place Identifier
                 </label>
                 <input
@@ -231,7 +231,7 @@ export default function SettingsView() {
                   value={newSourceUrl}
                   onChange={(e) => setNewSourceUrl(e.target.value)}
                   placeholder="https://maps.google.com/?cid=..."
-                  className="w-full bg-zinc-900 border border-zinc-800 rounded-md px-3 py-1.5 text-xs text-zinc-100 placeholder-zinc-600 focus:border-zinc-500 focus:outline-none font-mono"
+                  className="w-full bg-[#1f1f1f] border border-[#262626] rounded-full px-4 py-1.5 text-xs text-white placeholder-[#737373] focus:border-[#4ade80] focus:outline-none font-mono"
                 />
               </div>
             </div>
@@ -240,16 +240,16 @@ export default function SettingsView() {
               <button
                 type="button"
                 onClick={() => setShowAddPlatform(false)}
-                className="px-3 py-1 text-xs text-zinc-400 hover:text-zinc-200 transition-colors"
+                className="px-3.5 py-1.5 text-xs text-[#a3a3a3] hover:text-white transition-colors cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isConnectingPlatform || !newSourceUrl.trim()}
-                className="px-3.5 py-1.5 rounded-md text-xs font-medium bg-zinc-100 hover:bg-white text-zinc-950 transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50 active:scale-[0.98]"
+                className="px-4 py-1.5 rounded-full text-xs font-semibold bg-white hover:bg-zinc-200 text-[#0a0a0a] transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50 active:scale-[0.98]"
               >
-                {isConnectingPlatform ? <Loader2 className="w-3 h-3 animate-spin" /> : null}
+                {isConnectingPlatform ? <Loader2 className="w-3 h-3 animate-spin text-[#0a0a0a]" /> : null}
                 <span>Connect Source</span>
               </button>
             </div>
@@ -258,48 +258,42 @@ export default function SettingsView() {
 
         {/* Sync Status Banner */}
         {syncStatus && (
-          <div className="p-3 rounded-md bg-zinc-950 border border-zinc-800 text-xs text-zinc-300 flex items-center gap-2">
-            <RefreshCw className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
-            <span className="font-mono text-[11px]">{syncStatus}</span>
+          <div className="p-3.5 rounded-xl bg-[#141414] border border-[#262626] text-xs text-zinc-300 flex items-center gap-2 font-mono">
+            <RefreshCw className="w-3.5 h-3.5 text-[#4ade80] shrink-0" />
+            <span className="text-[11px]">{syncStatus}</span>
           </div>
         )}
 
         {/* Platform Cards List */}
         {isLoadingPlatforms ? (
-          <div className="p-8 flex items-center justify-center gap-2 text-xs text-zinc-500">
-            <Loader2 className="w-4 h-4 text-zinc-400 animate-spin" />
+          <div className="p-8 flex items-center justify-center gap-2 text-xs text-[#a3a3a3]">
+            <Loader2 className="w-4 h-4 text-[#4ade80] animate-spin" />
             <span className="font-mono">Loading connected channels...</span>
           </div>
         ) : platforms.length === 0 ? (
-          <div className="p-8 rounded-md bg-zinc-950/50 border border-dashed border-zinc-800 text-center space-y-2">
-            <p className="text-xs text-zinc-500 font-mono">
+          <div className="p-8 rounded-2xl bg-[#141414] border border-dashed border-[#262626] text-center space-y-3">
+            <p className="text-xs text-[#737373] font-mono">
               No scraping channels connected yet for {activeBusiness?.name || 'this business'}.
             </p>
             <button
               type="button"
               onClick={() => setShowAddPlatform(true)}
-              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700/80 transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold bg-[#1f1f1f] hover:bg-[#262626] text-white border border-[#333333] transition-colors cursor-pointer"
             >
-              <Plus className="w-3 h-3" />
+              <Plus className="w-3 h-3 text-[#4ade80]" />
               <span>Connect First Channel</span>
             </button>
           </div>
         ) : (
-          <div className="divide-y divide-zinc-800/80 border border-zinc-800/80 rounded-md overflow-hidden bg-zinc-950/50">
+          <div className="divide-y divide-[#262626] border border-[#262626] rounded-2xl overflow-hidden bg-[#141414]">
             {platforms.map((conn) => (
               <div
                 key={conn.id}
-                className="p-3.5 lg:p-4 flex flex-wrap items-center justify-between gap-3 hover:bg-zinc-900/40 transition-colors"
+                className="p-3.5 lg:p-4 flex flex-wrap items-center justify-between gap-3 hover:bg-[#1f1f1f]/50 transition-colors"
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <span
-                    className={`w-7 h-7 rounded font-mono font-semibold text-[11px] flex items-center justify-center border shrink-0 ${
-                      conn.platform === 'google_maps'
-                        ? 'bg-zinc-900 text-zinc-200 border-zinc-700'
-                        : conn.platform === 'instagram'
-                        ? 'bg-zinc-900 text-zinc-200 border-zinc-700'
-                        : 'bg-zinc-900 text-zinc-200 border-zinc-700'
-                    }`}
+                    className="w-8 h-8 rounded-full font-mono font-semibold text-xs flex items-center justify-center border shrink-0 bg-[#1f1f1f] text-white border-[#262626]"
                   >
                     {conn.platform === 'google_maps' ? (
                       'G'
@@ -311,14 +305,14 @@ export default function SettingsView() {
                   </span>
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-medium text-zinc-100 capitalize">
+                      <span className="text-xs font-medium text-white capitalize">
                         {conn.platform.replace('_', ' ')}
                       </span>
-                      <span className="text-[9px] px-1.5 py-0.5 rounded font-mono uppercase bg-emerald-950/40 text-emerald-400 border border-emerald-800/40">
+                      <span className="text-[9px] px-2 py-0.5 rounded-full font-mono uppercase bg-emerald-950/40 text-emerald-400 border border-emerald-800/40 font-semibold">
                         {conn.status}
                       </span>
                     </div>
-                    <span className="text-[11px] text-zinc-500 font-mono truncate max-w-md block mt-0.5">
+                    <span className="text-[11px] text-[#737373] font-mono truncate max-w-md block mt-0.5">
                       {conn.source_url || conn.place_id || 'Configured via place ID'}
                     </span>
                   </div>
@@ -329,27 +323,27 @@ export default function SettingsView() {
                     type="button"
                     onClick={() => handleTriggerScrape(conn.id)}
                     disabled={isScraping === conn.id}
-                    className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 transition-colors disabled:opacity-50 cursor-pointer active:scale-[0.98]"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-[#1f1f1f] hover:bg-[#262626] text-white border border-[#262626] transition-colors disabled:opacity-50 cursor-pointer active:scale-[0.98]"
                   >
-                    <RefreshCw className={`w-3 h-3 text-zinc-400 ${isScraping === conn.id ? 'animate-spin' : ''}`} />
+                    <RefreshCw className={`w-3 h-3 text-[#4ade80] ${isScraping === conn.id ? 'animate-spin' : ''}`} />
                     <span>{isScraping === conn.id ? 'Crawling...' : 'Trigger Crawl'}</span>
                   </button>
 
                   {confirmDeleteId === conn.id ? (
-                    <div className="flex items-center gap-1 bg-zinc-950 border border-rose-900/60 rounded-md p-1">
-                      <span className="text-[10px] font-mono text-rose-300 px-1">Delete?</span>
+                    <div className="flex items-center gap-1 bg-[#1f1f1f] border border-rose-900/60 rounded-full p-1">
+                      <span className="text-[10px] font-mono text-rose-300 px-1.5">Delete?</span>
                       <button
                         type="button"
                         onClick={() => handleDeletePlatform(conn.id)}
                         disabled={isDeletingPlatform === conn.id}
-                        className="px-2 py-0.5 rounded bg-rose-600 hover:bg-rose-500 text-white text-[10px] font-medium transition-colors disabled:opacity-50"
+                        className="px-2.5 py-0.5 rounded-full bg-rose-600 hover:bg-rose-500 text-white text-[10px] font-medium transition-colors disabled:opacity-50 cursor-pointer"
                       >
                         {isDeletingPlatform === conn.id ? '...' : 'Yes'}
                       </button>
                       <button
                         type="button"
                         onClick={() => setConfirmDeleteId(null)}
-                        className="px-1.5 py-0.5 rounded text-zinc-400 hover:text-zinc-200 text-[10px] transition-colors"
+                        className="px-2 py-0.5 rounded-full text-[#a3a3a3] hover:text-white text-[10px] transition-colors cursor-pointer"
                       >
                         No
                       </button>
@@ -360,7 +354,7 @@ export default function SettingsView() {
                       onClick={() => setConfirmDeleteId(conn.id)}
                       disabled={isDeletingPlatform === conn.id}
                       title="Disconnect channel"
-                      className="w-7 h-7 rounded-md border border-zinc-800 bg-zinc-900 text-zinc-500 hover:text-rose-400 hover:border-rose-900/40 flex items-center justify-center transition-colors cursor-pointer"
+                      className="w-8 h-8 rounded-full border border-[#262626] bg-[#1f1f1f] text-[#737373] hover:text-rose-400 hover:border-rose-900/40 flex items-center justify-center transition-colors cursor-pointer"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -385,14 +379,14 @@ export default function SettingsView() {
       {/* ─────────────────────────────────────────────────────────────
           SECTION 3: BUSINESS ENTITY PROFILE (EDITABLE IN POSTGRESQL)
           ───────────────────────────────────────────────────────────── */}
-      <div className="bg-zinc-900/60 rounded-lg border border-zinc-800/80 p-5 lg:p-6 space-y-5">
-        <div className="flex items-center justify-between pb-4 border-b border-zinc-800/80">
+      <div className="bg-[#171717] rounded-2xl border border-[#262626] p-5 lg:p-6 space-y-5 shadow-sm">
+        <div className="flex items-center justify-between pb-4 border-b border-[#262626]">
           <div>
-            <h3 className="text-xs font-semibold text-zinc-100 flex items-center gap-2">
-              <Building className="w-3.5 h-3.5 text-zinc-400" />
+            <h3 className="text-xs font-semibold text-white flex items-center gap-2">
+              <Building className="w-3.5 h-3.5 text-[#4ade80]" />
               Business Profile Metadata
             </h3>
-            <p className="text-[11px] text-zinc-400 mt-0.5">
+            <p className="text-[11px] text-[#a3a3a3] mt-0.5">
               Configured entity metadata used by zero-hallucination AI grounding.
             </p>
           </div>
@@ -407,8 +401,8 @@ export default function SettingsView() {
         <form onSubmit={handleSaveBusiness} className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-medium text-zinc-300 mb-1">
-                Business Name <span className="text-zinc-500">*</span>
+              <label className="block text-xs font-medium text-[#a3a3a3] mb-1.5 font-mono">
+                Business Name <span className="text-[#4ade80]">*</span>
               </label>
               <input
                 type="text"
@@ -416,22 +410,22 @@ export default function SettingsView() {
                 value={bizName}
                 onChange={(e) => setBizName(e.target.value)}
                 placeholder="e.g. Luminary Kitchen"
-                className="w-full bg-zinc-950 border border-zinc-800 rounded-md px-3 py-2 text-xs text-zinc-100 focus:border-zinc-500 focus:outline-none font-sans"
+                className="w-full bg-[#1f1f1f] border border-[#262626] rounded-full px-4 py-2 text-xs text-white focus:border-[#4ade80] focus:outline-none font-sans"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-zinc-300 mb-1">
+              <label className="block text-xs font-medium text-[#a3a3a3] mb-1.5 font-mono">
                 Operating Location / Region
               </label>
               <div className="relative">
-                <MapPin className="w-3.5 h-3.5 text-zinc-500 absolute left-3 top-2.5" />
+                <MapPin className="w-3.5 h-3.5 text-[#737373] absolute left-3.5 top-2.5" />
                 <input
                   type="text"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                   placeholder="e.g. Austin, TX"
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-md pl-8 pr-3 py-2 text-xs text-zinc-100 focus:border-zinc-500 focus:outline-none"
+                  className="w-full bg-[#1f1f1f] border border-[#262626] rounded-full pl-9 pr-4 py-2 text-xs text-white focus:border-[#4ade80] focus:outline-none"
                 />
               </div>
             </div>
@@ -439,33 +433,33 @@ export default function SettingsView() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-medium text-zinc-300 mb-1">
+              <label className="block text-xs font-medium text-[#a3a3a3] mb-1.5 font-mono">
                 Official Website
               </label>
               <div className="relative">
-                <Globe className="w-3.5 h-3.5 text-zinc-500 absolute left-3 top-2.5" />
+                <Globe className="w-3.5 h-3.5 text-[#737373] absolute left-3.5 top-2.5" />
                 <input
                   type="url"
                   value={website}
                   onChange={(e) => setWebsite(e.target.value)}
                   placeholder="https://luminary.com"
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-md pl-8 pr-3 py-2 text-xs text-zinc-100 focus:border-zinc-500 focus:outline-none font-mono"
+                  className="w-full bg-[#1f1f1f] border border-[#262626] rounded-full pl-9 pr-4 py-2 text-xs text-white focus:border-[#4ade80] focus:outline-none font-mono"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-zinc-300 mb-1">
+              <label className="block text-xs font-medium text-[#a3a3a3] mb-1.5 font-mono">
                 Description / Context
               </label>
               <div className="relative">
-                <FileText className="w-3.5 h-3.5 text-zinc-500 absolute left-3 top-2.5" />
+                <FileText className="w-3.5 h-3.5 text-[#737373] absolute left-3.5 top-2.5" />
                 <input
                   type="text"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="e.g. Farm-to-table dining"
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-md pl-8 pr-3 py-2 text-xs text-zinc-100 focus:border-zinc-500 focus:outline-none"
+                  className="w-full bg-[#1f1f1f] border border-[#262626] rounded-full pl-9 pr-4 py-2 text-xs text-white focus:border-[#4ade80] focus:outline-none"
                 />
               </div>
             </div>
@@ -475,9 +469,9 @@ export default function SettingsView() {
             <button
               type="submit"
               disabled={isSavingBiz || !bizName.trim()}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-md text-xs font-medium bg-zinc-100 hover:bg-white text-zinc-950 transition-colors cursor-pointer disabled:opacity-50 active:scale-[0.98]"
+              className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full text-xs font-semibold bg-white hover:bg-zinc-200 text-[#0a0a0a] transition-all cursor-pointer disabled:opacity-50 active:scale-[0.98] shadow-sm"
             >
-              {isSavingBiz ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
+              {isSavingBiz ? <Loader2 className="w-3.5 h-3.5 animate-spin text-[#0a0a0a]" /> : null}
               <span>Save Business Details</span>
             </button>
           </div>
@@ -485,27 +479,27 @@ export default function SettingsView() {
       </div>
 
       {/* ─────────────────────────────────────────────────────────────
-          SECTION 3: ACCOUNT & DATA SECURITY
+          SECTION 4: ACCOUNT & DATA SECURITY
           ───────────────────────────────────────────────────────────── */}
-      <div className="bg-zinc-900/60 rounded-lg border border-zinc-800/80 p-5 lg:p-6 space-y-4">
+      <div className="bg-[#171717] rounded-2xl border border-[#262626] p-5 lg:p-6 space-y-4 shadow-sm">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-xs font-semibold text-zinc-100 flex items-center gap-2">
-              <Shield className="w-3.5 h-3.5 text-zinc-400" />
+            <h3 className="text-xs font-semibold text-white flex items-center gap-2">
+              <Shield className="w-3.5 h-3.5 text-[#4ade80]" />
               Account & Data Security
             </h3>
-            <p className="text-[11px] text-zinc-400 mt-0.5">
+            <p className="text-[11px] text-[#a3a3a3] mt-0.5">
               Real-time verified credentials and PostgreSQL data encryption.
             </p>
           </div>
         </div>
 
-        <div className="p-3.5 rounded-md bg-zinc-950 border border-zinc-800/80 flex items-center justify-between text-xs">
+        <div className="p-4 rounded-xl bg-[#141414] border border-[#262626] flex items-center justify-between text-xs">
           <div>
-            <span className="font-medium text-zinc-200 block">Live PostgreSQL Ingestion</span>
-            <span className="text-[11px] text-zinc-500 font-mono">Feedback telemetry, sentiment vectors, and grounded rag queries stream in real-time</span>
+            <span className="font-medium text-white block">Live PostgreSQL Ingestion</span>
+            <span className="text-[11px] text-[#737373] font-mono">Feedback telemetry, sentiment vectors, and grounded rag queries stream in real-time</span>
           </div>
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded font-mono text-[9px] uppercase bg-emerald-950/40 text-emerald-400 border border-emerald-800/40 font-medium">
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full font-mono text-[9px] uppercase bg-emerald-950/40 text-emerald-400 border border-emerald-800/40 font-semibold">
             <Check className="w-3 h-3 text-emerald-400" />
             <span>ACTIVE</span>
           </span>

@@ -47,9 +47,9 @@ function DashboardLayout({
   // Auth loading state
   if (!isAuthLoaded) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-[#010102] space-y-4">
-        <Loader2 className="w-8 h-8 text-[#5e6ad2] animate-spin" />
-        <p className="text-xs text-[#8a8f98] font-mono">Authenticating credentials...</p>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#0a0a0a] space-y-4">
+        <Loader2 className="w-7 h-7 text-[#4ade80] animate-spin" />
+        <p className="text-xs text-[#a3a3a3] font-mono tracking-tight">Authenticating credentials...</p>
       </div>
     );
   }
@@ -62,20 +62,20 @@ function DashboardLayout({
   // Telemetry loading state
   if (isLoading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-[#010102] space-y-3">
-        <Loader2 className="w-6 h-6 text-[#5e6ad2] animate-spin" />
-        <p className="text-xs text-[#8a8f98]">Loading live telemetry...</p>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#0a0a0a] space-y-3">
+        <Loader2 className="w-6 h-6 text-[#4ade80] animate-spin" />
+        <p className="text-xs text-[#a3a3a3] font-sans">Loading live telemetry...</p>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen bg-[#010102] text-[#f7f8f8]">
+    <div className="flex min-h-screen bg-[#0a0a0a] text-white">
       {/* Left Navigation Sidebar */}
       <Sidebar />
 
       {/* Right Main Panel */}
-      <div className="flex-1 flex flex-col min-w-0 bg-[#010102]">
+      <div className="flex-1 flex flex-col min-w-0 bg-[#0a0a0a]">
         {/* Top Sticky Header */}
         <Header
           activePage={activePage}
@@ -83,7 +83,7 @@ function DashboardLayout({
         />
 
         {/* Dynamic Nested View Router */}
-        <main className={`flex-1 bg-[#010102] ${activePage === 'ask-ai' ? 'flex flex-col min-h-0 overflow-hidden pb-0' : 'pb-16'}`}>
+        <main className={`flex-1 bg-[#0a0a0a] ${activePage === 'ask-ai' ? 'flex flex-col min-h-0 overflow-hidden pb-0' : 'pb-16'}`}>
           <Outlet />
         </main>
       </div>

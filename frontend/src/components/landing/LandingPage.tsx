@@ -13,22 +13,22 @@ interface LandingPageProps {
 
 export default function LandingPage({ onLaunchApp, onOpenProof }: LandingPageProps) {
   return (
-    <div className="min-h-screen bg-[#010102] text-[#f7f8f8] selection:bg-zinc-800 selection:text-zinc-100 font-sans antialiased">
+    <div className="min-h-screen bg-[#0a0a0a] text-white selection:bg-[#4ade80]/30 selection:text-white font-sans antialiased">
       {/* Sticky Top Nav */}
       <LandingNavbar onLaunchApp={onLaunchApp} />
 
       {/* Main Content */}
       <main id="main-content">
-        {/* Act 1: The Thesis & Live Telemetry Inspector */}
+        {/* Act 1: The Thesis & Crowd Canvas Animation Background (Preserved) */}
         <LandingHero onLaunchApp={onLaunchApp} onOpenProof={onOpenProof} />
 
-        {/* Act 2: Proven by Evidence (User's Reference Staggered Masonry Layout) */}
+        {/* Act 2: Proven by Evidence (Staggered Masonry Layout) */}
         <LandingShowcase onOpenProof={onOpenProof} />
 
-        {/* Act 3: Core Architecture (Multi-dialect NLU, 2σ Math, Grounded Citations) */}
+        {/* Act 3: How It Works */}
         <LandingArchitecture onOpenProof={onOpenProof} />
 
-        {/* Act 4: The Closed Loop & Minimalist Studio Action */}
+        {/* Act 4: Closed Loop & Minimalist Studio Action */}
         <LandingCta onLaunchApp={onLaunchApp} />
       </main>
 

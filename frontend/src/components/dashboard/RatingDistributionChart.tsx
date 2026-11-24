@@ -114,20 +114,20 @@ export default function RatingDistributionChart({
 
   return (
     <div
-      className={`rounded-xl border border-zinc-800/80 bg-zinc-950/70 p-5 sm:p-6 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)] flex flex-col justify-between ${className}`}
+      className={`rounded-2xl border border-[#262626] bg-[#171717] p-5 sm:p-6 flex flex-col justify-between font-sans ${className}`}
     >
       {/* Header */}
-      <div className="flex items-center justify-between pb-4 border-b border-zinc-800/60">
+      <div className="flex items-center justify-between pb-4 border-b border-[#262626]">
         <div className="space-y-0.5">
-          <h3 className="text-sm font-semibold text-zinc-100 tracking-tight">Rating Distribution</h3>
-          <p className="text-[11px] font-mono text-zinc-500">Volume distribution across 1 to 5 star scores</p>
+          <h3 className="font-serif font-light text-lg text-white tracking-tight">Rating Distribution</h3>
+          <p className="text-xs text-[#a3a3a3]">Volume distribution across 1 to 5 star scores</p>
         </div>
 
         {totalCount > 0 && Number(averageRating) > 0 && (
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-zinc-900 border border-zinc-800 shrink-0">
+          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#1f1f1f] border border-[#262626] shrink-0">
             <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-            <span className="font-mono text-xs font-semibold text-zinc-200">{averageRating}</span>
-            <span className="font-mono text-[10px] text-zinc-500">/ 5.0</span>
+            <span className="font-mono text-xs font-semibold text-white">{averageRating}</span>
+            <span className="font-mono text-[10px] text-[#737373]">/ 5.0</span>
           </div>
         )}
       </div>
@@ -148,7 +148,7 @@ export default function RatingDistributionChart({
               cy="65"
               r={radius}
               fill="none"
-              stroke="#27272a"
+              stroke="#262626"
               strokeWidth={strokeWidth}
             />
 
@@ -195,8 +195,8 @@ export default function RatingDistributionChart({
                 key={row.star}
                 onMouseEnter={() => setHoveredStar(row.star)}
                 onMouseLeave={() => setHoveredStar(null)}
-                className={`flex items-center gap-3 text-xs transition-colors rounded-md p-1 -m-1 cursor-pointer ${
-                  isHovered ? 'bg-zinc-900/60' : ''
+                className={`flex items-center gap-3 text-xs transition-colors rounded-xl p-1.5 -m-1 cursor-pointer ${
+                  isHovered ? 'bg-[#1f1f1f]' : ''
                 }`}
               >
                 {/* Star Badge */}
@@ -208,12 +208,12 @@ export default function RatingDistributionChart({
                       transform: isHovered ? 'scale(1.3)' : 'scale(1)',
                     }}
                   />
-                  <span className="text-zinc-200 font-medium text-xs">{row.star}</span>
+                  <span className="text-white font-medium text-xs">{row.star}</span>
                   <Star className="w-3 h-3 text-amber-400 fill-amber-400 shrink-0" />
                 </div>
 
                 {/* Horizontal Progress Track */}
-                <div className="flex-1 h-2 rounded-full bg-zinc-900/90 border border-zinc-800/80 overflow-hidden relative">
+                <div className="flex-1 h-2 rounded-full bg-[#1f1f1f] border border-[#262626] overflow-hidden relative">
                   <div
                     className="h-full rounded-full transition-all duration-500 ease-out"
                     style={{
@@ -226,8 +226,8 @@ export default function RatingDistributionChart({
 
                 {/* Count & Percentage */}
                 <div className="w-20 text-right shrink-0 font-mono text-[11px] tabular-nums">
-                  <span className="text-zinc-200 font-medium">{row.count}</span>
-                  <span className="text-zinc-500 ml-1.5 font-normal">({row.percentage}%)</span>
+                  <span className="text-white font-medium">{row.count}</span>
+                  <span className="text-[#737373] ml-1.5 font-normal">({row.percentage}%)</span>
                 </div>
               </div>
             );
@@ -236,11 +236,11 @@ export default function RatingDistributionChart({
       </div>
 
       {/* Footer Metrics Strip */}
-      <div className="pt-3.5 border-t border-zinc-800/60 flex items-center justify-between text-xs font-mono text-zinc-500">
+      <div className="pt-3.5 border-t border-[#262626] flex items-center justify-between text-xs font-mono text-[#737373]">
         <div className="flex items-center gap-1.5">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-          <span className="text-zinc-300 font-medium">{positivePercentage}% Positive</span>
-          <span className="text-zinc-600">(4-5★)</span>
+          <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e]" />
+          <span className="text-[#a3a3a3] font-medium">{positivePercentage}% Positive</span>
+          <span className="text-[#737373]">(4-5★)</span>
         </div>
         <span>{totalCount.toLocaleString()} total</span>
       </div>

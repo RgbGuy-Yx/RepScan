@@ -22,6 +22,12 @@ app.use(express.json());
 app.use(morgan("combined", { stream: { write: (msg: string) => logger.info(msg.trim()) } }));
 
 // ── Routes ───────────────────────────────────────────────────
+app.get("/", (_req, res) => {
+  res.status(200).json({ status: "ok", service: "RepScan Backend", timestamp: new Date().toISOString() });
+});
+app.get("/health", (_req, res) => {
+  res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });
+});
 app.use("/api", v1Router);
 
 // ── Error handling ───────────────────────────────────────────

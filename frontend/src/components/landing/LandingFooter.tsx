@@ -4,69 +4,67 @@ interface LandingFooterProps {
 
 export default function LandingFooter({ onLaunchApp: _onLaunchApp }: LandingFooterProps) {
   return (
-    <footer className="bg-zinc-950 text-zinc-400 py-16 px-6 lg:px-8 border-t border-zinc-800/80 text-xs">
+    <footer className="bg-[#0a0a0a] text-[#a3a3a3] py-16 px-6 lg:px-8 border-t border-[#262626] text-xs">
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-5 gap-10">
         {/* Brand & System Status */}
-        <div className="md:col-span-2 space-y-3.5">
-          <div className="inline-flex items-center gap-2 text-zinc-100 font-semibold text-sm">
-            <span className="w-5 h-5 rounded-md bg-zinc-100 flex items-center justify-center text-zinc-950 text-[10px] font-bold shadow-sm">
-              <svg className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+        <div className="md:col-span-2 space-y-4">
+          <div className="inline-flex items-center gap-2.5 text-white font-medium text-sm">
+            <span className="w-6 h-6 rounded-full bg-white flex items-center justify-center text-[#0a0a0a] text-[10px] font-bold shadow-sm">
+              <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <path d="M4 6h16M4 12h10M4 18h14" strokeLinecap="round" />
               </svg>
             </span>
-            <span className="tracking-tight">RepScan</span>
+            <span className="tracking-tight">Rep<span className="text-[#a3a3a3] font-light">Scan</span></span>
           </div>
 
-          <p className="text-xs text-zinc-400 leading-relaxed max-w-sm">
+          <p className="text-xs text-[#a3a3a3] leading-relaxed max-w-sm">
             RepScan turns customer reviews into clear, evidence-backed insights, showing you what changed, why it changed, and what you can do about it.
           </p>
 
-          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-zinc-900 border border-zinc-800 text-[11px] text-emerald-400 font-mono">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-            <span>Multi-Channel Ingestion &amp; Grounded Evidence Active</span>
+          <div className="badge-action-subtle">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#4ade80]" />
+            <span>Multi-Channel Customer Review Intelligence</span>
           </div>
 
-          <div className="text-[11px] text-zinc-600 pt-2 font-mono">
-            © 2026 RepScan Systems. All rights reserved.
+          <div className="text-[11px] text-[#737373] pt-2">
+            © 2026 RepScan. Built for honest customer insights.
           </div>
         </div>
 
         {/* Column 1: Capabilities */}
-        <div className="space-y-2.5">
-          <span className="text-[11px] font-semibold text-zinc-200 uppercase tracking-wider font-mono block">
+        <div className="space-y-3">
+          <span className="text-xs font-medium text-white tracking-wider uppercase block">
             Product
           </span>
-          <ul className="space-y-2 text-xs text-zinc-400">
-            <li><a href="#telemetry" className="hover:text-zinc-100 transition-colors">Proven Results</a></li>
-            <li><a href="#architecture" className="hover:text-zinc-100 transition-colors">Architecture</a></li>
-            <li><a href="#system" className="hover:text-zinc-100 transition-colors">Engine Specs</a></li>
+          <ul className="space-y-2 text-xs text-[#a3a3a3]">
+            <li><a href="#telemetry" className="hover:text-white transition-colors">Customer Feedback</a></li>
+            <li><a href="#how-it-works" className="hover:text-white transition-colors">How It Works</a></li>
           </ul>
         </div>
 
         {/* Column 2: Ingestion & Infrastructure */}
-        <div className="space-y-2.5">
-          <span className="text-[11px] font-semibold text-zinc-200 uppercase tracking-wider font-mono block">
-            Connectors
+        <div className="space-y-3">
+          <span className="text-xs font-medium text-white tracking-wider uppercase block">
+            Channels
           </span>
-          <ul className="space-y-2 text-xs text-zinc-400">
-            <li><span>Google Places Actor</span></li>
+          <ul className="space-y-2 text-xs text-[#a3a3a3]">
+            <li><span>Google Maps Reviews</span></li>
             <li><span>Instagram Comments</span></li>
-            <li><span>Local Ollama / Mistral</span></li>
-            <li><span>pgvector Embeddings</span></li>
+            <li><span>Automatic Daily Sync</span></li>
+            <li><span>Multi-Language Support</span></li>
           </ul>
         </div>
 
-        {/* Column 3: System & Security */}
-        <div className="space-y-2.5">
-          <span className="text-[11px] font-semibold text-zinc-200 uppercase tracking-wider font-mono block">
-            System
+        {/* Column 3: Trust & Assurance */}
+        <div className="space-y-3">
+          <span className="text-xs font-medium text-white tracking-wider uppercase block">
+            Trust &amp; Privacy
           </span>
-          <ul className="space-y-2 text-xs text-zinc-400">
-            <li><a href="#changelog" className="hover:text-zinc-100 transition-colors">Changelog (v2.4)</a></li>
-            <li><span>Deterministic Math Specs</span></li>
-            <li><span>Zero Data Egress Policy</span></li>
-            <li><span>SHA-256 Idempotency</span></li>
-            <li><span>Enterprise REST API</span></li>
+          <ul className="space-y-2 text-xs text-[#a3a3a3]">
+            <li><span>Direct Review Verification</span></li>
+            <li><span>Private &amp; Secure</span></li>
+            <li><span>Real-Time Trend Alerts</span></li>
+            <li><span>Executive Summary Reports</span></li>
           </ul>
         </div>
       </div>

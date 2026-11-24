@@ -39,7 +39,7 @@ function RealtimeSparkline({
   direction?: 'up' | 'down';
 }) {
   const isEmerald = color === 'emerald';
-  const stroke = isEmerald ? '#10b981' : '#f43f5e';
+  const stroke = isEmerald ? '#22c55e' : '#f43f5e';
   const gradId = `spark_${color}_${Math.random().toString(36).substring(2, 7)}`;
 
   // Default to a 2-point baseline if values are empty
@@ -213,7 +213,7 @@ function SentimentTrendChart({
 }) {
   if (!trends || trends.length === 0) {
     return (
-      <div className="h-[155px] flex items-center justify-center text-xs text-zinc-500 font-mono">
+      <div className="h-[155px] flex items-center justify-center text-xs text-[#737373] font-mono">
         No review milestones recorded for this period.
       </div>
     );
@@ -248,8 +248,8 @@ function SentimentTrendChart({
         <svg className="w-full h-full" viewBox="0 0 460 145" fill="none">
           <defs>
             <linearGradient id="realtimeSentimentPosGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#10b981" stopOpacity={0.25} />
-              <stop offset="100%" stopColor="#10b981" stopOpacity={0.0} />
+              <stop offset="0%" stopColor="#22c55e" stopOpacity={0.25} />
+              <stop offset="100%" stopColor="#22c55e" stopOpacity={0.0} />
             </linearGradient>
           </defs>
 
@@ -258,7 +258,7 @@ function SentimentTrendChart({
             const y = getY(pct);
             return (
               <g key={pct}>
-                <text x="2" y={y + 3} className="fill-zinc-500 font-mono text-[9px]">
+                <text x="2" y={y + 3} className="fill-[#737373] font-mono text-[9px]">
                   {pct}%
                 </text>
                 <line
@@ -266,7 +266,7 @@ function SentimentTrendChart({
                   y1={y}
                   x2="445"
                   y2={y}
-                  stroke="#27272a"
+                  stroke="#262626"
                   strokeWidth="1"
                   strokeDasharray={pct === 0 ? undefined : '2 3'}
                 />
@@ -278,14 +278,14 @@ function SentimentTrendChart({
           <path d={posAreaPath} fill="url(#realtimeSentimentPosGrad)" />
 
           {/* Neutral line & dots */}
-          <path d={neuPath} stroke="#a1a1aa" strokeWidth="2" strokeLinecap="round" />
+          <path d={neuPath} stroke="#a3a3a3" strokeWidth="2" strokeLinecap="round" />
           {neuPoints.map((pt, i) => (
             <circle
               key={`neu-${i}`}
               cx={getX(i)}
               cy={getY(pt)}
               r="3"
-              className="fill-zinc-400 stroke-[#09090b]"
+              className="fill-zinc-400 stroke-[#0a0a0a]"
               strokeWidth="1.5"
             />
           ))}
@@ -298,20 +298,20 @@ function SentimentTrendChart({
               cx={getX(i)}
               cy={getY(pt)}
               r="3"
-              className="fill-rose-500 stroke-[#09090b]"
+              className="fill-rose-500 stroke-[#0a0a0a]"
               strokeWidth="1.5"
             />
           ))}
 
           {/* Positive line & dots */}
-          <path d={posPath} stroke="#10b981" strokeWidth="2" strokeLinecap="round" />
+          <path d={posPath} stroke="#22c55e" strokeWidth="2" strokeLinecap="round" />
           {posPoints.map((pt, i) => (
             <circle
               key={`pos-${i}`}
               cx={getX(i)}
               cy={getY(pt)}
               r="3.5"
-              className="fill-emerald-400 stroke-[#09090b]"
+              className="fill-emerald-400 stroke-[#0a0a0a]"
               strokeWidth="1.5"
             />
           ))}
@@ -323,7 +323,7 @@ function SentimentTrendChart({
               x={getX(i)}
               y="138"
               textAnchor="middle"
-              className="fill-zinc-500 font-mono text-[9px]"
+              className="fill-[#737373] font-mono text-[9px]"
             >
               {date}
             </text>
@@ -337,11 +337,11 @@ function SentimentTrendChart({
           <span className="w-2 h-2 rounded-full bg-emerald-400" />
           <span>Positive</span>
         </div>
-        <div className="flex items-center gap-1.5 text-zinc-400">
+        <div className="flex items-center gap-1.5 text-[#a3a3a3]">
           <span className="w-2 h-2 rounded-full bg-zinc-400" />
           <span>Neutral</span>
         </div>
-        <div className="flex items-center gap-1.5 text-zinc-400">
+        <div className="flex items-center gap-1.5 text-[#a3a3a3]">
           <span className="w-2 h-2 rounded-full bg-rose-500" />
           <span>Negative</span>
         </div>
@@ -487,11 +487,11 @@ export default function ReportsView() {
   if (!activeBusiness) {
     return (
       <div className="p-16 max-w-lg mx-auto text-center space-y-4">
-        <div className="w-12 h-12 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center mx-auto text-zinc-500">
+        <div className="w-12 h-12 rounded-full bg-[#171717] border border-[#262626] flex items-center justify-center mx-auto text-[#a3a3a3]">
           <Building2 className="w-6 h-6" />
         </div>
-        <h3 className="text-sm font-semibold text-zinc-100">No Business Selected</h3>
-        <p className="text-xs text-zinc-400">
+        <h3 className="font-serif font-light text-xl text-white tracking-[-0.01em]">No Business Selected</h3>
+        <p className="text-xs text-[#a3a3a3]">
           Select an active business from the header to configure and export intelligence audit reports.
         </p>
       </div>
@@ -542,17 +542,17 @@ export default function ReportsView() {
   return (
     <div className="p-6 lg:p-8 max-w-6xl mx-auto space-y-7 animate-in fade-in duration-300">
       {/* ── 1. Top Header & Business Selector ───────────────────────── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-800/80 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#262626] pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 bg-zinc-900 px-2 py-0.5 rounded border border-zinc-800 font-medium">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-[#a3a3a3] bg-[#1f1f1f] px-2.5 py-0.5 rounded-full border border-[#262626] font-medium">
               Audits & Exports
             </span>
           </div>
-          <h1 className="text-xl font-bold text-zinc-100 tracking-tight mt-1">
+          <h1 className="font-serif font-light text-2xl sm:text-3xl text-white tracking-[-0.02em] mt-1.5">
             Executive Intelligence Reports
           </h1>
-          <p className="text-xs text-zinc-400 mt-0.5">
+          <p className="text-xs text-[#a3a3a3] mt-0.5">
             Concise reputation audits with one-click formal PDF export.
           </p>
         </div>
@@ -580,44 +580,41 @@ export default function ReportsView() {
       </div>
 
       {/* ── 2. Compact Generator Bar ─────────────────────────────────── */}
-      <div className="bg-zinc-950/70 rounded-xl border border-zinc-800/80 p-4 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)] space-y-3">
+      <div className="bg-[#171717] rounded-2xl border border-[#262626] p-5 shadow-sm space-y-4">
         <form onSubmit={handleGenerateReport} className="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
           {/* Cadence Pills */}
-          <div className="md:col-span-3 space-y-1">
-            <label className="text-[10px] font-mono text-zinc-400 block uppercase tracking-wider">
+          <div className="md:col-span-3 space-y-1.5">
+            <label className="text-[10px] font-mono text-[#a3a3a3] block uppercase tracking-wider">
               Cadence Window
             </label>
-            <div className="flex rounded-lg bg-zinc-900/80 p-1 border border-zinc-800">
+            <div className="flex rounded-full bg-[#141414] p-1 border border-[#262626]">
               <button
                 type="button"
                 onClick={() => setReportType('weekly')}
-                className={`flex-1 text-xs py-1 rounded-md font-medium transition-all ${
-                  reportType === 'weekly'
-                    ? 'bg-zinc-100 text-zinc-950 shadow-sm'
-                    : 'text-zinc-400 hover:text-zinc-200'
-                }`}
+                className={`flex-1 text-xs py-1 rounded-full font-medium transition-all cursor-pointer ${reportType === 'weekly'
+                    ? 'bg-white text-[#0a0a0a] shadow-sm'
+                    : 'text-[#a3a3a3] hover:text-white'
+                  }`}
               >
                 Weekly
               </button>
               <button
                 type="button"
                 onClick={() => setReportType('monthly')}
-                className={`flex-1 text-xs py-1 rounded-md font-medium transition-all ${
-                  reportType === 'monthly'
-                    ? 'bg-zinc-100 text-zinc-950 shadow-sm'
-                    : 'text-zinc-400 hover:text-zinc-200'
-                }`}
+                className={`flex-1 text-xs py-1 rounded-full font-medium transition-all cursor-pointer ${reportType === 'monthly'
+                    ? 'bg-white text-[#0a0a0a] shadow-sm'
+                    : 'text-[#a3a3a3] hover:text-white'
+                  }`}
               >
                 Monthly
               </button>
               <button
                 type="button"
                 onClick={() => setReportType('custom')}
-                className={`flex-1 text-xs py-1 rounded-md font-medium transition-all ${
-                  reportType === 'custom'
-                    ? 'bg-zinc-100 text-zinc-950 shadow-sm'
-                    : 'text-zinc-400 hover:text-zinc-200'
-                }`}
+                className={`flex-1 text-xs py-1 rounded-full font-medium transition-all cursor-pointer ${reportType === 'custom'
+                    ? 'bg-white text-[#0a0a0a] shadow-sm'
+                    : 'text-[#a3a3a3] hover:text-white'
+                  }`}
               >
                 Custom
               </button>
@@ -625,8 +622,8 @@ export default function ReportsView() {
           </div>
 
           {/* Date Range Inputs */}
-          <div className="md:col-span-4 space-y-1">
-            <label className="text-[10px] font-mono text-zinc-400 block uppercase tracking-wider">
+          <div className="md:col-span-4 space-y-1.5">
+            <label className="text-[10px] font-mono text-[#a3a3a3] block uppercase tracking-wider">
               Reporting Range
             </label>
             <div className="flex items-center gap-2">
@@ -635,22 +632,22 @@ export default function ReportsView() {
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
                 disabled={reportType !== 'custom'}
-                className="w-full bg-zinc-900 text-zinc-200 text-xs rounded-lg border border-zinc-800 px-3 py-1.5 font-mono focus:outline-none focus:ring-1 focus:ring-zinc-600 disabled:opacity-50"
+                className="w-full bg-[#1f1f1f] text-white text-xs rounded-full border border-[#262626] px-3.5 py-1.5 font-mono focus:outline-none focus:border-[#4ade80] disabled:opacity-50"
               />
-              <span className="text-zinc-500 text-xs font-mono">&rarr;</span>
+              <span className="text-[#737373] text-xs font-mono">&rarr;</span>
               <input
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
                 disabled={reportType !== 'custom'}
-                className="w-full bg-zinc-900 text-zinc-200 text-xs rounded-lg border border-zinc-800 px-3 py-1.5 font-mono focus:outline-none focus:ring-1 focus:ring-zinc-600 disabled:opacity-50"
+                className="w-full bg-[#1f1f1f] text-white text-xs rounded-full border border-[#262626] px-3.5 py-1.5 font-mono focus:outline-none focus:border-[#4ade80] disabled:opacity-50"
               />
             </div>
           </div>
 
           {/* Optional Title Input */}
-          <div className="md:col-span-3 space-y-1">
-            <label className="text-[10px] font-mono text-zinc-400 block uppercase tracking-wider">
+          <div className="md:col-span-3 space-y-1.5">
+            <label className="text-[10px] font-mono text-[#a3a3a3] block uppercase tracking-wider">
               Title (Optional)
             </label>
             <input
@@ -658,7 +655,7 @@ export default function ReportsView() {
               placeholder={`${activeBusiness.name} Executive Audit`}
               value={reportTitle}
               onChange={(e) => setReportTitle(e.target.value)}
-              className="w-full bg-zinc-900 text-zinc-200 text-xs rounded-lg border border-zinc-800 px-3 py-1.5 placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-zinc-600"
+              className="w-full bg-[#1f1f1f] text-white text-xs rounded-full border border-[#262626] px-4 py-1.5 placeholder-[#737373] focus:outline-none focus:border-[#4ade80]"
             />
           </div>
 
@@ -667,16 +664,16 @@ export default function ReportsView() {
             <button
               type="submit"
               disabled={isGenerating}
-              className="w-full inline-flex items-center justify-center gap-2 px-3.5 py-1.5 rounded-lg bg-zinc-100 hover:bg-white text-zinc-950 text-xs font-semibold transition-all active:scale-[0.98] disabled:opacity-50 cursor-pointer shadow-sm"
+              className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-white hover:bg-zinc-200 text-[#0a0a0a] text-xs font-semibold transition-all active:scale-[0.98] disabled:opacity-50 cursor-pointer shadow-sm"
             >
               {isGenerating ? (
                 <>
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-[#0a0a0a]" />
                   <span>Synthesizing...</span>
                 </>
               ) : (
                 <>
-                  <Sparkles className="w-3.5 h-3.5" />
+                  <Sparkles className="w-3.5 h-3.5 text-[#4ade80]" />
                   <span>Generate Audit</span>
                 </>
               )}
@@ -685,7 +682,7 @@ export default function ReportsView() {
         </form>
 
         {error && (
-          <div className="p-2.5 rounded-lg bg-rose-950/30 border border-rose-900/40 text-rose-300 text-xs font-mono flex items-center justify-between">
+          <div className="p-3 rounded-xl bg-rose-950/30 border border-rose-900/40 text-rose-300 text-xs font-mono flex items-center justify-between">
             <span>{error}</span>
             <button onClick={() => setError(null)} className="text-rose-400 hover:text-rose-200">
               &times;
@@ -694,36 +691,35 @@ export default function ReportsView() {
         )}
 
         {successMessage && (
-          <div className="p-2.5 rounded-lg bg-emerald-950/30 border border-emerald-900/40 text-emerald-300 text-xs font-mono flex items-center gap-2">
+          <div className="p-3 rounded-xl bg-emerald-950/30 border border-emerald-900/40 text-emerald-300 text-xs font-mono flex items-center gap-2">
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
             <span>{successMessage}</span>
           </div>
         )}
       </div>
 
-      {/* ── 3. Focused Executive Card (Matching User Image Specification) ─ */}
+      {/* ── 3. Focused Executive Card ─────────────────────────────────── */}
       {isLoading && !activeReport ? (
-        <div className="p-16 border border-zinc-800/80 rounded-xl bg-zinc-950/50 text-center space-y-3">
-          <Loader2 className="w-6 h-6 text-zinc-400 animate-spin mx-auto" />
-          <p className="text-xs font-mono text-zinc-400">Loading audit metadata...</p>
+        <div className="p-16 border border-[#262626] rounded-2xl bg-[#171717] text-center space-y-3">
+          <Loader2 className="w-6 h-6 text-[#4ade80] animate-spin mx-auto" />
+          <p className="text-xs font-mono text-[#a3a3a3]">Loading audit metadata...</p>
         </div>
       ) : activeReport ? (
-        <div className="bg-[#0b0e14]/90 rounded-2xl border border-zinc-800/80 p-6 sm:p-7 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)] space-y-6">
+        <div className="bg-[#171717] rounded-2xl border border-[#262626] p-6 sm:p-7 shadow-sm space-y-6">
           {/* Top Bar: Badges, Title, Subtitle, Download Button */}
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
             <div className="space-y-2">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-[10px] font-mono px-2.5 py-0.5 rounded uppercase font-semibold tracking-wider bg-zinc-900 text-zinc-300 border border-zinc-800">
+                <span className="text-[10px] font-mono px-3 py-0.5 rounded-full uppercase font-semibold tracking-wider bg-[#1f1f1f] text-zinc-300 border border-[#262626]">
                   {activeReport.report_type} Intelligence Audit
                 </span>
                 <span
-                  className={`text-[10px] font-mono px-2.5 py-0.5 rounded font-semibold flex items-center gap-1.5 ${
-                    activeReport.confidence === 'High'
+                  className={`text-[10px] font-mono px-3 py-0.5 rounded-full font-semibold flex items-center gap-1.5 ${activeReport.confidence === 'High'
                       ? 'bg-emerald-950/50 text-emerald-400 border border-emerald-900/40'
                       : activeReport.confidence === 'Medium'
-                      ? 'bg-amber-950/50 text-amber-400 border border-amber-900/40'
-                      : 'bg-rose-950/50 text-rose-400 border border-rose-900/40'
-                  }`}
+                        ? 'bg-amber-950/50 text-amber-400 border border-amber-900/40'
+                        : 'bg-rose-950/50 text-rose-400 border border-rose-900/40'
+                    }`}
                 >
                   <ShieldCheck className="w-3 h-3 text-emerald-400" />
                   Confidence: {activeReport.confidence} ({Math.round(activeReport.confidence_score * 100)}%)
@@ -731,17 +727,17 @@ export default function ReportsView() {
                 <button
                   type="button"
                   title="Confidence rating inferred from review telemetry volume and timestamp density"
-                  className="text-zinc-500 hover:text-zinc-300 transition-colors"
+                  className="text-[#737373] hover:text-white transition-colors"
                 >
                   <Info className="w-3.5 h-3.5" />
                 </button>
               </div>
 
               <div>
-                <h2 className="text-xl sm:text-2xl font-bold text-zinc-100 tracking-tight">
+                <h2 className="font-serif font-light text-2xl sm:text-3xl text-white tracking-[-0.02em]">
                   {activeReport.title}
                 </h2>
-                <p className="text-xs font-mono text-zinc-400 mt-0.5">
+                <p className="text-xs font-mono text-[#a3a3a3] mt-1">
                   Period: {activeReport.data?.period_start} &ndash; {activeReport.data?.period_end} &bull; Generated: {activeReport.data?.generated_date}
                 </p>
               </div>
@@ -753,16 +749,16 @@ export default function ReportsView() {
                 type="button"
                 onClick={() => handleDownload(activeReport)}
                 disabled={downloadingId === activeReport.id}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-zinc-100 hover:bg-white text-zinc-950 text-xs font-bold transition-all active:scale-[0.98] disabled:opacity-50 cursor-pointer shadow-sm"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white hover:bg-zinc-200 text-[#0a0a0a] text-xs font-semibold transition-all active:scale-[0.98] disabled:opacity-50 cursor-pointer shadow-sm"
               >
                 {downloadingId === activeReport.id ? (
                   <>
-                    <Loader2 className="w-4 h-4 animate-spin text-zinc-900" />
+                    <Loader2 className="w-4 h-4 animate-spin text-[#0a0a0a]" />
                     <span>Compiling...</span>
                   </>
                 ) : (
                   <>
-                    <Download className="w-4 h-4 text-zinc-950" />
+                    <Download className="w-4 h-4 text-[#0a0a0a]" />
                     <span>Download Full Report (PDF)</span>
                   </>
                 )}
@@ -783,16 +779,16 @@ export default function ReportsView() {
           {/* Four KPI Cards Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
             {/* 1. Analyzed Reviews */}
-            <div className="p-4 rounded-xl bg-zinc-900/40 border border-zinc-800/80 flex items-center justify-between gap-2">
+            <div className="p-4 rounded-xl bg-[#141414] border border-[#262626] flex items-center justify-between gap-2">
               <div className="flex items-center gap-3 min-w-0">
-                <div className="w-9 h-9 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-400 shrink-0">
-                  <FileText className="w-4 h-4 text-zinc-300" />
+                <div className="w-9 h-9 rounded-full bg-[#1f1f1f] border border-[#262626] flex items-center justify-center text-[#a3a3a3] shrink-0">
+                  <FileText className="w-4 h-4 text-white" />
                 </div>
                 <div className="space-y-0.5 min-w-0">
-                  <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider block font-semibold">
+                  <span className="text-[10px] font-mono text-[#a3a3a3] uppercase tracking-wider block font-semibold">
                     Analyzed Reviews
                   </span>
-                  <div className="text-xl sm:text-2xl font-bold text-zinc-100 tracking-tight">
+                  <div className="font-serif font-light text-2xl text-white tracking-[-0.01em]">
                     {kpis?.total_reviews ?? 0}
                   </div>
                   <div className="text-[11px] font-mono flex items-center gap-0.5">
@@ -808,10 +804,10 @@ export default function ReportsView() {
                           <span className="text-rose-400">{kpis.reviews_delta} vs prior</span>
                         </>
                       ) : (
-                        <span className="text-zinc-500">0 vs prior</span>
+                        <span className="text-[#737373]">0 vs prior</span>
                       )
                     ) : (
-                      <span className="text-zinc-500">First period baseline</span>
+                      <span className="text-[#737373]">First period baseline</span>
                     )}
                   </div>
                 </div>
@@ -824,16 +820,16 @@ export default function ReportsView() {
             </div>
 
             {/* 2. Average Rating */}
-            <div className="p-4 rounded-xl bg-zinc-900/40 border border-zinc-800/80 flex items-center justify-between gap-2">
+            <div className="p-4 rounded-xl bg-[#141414] border border-[#262626] flex items-center justify-between gap-2">
               <div className="flex items-center gap-3 min-w-0">
-                <div className="w-9 h-9 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-400 shrink-0">
-                  <Star className="w-4 h-4 text-zinc-300" />
+                <div className="w-9 h-9 rounded-full bg-[#1f1f1f] border border-[#262626] flex items-center justify-center text-[#a3a3a3] shrink-0">
+                  <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
                 </div>
                 <div className="space-y-0.5 min-w-0">
-                  <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider block font-semibold">
+                  <span className="text-[10px] font-mono text-[#a3a3a3] uppercase tracking-wider block font-semibold">
                     Average Rating
                   </span>
-                  <div className="text-xl sm:text-2xl font-bold text-zinc-100 tracking-tight">
+                  <div className="font-serif font-light text-2xl text-white tracking-[-0.01em]">
                     {kpis?.average_rating !== undefined && kpis?.average_rating !== null
                       ? `${kpis.average_rating.toFixed(1)}★`
                       : '—'}
@@ -851,10 +847,10 @@ export default function ReportsView() {
                           <span className="text-rose-400">{kpis.rating_delta.toFixed(2)}★ net shift</span>
                         </>
                       ) : (
-                        <span className="text-zinc-500">No rating shift</span>
+                        <span className="text-[#737373]">No rating shift</span>
                       )
                     ) : (
-                      <span className="text-zinc-500">First period baseline</span>
+                      <span className="text-[#737373]">First period baseline</span>
                     )}
                   </div>
                 </div>
@@ -867,21 +863,21 @@ export default function ReportsView() {
             </div>
 
             {/* 3. Positive Sentiment */}
-            <div className="p-4 rounded-xl bg-zinc-900/40 border border-zinc-800/80 flex items-center justify-between gap-2">
+            <div className="p-4 rounded-xl bg-[#141414] border border-[#262626] flex items-center justify-between gap-2">
               <div className="flex items-center gap-3 min-w-0">
-                <div className="w-9 h-9 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-400 shrink-0">
-                  <Smile className="w-4 h-4 text-zinc-300" />
+                <div className="w-9 h-9 rounded-full bg-[#1f1f1f] border border-[#262626] flex items-center justify-center text-[#a3a3a3] shrink-0">
+                  <Smile className="w-4 h-4 text-emerald-400" />
                 </div>
                 <div className="space-y-0.5 min-w-0">
-                  <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider block font-semibold">
+                  <span className="text-[10px] font-mono text-[#a3a3a3] uppercase tracking-wider block font-semibold">
                     Positive Sentiment
                   </span>
-                  <div className="text-xl sm:text-2xl font-bold text-emerald-400 tracking-tight">
+                  <div className="font-serif font-light text-2xl text-emerald-400 tracking-[-0.01em]">
                     {sentiment?.total && sentiment.total > 0
                       ? `${Math.round((sentiment.positive / sentiment.total) * 100)}%`
                       : '—'}
                   </div>
-                  <div className="text-[11px] font-mono text-zinc-400">
+                  <div className="text-[11px] font-mono text-[#a3a3a3]">
                     {sentiment?.positive ?? 0} positive mentions
                   </div>
                 </div>
@@ -890,21 +886,21 @@ export default function ReportsView() {
             </div>
 
             {/* 4. Critical Friction */}
-            <div className="p-4 rounded-xl bg-zinc-900/40 border border-zinc-800/80 flex items-center justify-between gap-2">
+            <div className="p-4 rounded-xl bg-[#141414] border border-[#262626] flex items-center justify-between gap-2">
               <div className="flex items-center gap-3 min-w-0">
-                <div className="w-9 h-9 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-400 shrink-0">
-                  <AlertTriangle className="w-4 h-4 text-zinc-300" />
+                <div className="w-9 h-9 rounded-full bg-[#1f1f1f] border border-[#262626] flex items-center justify-center text-[#a3a3a3] shrink-0">
+                  <AlertTriangle className="w-4 h-4 text-rose-400" />
                 </div>
                 <div className="space-y-0.5 min-w-0">
-                  <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider block font-semibold">
+                  <span className="text-[10px] font-mono text-[#a3a3a3] uppercase tracking-wider block font-semibold">
                     Critical Friction
                   </span>
-                  <div className="text-xl sm:text-2xl font-bold text-rose-400 tracking-tight">
+                  <div className="font-serif font-light text-2xl text-rose-400 tracking-[-0.01em]">
                     {sentiment?.total && sentiment.total > 0
                       ? `${Math.round((sentiment.negative / sentiment.total) * 100)}%`
                       : '0%'}
                   </div>
-                  <div className="text-[11px] font-mono text-zinc-400">
+                  <div className="text-[11px] font-mono text-[#a3a3a3]">
                     {sentiment?.negative ?? 0} complaints logged
                   </div>
                 </div>
@@ -918,12 +914,12 @@ export default function ReportsView() {
           </div>
 
           {/* Executive Briefing Synopsis Box */}
-          <div className="p-5 rounded-xl bg-zinc-900/40 border border-zinc-800/80 flex items-start gap-4">
-            <div className="w-9 h-9 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-400 shrink-0 mt-0.5">
-              <FileText className="w-4 h-4 text-zinc-300" />
+          <div className="p-5 rounded-xl bg-[#141414] border border-[#262626] flex items-start gap-4">
+            <div className="w-9 h-9 rounded-full bg-[#1f1f1f] border border-[#262626] flex items-center justify-center text-[#a3a3a3] shrink-0 mt-0.5">
+              <FileText className="w-4 h-4 text-[#4ade80]" />
             </div>
             <div className="space-y-1.5 min-w-0 flex-1">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 font-semibold block">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-[#a3a3a3] font-semibold block">
                 Executive Briefing Synopsis
               </span>
               <p className="text-xs sm:text-sm text-zinc-200 leading-relaxed font-sans">
@@ -932,22 +928,22 @@ export default function ReportsView() {
             </div>
           </div>
 
-          {/* ── Bottom Row: Key Insights & Sentiment Trend (Matching Reference Image) ── */}
+          {/* ── Bottom Row: Key Insights & Sentiment Trend ── */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* Key Insights Card */}
-            <div className="p-5 sm:p-6 rounded-xl bg-zinc-900/40 border border-zinc-800/80 flex flex-col justify-between space-y-4">
-              <div className="flex items-center justify-between pb-1">
+            <div className="p-5 sm:p-6 rounded-2xl bg-[#141414] border border-[#262626] flex flex-col justify-between space-y-4">
+              <div className="flex items-center justify-between pb-1 border-b border-[#262626]">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-400 shrink-0">
-                    <Lightbulb className="w-4 h-4 text-zinc-300" />
+                  <div className="w-8 h-8 rounded-full bg-[#1f1f1f] border border-[#262626] flex items-center justify-center text-[#4ade80] shrink-0">
+                    <Lightbulb className="w-4 h-4" />
                   </div>
-                  <h3 className="text-sm font-semibold text-zinc-100 tracking-tight">Key Insights</h3>
+                  <h3 className="font-serif font-light text-lg text-white tracking-[-0.01em]">Key Insights</h3>
                 </div>
 
                 <button
                   type="button"
                   onClick={() => handleDownload(activeReport)}
-                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-[11px] font-mono text-zinc-300 hover:text-zinc-100 transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#1f1f1f] border border-[#262626] hover:border-[#404040] text-[11px] font-mono text-[#a3a3a3] hover:text-white transition-colors cursor-pointer"
                 >
                   <span>View Full Analysis</span>
                   <span>&rarr;</span>
@@ -959,11 +955,10 @@ export default function ReportsView() {
                   realtimeInsights.map((insight, idx) => (
                     <div key={idx} className="flex items-start gap-3">
                       <div
-                        className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${
-                          insight.color === 'emerald'
+                        className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${insight.color === 'emerald'
                             ? 'bg-emerald-950/60 border border-emerald-800/40 text-emerald-400'
                             : 'bg-rose-950/60 border border-rose-800/40 text-rose-400'
-                        }`}
+                          }`}
                       >
                         {insight.iconType === 'up-right' ? (
                           <ArrowUpRight className="w-3.5 h-3.5" />
@@ -975,20 +970,19 @@ export default function ReportsView() {
                       </div>
                       <div className="space-y-0.5 min-w-0">
                         <h4
-                          className={`text-xs font-semibold leading-snug ${
-                            insight.color === 'emerald' ? 'text-emerald-400' : 'text-rose-400'
-                          }`}
+                          className={`text-xs font-semibold leading-snug ${insight.color === 'emerald' ? 'text-emerald-400' : 'text-rose-400'
+                            }`}
                         >
                           {insight.title}
                         </h4>
-                        <p className="text-[11px] text-zinc-400 leading-relaxed font-sans">
+                        <p className="text-[11px] text-[#a3a3a3] leading-relaxed font-sans">
                           {insight.description}
                         </p>
                       </div>
                     </div>
                   ))
                 ) : (
-                  <div className="text-xs text-zinc-500 font-mono py-4 text-center">
+                  <div className="text-xs text-[#737373] font-mono py-4 text-center">
                     No qualitative insights logged for this timeframe.
                   </div>
                 )}
@@ -996,13 +990,13 @@ export default function ReportsView() {
             </div>
 
             {/* Sentiment Trend Card */}
-            <div className="p-5 sm:p-6 rounded-xl bg-zinc-900/40 border border-zinc-800/80 flex flex-col justify-between space-y-4">
-              <div className="flex items-center justify-between pb-1">
+            <div className="p-5 sm:p-6 rounded-2xl bg-[#141414] border border-[#262626] flex flex-col justify-between space-y-4">
+              <div className="flex items-center justify-between pb-1 border-b border-[#262626]">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-400 shrink-0">
-                    <TrendingUp className="w-4 h-4 text-zinc-300" />
+                  <div className="w-8 h-8 rounded-full bg-[#1f1f1f] border border-[#262626] flex items-center justify-center text-zinc-300 shrink-0">
+                    <TrendingUp className="w-4 h-4" />
                   </div>
-                  <h3 className="text-sm font-semibold text-zinc-100 tracking-tight">Sentiment Trend</h3>
+                  <h3 className="font-serif font-light text-lg text-white tracking-[-0.01em]">Sentiment Trend</h3>
                 </div>
 
                 <Select<string>
@@ -1025,13 +1019,13 @@ export default function ReportsView() {
           </div>
         </div>
       ) : (
-        <div className="p-16 border border-zinc-800/80 rounded-xl bg-zinc-950/50 text-center space-y-3">
-          <div className="w-10 h-10 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center mx-auto text-zinc-500">
+        <div className="p-16 border border-[#262626] rounded-2xl bg-[#171717] text-center space-y-3">
+          <div className="w-12 h-12 rounded-full bg-[#1f1f1f] border border-[#262626] flex items-center justify-center mx-auto text-[#737373]">
             <FileText className="w-5 h-5" />
           </div>
-          <h3 className="text-sm font-semibold text-zinc-200">No Audits Created Yet</h3>
-          <p className="text-xs text-zinc-400 max-w-sm mx-auto">
-            Choose a weekly or monthly window above and click <strong className="text-zinc-200">Generate Audit</strong> to build your first reputation brief.
+          <h3 className="font-serif font-light text-xl text-white tracking-[-0.01em]">No Audits Created Yet</h3>
+          <p className="text-xs text-[#a3a3a3] max-w-sm mx-auto">
+            Choose a weekly or monthly window above and click <strong className="text-white">Generate Audit</strong> to build your first reputation brief.
           </p>
         </div>
       )}
@@ -1040,34 +1034,34 @@ export default function ReportsView() {
       <div className="space-y-3 pt-2">
         <div className="flex items-center justify-between">
           <h3 className="text-xs font-mono uppercase tracking-wider text-zinc-300 font-bold flex items-center gap-2">
-            <Clock className="w-3.5 h-3.5 text-zinc-400" />
+            <Clock className="w-3.5 h-3.5 text-[#4ade80]" />
             Generated Audits Archive ({reports.length})
           </h3>
-          <span className="text-[11px] font-mono text-zinc-500">
+          <span className="text-[11px] font-mono text-[#737373]">
             Click any row to view its executive card or download PDF
           </span>
         </div>
 
         {reports.length === 0 ? (
-          <div className="p-8 text-center border border-zinc-800/60 rounded-xl bg-zinc-950/40 text-xs text-zinc-500 font-mono">
+          <div className="p-8 text-center border border-[#262626] rounded-2xl bg-[#171717] text-xs text-[#737373] font-mono">
             Archive is empty for {activeBusiness.name}.
           </div>
         ) : (
-          <div className="rounded-xl border border-zinc-800/80 overflow-hidden bg-zinc-950/60">
+          <div className="rounded-2xl border border-[#262626] overflow-hidden bg-[#171717]">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-zinc-900/70 text-zinc-400 font-mono uppercase text-[10px] tracking-wider border-b border-zinc-800">
+                <thead className="bg-[#141414] text-[#a3a3a3] font-mono uppercase text-[10px] tracking-wider border-b border-[#262626]">
                   <tr>
-                    <th className="py-2.5 px-4">Audit Title</th>
-                    <th className="py-2.5 px-4">Cadence</th>
-                    <th className="py-2.5 px-4">Date Window</th>
-                    <th className="py-2.5 px-4">Volume</th>
-                    <th className="py-2.5 px-4">Rating</th>
-                    <th className="py-2.5 px-4">Confidence</th>
-                    <th className="py-2.5 px-4 text-right">Actions</th>
+                    <th className="py-3 px-4">Audit Title</th>
+                    <th className="py-3 px-4">Cadence</th>
+                    <th className="py-3 px-4">Date Window</th>
+                    <th className="py-3 px-4">Volume</th>
+                    <th className="py-3 px-4">Rating</th>
+                    <th className="py-3 px-4">Confidence</th>
+                    <th className="py-3 px-4 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-zinc-800/60">
+                <tbody className="divide-y divide-[#262626]">
                   {reports.map((r) => {
                     const isSelected = activeReport?.id === r.id;
                     const isDownloading = downloadingId === r.id;
@@ -1076,56 +1070,54 @@ export default function ReportsView() {
                       <tr
                         key={r.id}
                         onClick={() => setActiveReport(r)}
-                        className={`transition-colors cursor-pointer ${
-                          isSelected ? 'bg-zinc-900/60' : 'hover:bg-zinc-900/30'
-                        }`}
+                        className={`transition-colors cursor-pointer ${isSelected ? 'bg-[#1f1f1f]' : 'hover:bg-[#1c1c1c]'
+                          }`}
                       >
-                        <td className="py-2.5 px-4">
-                          <div className="font-semibold text-zinc-200 line-clamp-1">{r.title}</div>
-                          <span className="text-[10px] font-mono text-zinc-500">
+                        <td className="py-3 px-4">
+                          <div className="font-semibold text-white line-clamp-1">{r.title}</div>
+                          <span className="text-[10px] font-mono text-[#737373]">
                             Created {new Date(r.created_at).toLocaleDateString()}
                           </span>
                         </td>
-                        <td className="py-2.5 px-4 font-mono">
-                          <span className="text-[10px] uppercase font-semibold px-2 py-0.5 rounded bg-zinc-900 text-zinc-300 border border-zinc-800">
+                        <td className="py-3 px-4 font-mono">
+                          <span className="text-[10px] uppercase font-semibold px-2.5 py-0.5 rounded-full bg-[#1f1f1f] text-zinc-300 border border-[#262626]">
                             {r.report_type}
                           </span>
                         </td>
-                        <td className="py-2.5 px-4 font-mono text-zinc-400 text-[11px]">
+                        <td className="py-3 px-4 font-mono text-[#a3a3a3] text-[11px]">
                           {new Date(r.period_start).toLocaleDateString()} &ndash;{' '}
                           {new Date(r.period_end).toLocaleDateString()}
                         </td>
-                        <td className="py-2.5 px-4 font-mono text-zinc-300">
+                        <td className="py-3 px-4 font-mono text-zinc-200">
                           {r.data?.kpis?.total_reviews ?? 0} reviews
                         </td>
-                        <td className="py-2.5 px-4 font-mono text-zinc-300">
+                        <td className="py-3 px-4 font-mono text-zinc-200">
                           {r.data?.kpis?.average_rating ? `${r.data.kpis.average_rating.toFixed(1)}★` : '-'}
                         </td>
-                        <td className="py-2.5 px-4">
+                        <td className="py-3 px-4">
                           <span
-                            className={`text-[10px] font-mono px-2 py-0.5 rounded font-semibold ${
-                              r.confidence === 'High'
+                            className={`text-[10px] font-mono px-2.5 py-0.5 rounded-full font-semibold ${r.confidence === 'High'
                                 ? 'bg-emerald-950/50 text-emerald-400 border border-emerald-900/40'
                                 : r.confidence === 'Medium'
-                                ? 'bg-amber-950/50 text-amber-400 border border-amber-900/40'
-                                : 'bg-rose-950/50 text-rose-400 border border-rose-900/40'
-                            }`}
+                                  ? 'bg-amber-950/50 text-amber-400 border border-amber-900/40'
+                                  : 'bg-rose-950/50 text-rose-400 border border-rose-900/40'
+                              }`}
                           >
                             {r.confidence}
                           </span>
                         </td>
-                        <td className="py-2.5 px-4 text-right">
+                        <td className="py-3 px-4 text-right">
                           <div className="flex items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>
                             {/* Download PDF button */}
                             <button
                               type="button"
                               onClick={() => handleDownload(r)}
                               disabled={isDownloading}
-                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-zinc-900 hover:bg-zinc-800 text-zinc-200 border border-zinc-700/80 text-[11px] font-medium transition-all"
+                              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#1f1f1f] hover:bg-[#262626] text-white border border-[#333333] text-[11px] font-medium transition-all cursor-pointer"
                               title="Download PDF"
                             >
                               {isDownloading ? (
-                                <Loader2 className="w-3 h-3 animate-spin" />
+                                <Loader2 className="w-3 h-3 animate-spin text-[#4ade80]" />
                               ) : (
                                 <Download className="w-3 h-3" />
                               )}
@@ -1136,7 +1128,7 @@ export default function ReportsView() {
                             <button
                               type="button"
                               onClick={() => handleDelete(r.id)}
-                              className="p-1 rounded text-zinc-500 hover:text-rose-400 transition-colors"
+                              className="p-1.5 rounded-full text-[#737373] hover:text-rose-400 hover:bg-[#1f1f1f] transition-colors cursor-pointer"
                               title="Delete Report"
                             >
                               <Trash2 className="w-3.5 h-3.5" />

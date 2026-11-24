@@ -212,42 +212,42 @@ export default function DashboardView({ onNavigate, onAskAiQuery }: DashboardVie
 
   if (!activeBusiness) {
     return (
-      <div className="p-8 max-w-3xl mx-auto space-y-6">
-        <div className="p-8 rounded-xl bg-zinc-950 border border-zinc-800/80 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)] space-y-6">
-          <div className="w-10 h-10 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-300 flex items-center justify-center">
-            <Building2 className="w-5 h-5" />
+      <div className="p-8 max-w-3xl mx-auto space-y-6 font-sans">
+        <div className="p-8 rounded-2xl bg-[#171717] border border-[#262626] space-y-6">
+          <div className="w-10 h-10 rounded-full bg-[#1f1f1f] border border-[#262626] text-white flex items-center justify-center">
+            <Building2 className="w-5 h-5 text-[#4ade80]" />
           </div>
           <div className="space-y-1.5">
-            <h2 className="text-base font-semibold text-zinc-100 tracking-tight">
+            <h2 className="font-serif font-light text-2xl text-white tracking-tight">
               Select a Workspace Business
             </h2>
-            <p className="text-xs text-zinc-400 max-w-lg leading-relaxed">
+            <p className="text-xs text-[#a3a3a3] max-w-lg leading-relaxed">
               Choose a business profile to view ratings, sentiment patterns, and customer reviews.
             </p>
           </div>
 
           {businesses.length > 0 ? (
             <div className="space-y-2 pt-2">
-              <span className="text-[11px] font-mono uppercase tracking-wider text-zinc-500 block">
+              <span className="text-[11px] font-mono uppercase tracking-wider text-[#737373] block">
                 Available Profiles:
               </span>
-              <div className="grid gap-2">
+              <div className="grid gap-2.5">
                 {businesses.map((biz) => (
                   <button
                     key={biz.id}
                     type="button"
                     onClick={() => setActiveBusiness(biz)}
-                    className="w-full p-3.5 rounded-lg bg-zinc-900/40 border border-zinc-800/80 hover:border-zinc-700 hover:bg-zinc-900/80 text-left flex items-center justify-between transition-colors group cursor-pointer"
+                    className="w-full p-4 rounded-xl bg-[#1f1f1f] border border-[#262626] hover:border-[#404040] text-left flex items-center justify-between transition-colors group cursor-pointer"
                   >
                     <div>
-                      <span className="text-xs font-medium text-zinc-200 group-hover:text-white block">
+                      <span className="text-xs font-medium text-white block">
                         {biz.name}
                       </span>
                       {biz.location && (
-                        <span className="text-[11px] font-mono text-zinc-500 mt-0.5 block">{biz.location}</span>
+                        <span className="text-[11px] font-mono text-[#737373] mt-0.5 block">{biz.location}</span>
                       )}
                     </div>
-                    <span className="text-xs font-mono text-zinc-400 group-hover:text-zinc-200 transition-colors">Select &rarr;</span>
+                    <span className="btn-pill-secondary text-xs py-1 px-3">Select &rarr;</span>
                   </button>
                 ))}
               </div>
@@ -257,7 +257,7 @@ export default function DashboardView({ onNavigate, onAskAiQuery }: DashboardVie
               <button
                 type="button"
                 onClick={() => onNavigate('settings')}
-                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-md bg-zinc-100 hover:bg-white text-zinc-950 text-xs font-medium transition-all active:scale-[0.98] cursor-pointer"
+                className="btn-pill-primary text-xs"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Configure Business Listing in Settings</span>
@@ -274,24 +274,24 @@ export default function DashboardView({ onNavigate, onAskAiQuery }: DashboardVie
   }
 
   return (
-    <div className="p-6 lg:p-8 space-y-6 max-w-7xl mx-auto">
+    <div className="p-6 lg:p-8 space-y-6 max-w-7xl mx-auto font-sans">
       {/* Zero reviews helper notice */}
       {totalReviews === 0 && (
-        <div className="p-4 rounded-lg bg-zinc-900/60 border border-zinc-800 flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div className="p-4 rounded-2xl bg-[#171717] border border-[#262626] flex flex-wrap items-center justify-between gap-3 text-xs">
           <div className="space-y-0.5">
-            <span className="font-medium text-zinc-200">
+            <span className="font-medium text-white">
               No reviews imported yet for {activeBusiness.name}
             </span>
-            <p className="text-zinc-500 text-[11px] flex items-center gap-1.5 flex-wrap">
+            <p className="text-[#a3a3a3] text-xs flex items-center gap-1.5 flex-wrap">
               <span>Connect your</span>
-              <span className="font-medium text-zinc-300">Google Maps</span>
+              <span className="font-medium text-white">Google Maps</span>
               <span>or Instagram listing in Settings to start analyzing reviews.</span>
             </p>
           </div>
           <button
             type="button"
             onClick={() => onNavigate('settings')}
-            className="px-3 py-1.5 rounded-md bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700/80 text-xs font-medium transition-colors cursor-pointer"
+            className="btn-pill-secondary text-xs py-1.5"
           >
             Open Settings
           </button>
@@ -301,54 +301,54 @@ export default function DashboardView({ onNavigate, onAskAiQuery }: DashboardVie
       {/* ─────────────────────────────────────────────────────────────
           SECTION 1: REFINED TELEMETRY GRID (4 METRICS)
           ───────────────────────────────────────────────────────────── */}
-      <div className="border border-zinc-800/80 rounded-xl bg-zinc-950/70 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)] grid grid-cols-2 lg:grid-cols-4 divide-y lg:divide-y-0 lg:divide-x divide-zinc-800/80">
+      <div className="border border-[#262626] rounded-2xl bg-[#171717] grid grid-cols-2 lg:grid-cols-4 divide-y lg:divide-y-0 lg:divide-x divide-[#262626]">
         {/* Metric 1: Average Rating (Google Reviews Exclusively) */}
-        <div className="p-5 sm:p-6 space-y-3">
+        <div className="p-6 space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-mono uppercase tracking-wider text-zinc-400">Google Rating</span>
+            <span className="text-xs font-medium text-[#a3a3a3] uppercase tracking-wider">Google Rating</span>
             <div className="text-amber-400">
               <StarRating rating={avgRating} />
             </div>
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-semibold text-zinc-100 tracking-tight font-mono">
+            <span className="font-serif font-light text-4xl text-white tracking-tight">
               {avgRating > 0 ? avgRating.toFixed(2) : '0.00'}
             </span>
-            <span className="text-xs text-zinc-500 font-mono">/ 5.0</span>
+            <span className="text-xs text-[#737373] font-mono">/ 5.0</span>
           </div>
-          <div className="flex items-center gap-1.5 text-[11px] font-mono text-zinc-500">
+          <div className="flex items-center gap-1.5 text-xs text-[#737373]">
             <span>Google reviews only</span>
           </div>
         </div>
 
         {/* Metric 2: Total Reviews Ingested */}
-        <div className="p-5 sm:p-6 space-y-3">
+        <div className="p-6 space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-mono uppercase tracking-wider text-zinc-400">Total Feedback</span>
-            <MessageSquare className="w-3.5 h-3.5 text-zinc-400" />
+            <span className="text-xs font-medium text-[#a3a3a3] uppercase tracking-wider">Total Feedback</span>
+            <MessageSquare className="w-3.5 h-3.5 text-[#a3a3a3]" />
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-semibold text-zinc-100 tracking-tight font-mono">
+            <span className="font-serif font-light text-4xl text-white tracking-tight">
               {totalReviews.toLocaleString()}
             </span>
-            <span className="text-xs text-zinc-500 font-mono">records</span>
+            <span className="text-xs text-[#737373] font-mono">records</span>
           </div>
-          <div className="flex items-center gap-1.5 text-[11px] font-mono text-zinc-500">
+          <div className="flex items-center gap-1.5 text-xs text-[#737373]">
             {reviewsChangePercent !== 0 ? (
-              <span className="text-emerald-400 inline-flex items-center gap-0.5">
+              <span className="text-[#22c55e] inline-flex items-center gap-0.5 font-medium">
                 <ArrowUpRight className="w-3 h-3" />
                 +{reviewsChangePercent}% vs prior period
               </span>
             ) : (
               <span className="inline-flex items-center gap-1.5 flex-wrap">
-                <span className="text-zinc-300">
+                <span className="text-white font-medium">
                   {googleReviewsCount} Google
                 </span>
                 {instagramFeedbackCount > 0 && (
                   <>
-                    <span className="text-zinc-600">•</span>
-                    <span className="inline-flex items-center gap-1 text-zinc-300">
-                      <span className="w-1.5 h-1.5 rounded-full bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 shrink-0" />
+                    <span className="text-[#404040]">•</span>
+                    <span className="inline-flex items-center gap-1 text-[#4ade80] font-medium">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#4ade80] shrink-0" />
                       <span>{instagramFeedbackCount} Instagram</span>
                     </span>
                   </>
@@ -359,35 +359,35 @@ export default function DashboardView({ onNavigate, onAskAiQuery }: DashboardVie
         </div>
 
         {/* Metric 3: Positive Sentiment */}
-        <div className="p-5 sm:p-6 space-y-3">
+        <div className="p-6 space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-mono uppercase tracking-wider text-zinc-400">Positive Sentiment</span>
-            <div className="w-2 h-2 rounded-full bg-emerald-400" />
+            <span className="text-xs font-medium text-[#a3a3a3] uppercase tracking-wider">Positive Sentiment</span>
+            <div className="w-2 h-2 rounded-full bg-[#22c55e]" />
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-semibold text-zinc-100 tracking-tight font-mono">
+            <span className="font-serif font-light text-4xl text-white tracking-tight">
               {positivePercent}%
             </span>
-            <span className="text-xs text-zinc-500 font-mono">positive</span>
+            <span className="text-xs text-[#737373] font-mono">positive</span>
           </div>
-          <div className="flex items-center gap-1 text-[11px] font-mono text-zinc-500">
+          <div className="flex items-center gap-1 text-xs text-[#737373]">
             <span>{curr?.sentimentDistribution?.positive ?? 0} positive mentions</span>
           </div>
         </div>
 
         {/* Metric 4: Negative Sentiment */}
-        <div className="p-5 sm:p-6 space-y-3">
+        <div className="p-6 space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-mono uppercase tracking-wider text-zinc-400">Negative Sentiment</span>
+            <span className="text-xs font-medium text-[#a3a3a3] uppercase tracking-wider">Negative Sentiment</span>
             <div className="w-2 h-2 rounded-full bg-rose-400" />
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-semibold text-zinc-100 tracking-tight font-mono">
+            <span className="font-serif font-light text-4xl text-white tracking-tight">
               {negativePercent}%
             </span>
-            <span className="text-xs text-zinc-500 font-mono">critical</span>
+            <span className="text-xs text-[#737373] font-mono">critical</span>
           </div>
-          <div className="flex items-center gap-1 text-[11px] font-mono text-zinc-500">
+          <div className="flex items-center gap-1 text-xs text-[#737373]">
             <span>{curr?.sentimentDistribution?.negative ?? 0} negative reviews</span>
           </div>
         </div>
@@ -466,16 +466,16 @@ export default function DashboardView({ onNavigate, onAskAiQuery }: DashboardVie
           ───────────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left: Topic Clusters */}
-        <div className="rounded-xl border border-zinc-800/80 bg-zinc-950/70 p-5 sm:p-6 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)] space-y-4">
-          <div className="flex items-center justify-between border-b border-zinc-800/60 pb-3">
+        <div className="rounded-2xl border border-[#262626] bg-[#171717] p-6 space-y-4">
+          <div className="flex items-center justify-between border-b border-[#262626] pb-4">
             <div className="space-y-0.5">
-              <h3 className="text-xs font-mono uppercase tracking-wider text-zinc-400">Top Themes</h3>
-              <p className="text-[11px] text-zinc-500">Most frequent topics in customer reviews</p>
+              <h3 className="font-serif font-light text-lg text-white tracking-tight">Top Themes</h3>
+              <p className="text-xs text-[#a3a3a3]">Most frequent topics in customer reviews</p>
             </div>
             <button
               type="button"
               onClick={() => onNavigate('themes')}
-              className="text-xs font-mono text-zinc-400 hover:text-zinc-200 transition-colors inline-flex items-center gap-1 cursor-pointer"
+              className="btn-pill-secondary text-xs py-1 px-3.5"
             >
               <span>Explore all</span>
               <ChevronRight className="w-3.5 h-3.5" />
@@ -483,11 +483,11 @@ export default function DashboardView({ onNavigate, onAskAiQuery }: DashboardVie
           </div>
 
           {themesList.length === 0 ? (
-            <p className="text-xs text-zinc-500 py-8 text-center font-mono">
+            <p className="text-xs text-[#737373] py-8 text-center font-mono">
               No themes detected yet.
             </p>
           ) : (
-            <div className="space-y-3.5">
+            <div className="space-y-4">
               {themesList.slice(0, 5).map((theme: any) => {
                 const total = theme.count || 1;
                 const posPct = Math.round(((theme.positiveCount || 0) / total) * 100);
@@ -497,13 +497,13 @@ export default function DashboardView({ onNavigate, onAskAiQuery }: DashboardVie
                 return (
                   <div key={theme.theme} className="space-y-1.5">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="font-medium text-zinc-200 capitalize">{theme.theme}</span>
-                      <span className="text-zinc-500 font-mono text-[11px]">{theme.count} mentions</span>
+                      <span className="font-medium text-white capitalize">{theme.theme}</span>
+                      <span className="text-[#a3a3a3] font-mono text-[11px]">{theme.count} mentions</span>
                     </div>
-                    <div className="h-1.5 w-full bg-zinc-900 rounded-[2px] overflow-hidden flex">
-                      <div style={{ width: `${posPct}%` }} className="bg-emerald-500/80 h-full" />
-                      <div style={{ width: `${neuPct}%` }} className="bg-zinc-700 h-full" />
-                      <div style={{ width: `${negPct}%` }} className="bg-rose-500/80 h-full" />
+                    <div className="h-1.5 w-full bg-[#1f1f1f] rounded-full overflow-hidden flex border border-[#262626]">
+                      <div style={{ width: `${posPct}%` }} className="bg-[#22c55e] h-full" />
+                      <div style={{ width: `${neuPct}%` }} className="bg-[#737373] h-full" />
+                      <div style={{ width: `${negPct}%` }} className="bg-rose-500 h-full" />
                     </div>
                   </div>
                 );
@@ -513,16 +513,16 @@ export default function DashboardView({ onNavigate, onAskAiQuery }: DashboardVie
         </div>
 
         {/* Right: Meaningful Anomalies / Shifts */}
-        <div className="rounded-xl border border-zinc-800/80 bg-zinc-950/70 p-5 sm:p-6 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)] space-y-4">
-          <div className="flex items-center justify-between border-b border-zinc-800/60 pb-3">
+        <div className="rounded-2xl border border-[#262626] bg-[#171717] p-6 space-y-4">
+          <div className="flex items-center justify-between border-b border-[#262626] pb-4">
             <div className="space-y-0.5">
-              <h3 className="text-xs font-mono uppercase tracking-wider text-zinc-400">Notable Shifts</h3>
-              <p className="text-[11px] text-zinc-500">Significant changes compared to previous weeks</p>
+              <h3 className="font-serif font-light text-lg text-white tracking-tight">Notable Shifts</h3>
+              <p className="text-xs text-[#a3a3a3]">Significant changes compared to previous weeks</p>
             </div>
             <button
               type="button"
               onClick={() => onNavigate('reports')}
-              className="text-xs font-mono text-zinc-400 hover:text-zinc-200 transition-colors inline-flex items-center gap-1 cursor-pointer"
+              className="btn-pill-secondary text-xs py-1 px-3.5"
             >
               <span>Weekly brief</span>
               <ChevronRight className="w-3.5 h-3.5" />
@@ -531,8 +531,8 @@ export default function DashboardView({ onNavigate, onAskAiQuery }: DashboardVie
 
           {meaningfulShifts.length === 0 ? (
             <div className="py-8 text-center space-y-1.5">
-              <CheckCircle2 className="w-4 h-4 text-zinc-600 mx-auto" />
-              <p className="text-xs text-zinc-500 font-mono">
+              <CheckCircle2 className="w-4 h-4 text-[#737373] mx-auto" />
+              <p className="text-xs text-[#737373] font-mono">
                 No major metric changes detected in this period.
               </p>
             </div>
@@ -541,18 +541,18 @@ export default function DashboardView({ onNavigate, onAskAiQuery }: DashboardVie
               {meaningfulShifts.map((shift) => (
                 <div
                   key={shift.id}
-                  className="p-3 rounded-lg bg-zinc-900/50 border border-zinc-800/80 flex items-start justify-between gap-3"
+                  className="p-3.5 rounded-xl bg-[#1f1f1f] border border-[#262626] flex items-start justify-between gap-3"
                 >
                   <div className="space-y-0.5">
-                    <span className="text-xs font-medium text-zinc-200 block">{shift.title}</span>
-                    <span className="text-[11px] font-mono text-zinc-500">{shift.detail}</span>
+                    <span className="text-xs font-medium text-white block">{shift.title}</span>
+                    <span className="text-[11px] font-mono text-[#a3a3a3]">{shift.detail}</span>
                   </div>
                   {shift.direction === 'up' ? (
-                    <span className="text-rose-400 p-1 rounded bg-rose-500/10 shrink-0">
+                    <span className="text-rose-400 p-1.5 rounded-full bg-rose-500/10 shrink-0">
                       <ArrowUpRight className="w-3.5 h-3.5" />
                     </span>
                   ) : (
-                    <span className="text-emerald-400 p-1 rounded bg-emerald-500/10 shrink-0">
+                    <span className="text-[#22c55e] p-1.5 rounded-full bg-[#22c55e]/10 shrink-0">
                       <ArrowDownRight className="w-3.5 h-3.5" />
                     </span>
                   )}
@@ -566,16 +566,16 @@ export default function DashboardView({ onNavigate, onAskAiQuery }: DashboardVie
       {/* ─────────────────────────────────────────────────────────────
           SECTION 4: RECENT REVIEWS
           ───────────────────────────────────────────────────────────── */}
-      <div className="rounded-xl border border-zinc-800/80 bg-zinc-950/70 p-5 sm:p-6 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)] space-y-4">
-        <div className="flex items-center justify-between border-b border-zinc-800/60 pb-3">
+      <div className="rounded-2xl border border-[#262626] bg-[#171717] p-6 space-y-4">
+        <div className="flex items-center justify-between border-b border-[#262626] pb-4">
           <div className="space-y-0.5">
-            <h3 className="text-xs font-mono uppercase tracking-wider text-zinc-400">Recent Reviews</h3>
-            <p className="text-[11px] text-zinc-500">Latest customer reviews from connected platforms</p>
+            <h3 className="font-serif font-light text-lg text-white tracking-tight">Recent Reviews</h3>
+            <p className="text-xs text-[#a3a3a3]">Latest customer reviews from connected platforms</p>
           </div>
           <button
             type="button"
             onClick={() => onNavigate('reviews')}
-            className="text-xs font-mono text-zinc-400 hover:text-zinc-200 transition-colors inline-flex items-center gap-1 cursor-pointer"
+            className="btn-pill-secondary text-xs py-1 px-3.5"
           >
             <span>All reviews</span>
             <ChevronRight className="w-3.5 h-3.5" />
@@ -583,67 +583,67 @@ export default function DashboardView({ onNavigate, onAskAiQuery }: DashboardVie
         </div>
 
         {recentReviews.length === 0 ? (
-          <p className="text-xs text-zinc-500 py-8 text-center font-mono">
+          <p className="text-xs text-[#737373] py-8 text-center font-mono">
             No customer reviews found yet.
           </p>
         ) : (
-          <div className="divide-y divide-zinc-800/60">
+          <div className="divide-y divide-[#262626]">
             {pagedReviews.map((rev) => (
-              <div key={rev.id} className="py-3.5 flex flex-col sm:flex-row sm:items-start justify-between gap-3 group">
+              <div key={rev.id} className="py-4 flex flex-col sm:flex-row sm:items-start justify-between gap-3 group">
                 <div className="space-y-1.5 flex-1 min-w-0 pr-4">
                   <div className="flex flex-wrap items-center gap-2 text-xs">
-                    <span className="font-medium text-zinc-200">{rev.author}</span>
-                    <span className="text-zinc-600 font-mono">/</span>
+                    <span className="font-medium text-white">{rev.author}</span>
+                    <span className="text-[#404040]">/</span>
                     {String(rev.platform).toLowerCase().includes('google') ? (
                       rev.rating != null ? (
                         <>
                           <StarRating rating={rev.rating} />
-                          <span className="text-[11px] font-mono text-zinc-400">{Number(rev.rating).toFixed(1)} ★</span>
-                          <span className="text-zinc-600 font-mono">/</span>
+                          <span className="text-[11px] font-mono text-[#a3a3a3]">{Number(rev.rating).toFixed(1)} ★</span>
+                          <span className="text-[#404040]">/</span>
                         </>
                       ) : (
                         <>
-                          <span className="text-[11px] font-mono text-zinc-500">Google Review (Unrated)</span>
-                          <span className="text-zinc-600 font-mono">/</span>
+                          <span className="text-[11px] font-mono text-[#737373]">Google Review (Unrated)</span>
+                          <span className="text-[#404040]">/</span>
                         </>
                       )
                     ) : (
                       <>
-                        <span className="text-[11px] font-mono text-zinc-500">Instagram Comment</span>
-                        <span className="text-zinc-600 font-mono">/</span>
+                        <span className="text-[11px] font-mono text-[#737373]">Instagram Comment</span>
+                        <span className="text-[#404040]">/</span>
                       </>
                     )}
-                    <span className="text-[11px] font-mono text-zinc-500">{rev.date}</span>
-                    <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-300 px-1.5 py-0.5 rounded border border-zinc-800 bg-zinc-900/60 inline-flex items-center gap-1.5">
+                    <span className="text-[11px] font-mono text-[#737373]">{rev.date}</span>
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-white px-2.5 py-0.5 rounded-full border border-[#262626] bg-[#1f1f1f] inline-flex items-center gap-1.5">
                       {String(rev.platform).toLowerCase().includes('google') ? (
                         <span>Google Review</span>
                       ) : (
-                        <span className="text-zinc-300 flex items-center gap-1 font-semibold">
-                          <span className="w-2 h-2 rounded-full bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 inline-block" />
+                        <span className="text-white flex items-center gap-1 font-medium">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#4ade80] inline-block" />
                           <span>Instagram</span>
                         </span>
                       )}
                     </span>
                   </div>
-                  <p className="text-xs text-zinc-300 leading-relaxed font-sans">{rev.content}</p>
+                  <p className="text-xs text-[#a3a3a3] leading-relaxed font-sans">{rev.content}</p>
                 </div>
                 <div className="flex items-center gap-2 self-start shrink-0">
                   <span
-                    className={`inline-flex items-center gap-1.5 text-[10px] font-mono px-2 py-0.5 rounded border ${
+                    className={`inline-flex items-center gap-1.5 text-[10px] font-mono px-2.5 py-0.5 rounded-full border ${
                       rev.sentiment === 'positive'
-                        ? 'bg-emerald-950/30 text-emerald-300 border-emerald-900/40'
+                        ? 'bg-[#22c55e]/15 text-[#22c55e] border-[#22c55e]/30'
                         : rev.sentiment === 'negative'
-                        ? 'bg-rose-950/30 text-rose-300 border-rose-900/40'
-                        : 'bg-zinc-900 text-zinc-400 border-zinc-800'
+                        ? 'bg-rose-500/15 text-rose-400 border-rose-500/30'
+                        : 'bg-[#1f1f1f] text-[#a3a3a3] border-[#262626]'
                     }`}
                   >
                     <span
                       className={`w-1.5 h-1.5 rounded-full ${
                         rev.sentiment === 'positive'
-                          ? 'bg-emerald-400'
+                          ? 'bg-[#22c55e]'
                           : rev.sentiment === 'negative'
                           ? 'bg-rose-400'
-                          : 'bg-zinc-500'
+                          : 'bg-[#737373]'
                       }`}
                     />
                     <span className="capitalize">{rev.sentiment}</span>
@@ -656,14 +656,14 @@ export default function DashboardView({ onNavigate, onAskAiQuery }: DashboardVie
 
         {/* Pagination Footer Controls */}
         {recentReviews.length > REVIEWS_PAGE_SIZE && (
-          <div className="pt-4 border-t border-zinc-800/60 flex flex-wrap items-center justify-between gap-3 text-xs">
-            <div className="text-[11px] font-mono text-zinc-500">
+          <div className="pt-4 border-t border-[#262626] flex flex-wrap items-center justify-between gap-3 text-xs">
+            <div className="text-xs font-mono text-[#737373]">
               Showing{' '}
-              <span className="text-zinc-300 font-medium">
+              <span className="text-white font-medium">
                 {(currentReviewsPage - 1) * REVIEWS_PAGE_SIZE + 1}–
                 {Math.min(currentReviewsPage * REVIEWS_PAGE_SIZE, recentReviews.length)}
               </span>{' '}
-              of <span className="text-zinc-300 font-medium">{recentReviews.length}</span> reviews
+              of <span className="text-white font-medium">{recentReviews.length}</span> reviews
             </div>
 
             <div className="flex items-center gap-1.5">
@@ -671,7 +671,7 @@ export default function DashboardView({ onNavigate, onAskAiQuery }: DashboardVie
                 type="button"
                 onClick={() => setReviewPage((p) => Math.max(1, p - 1))}
                 disabled={currentReviewsPage <= 1}
-                className="px-2.5 py-1 rounded-md text-xs font-mono border border-zinc-800 bg-zinc-900/60 text-zinc-300 hover:bg-zinc-800 hover:text-white disabled:opacity-30 disabled:pointer-events-none transition-colors inline-flex items-center gap-1 cursor-pointer"
+                className="btn-pill-secondary px-3 py-1 text-xs disabled:opacity-30 disabled:pointer-events-none inline-flex items-center gap-1"
                 title="Previous page"
               >
                 <ChevronLeft className="w-3.5 h-3.5" />
@@ -681,7 +681,6 @@ export default function DashboardView({ onNavigate, onAskAiQuery }: DashboardVie
               <div className="flex items-center gap-1 font-mono text-xs">
                 {Array.from({ length: totalReviewPages }).map((_, idx) => {
                   const pNum = idx + 1;
-                  // Condense with ellipsis if more than 7 pages
                   if (
                     totalReviewPages > 7 &&
                     pNum !== 1 &&
@@ -693,7 +692,7 @@ export default function DashboardView({ onNavigate, onAskAiQuery }: DashboardVie
                       (pNum === totalReviewPages - 1 && currentReviewsPage < totalReviewPages - 2)
                     ) {
                       return (
-                        <span key={`ellipsis-${pNum}`} className="px-1 text-zinc-600">
+                        <span key={`ellipsis-${pNum}`} className="px-1 text-[#737373]">
                           …
                         </span>
                       );
@@ -707,10 +706,10 @@ export default function DashboardView({ onNavigate, onAskAiQuery }: DashboardVie
                       key={pNum}
                       type="button"
                       onClick={() => setReviewPage(pNum)}
-                      className={`min-w-[28px] h-7 px-2 rounded-md text-xs font-mono transition-colors cursor-pointer ${
+                      className={`min-w-[28px] h-7 px-2.5 rounded-full text-xs font-mono transition-colors cursor-pointer ${
                         isActive
-                          ? 'bg-zinc-100 text-zinc-950 font-semibold shadow-xs'
-                          : 'bg-zinc-900/60 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 border border-zinc-800'
+                          ? 'bg-white text-[#0a0a0a] font-medium shadow-xs'
+                          : 'bg-[#1f1f1f] text-[#a3a3a3] hover:text-white hover:bg-[#262626] border border-[#262626]'
                       }`}
                     >
                       {pNum}
@@ -723,7 +722,7 @@ export default function DashboardView({ onNavigate, onAskAiQuery }: DashboardVie
                 type="button"
                 onClick={() => setReviewPage((p) => Math.min(totalReviewPages, p + 1))}
                 disabled={currentReviewsPage >= totalReviewPages}
-                className="px-2.5 py-1 rounded-md text-xs font-mono border border-zinc-800 bg-zinc-900/60 text-zinc-300 hover:bg-zinc-800 hover:text-white disabled:opacity-30 disabled:pointer-events-none transition-colors inline-flex items-center gap-1 cursor-pointer"
+                className="btn-pill-secondary px-3 py-1 text-xs disabled:opacity-30 disabled:pointer-events-none inline-flex items-center gap-1"
                 title="Next page"
               >
                 <span>Next</span>

@@ -115,7 +115,7 @@ function renderInlineMarkdown(text: string) {
   return parts.map((part, i) => {
     if (part.startsWith('**') && part.endsWith('**')) {
       return (
-        <strong key={i} className="font-semibold text-zinc-100">
+        <strong key={i} className="font-semibold text-white">
           {part.slice(2, -2)}
         </strong>
       );
@@ -129,7 +129,7 @@ function renderInlineMarkdown(text: string) {
     }
     if (part.startsWith('`') && part.endsWith('`')) {
       return (
-        <code key={i} className="font-mono text-[11px] px-1 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-200">
+        <code key={i} className="font-mono text-[11px] px-1.5 py-0.5 rounded bg-[#1f1f1f] border border-[#262626] text-zinc-200">
           {part.slice(1, -1)}
         </code>
       );
@@ -347,20 +347,20 @@ function FormattedMessage({ text }: { text: string }) {
   // If parsed as an Executive Structured Brief, render premium card layout
   if (brief && (brief.themes.length > 0 || brief.takeaways)) {
     return (
-      <div className="space-y-3.5 leading-relaxed font-sans text-xs">
+      <div className="space-y-4 leading-relaxed font-sans text-xs">
         {/* Executive Header */}
         {brief.header && (
-          <div className="pb-3 border-b border-zinc-800/80 mb-2">
+          <div className="pb-3 border-b border-[#262626] mb-2">
             <div className="flex items-center gap-2 mb-1.5">
-              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-mono tracking-wide uppercase bg-[#5e6ad2]/15 text-[#828cf0] border border-[#5e6ad2]/30">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono tracking-wide uppercase bg-[#4ade80]/15 text-[#4ade80] border border-[#4ade80]/30">
                 Executive Intelligence Brief
               </span>
             </div>
-            <h3 className="text-sm font-semibold text-white tracking-tight">
+            <h3 className="font-serif font-light text-lg text-white tracking-[-0.01em]">
               {brief.header.title}
             </h3>
             {brief.header.subtitle && (
-              <p className="text-[11px] font-mono text-zinc-400 mt-1">
+              <p className="text-[11px] font-mono text-[#a3a3a3] mt-1">
                 {brief.header.subtitle}
               </p>
             )}
@@ -369,7 +369,7 @@ function FormattedMessage({ text }: { text: string }) {
 
         {/* Intro Overview */}
         {brief.intro && (
-          <div className="text-zinc-300 text-xs leading-relaxed bg-zinc-900/40 border border-zinc-800/60 rounded-xl p-3">
+          <div className="text-zinc-300 text-xs leading-relaxed bg-[#141414] border border-[#262626] rounded-xl p-3.5">
             {renderInlineMarkdown(brief.intro)}
           </div>
         )}
@@ -380,19 +380,19 @@ function FormattedMessage({ text }: { text: string }) {
             {brief.themes.map((theme, i) => (
               <div
                 key={i}
-                className="rounded-xl border border-zinc-800/80 bg-zinc-900/50 p-3.5 space-y-3 shadow-sm hover:border-zinc-700/60 transition-colors"
+                className="rounded-xl border border-[#262626] bg-[#141414] p-4 space-y-3 shadow-sm hover:border-[#404040] transition-colors"
               >
                 {/* Theme Title Bar */}
-                <div className="flex items-center justify-between gap-2 border-b border-zinc-800/50 pb-2.5">
+                <div className="flex items-center justify-between gap-2 border-b border-[#262626] pb-2.5">
                   <div className="flex items-center gap-2.5">
-                    <span className="w-5 h-5 rounded-md bg-rose-500/15 border border-rose-500/30 flex items-center justify-center font-mono text-[10px] font-semibold text-rose-400">
+                    <span className="w-5 h-5 rounded-full bg-rose-500/15 border border-rose-500/30 flex items-center justify-center font-mono text-[10px] font-semibold text-rose-400">
                       {theme.num || i + 1}
                     </span>
-                    <h4 className="text-xs font-semibold text-zinc-100 tracking-tight">
+                    <h4 className="text-xs font-semibold text-white tracking-tight">
                       {theme.title}
                     </h4>
                   </div>
-                  <span className="text-[9.5px] font-mono uppercase tracking-wider text-rose-400/90 bg-rose-500/10 border border-rose-500/20 px-2 py-0.5 rounded-full">
+                  <span className="text-[9.5px] font-mono uppercase tracking-wider text-rose-400 bg-rose-500/10 border border-rose-500/20 px-2 py-0.5 rounded-full">
                     Friction Area
                   </span>
                 </div>
@@ -425,8 +425,8 @@ function FormattedMessage({ text }: { text: string }) {
 
                 {/* Impact */}
                 {theme.impact && (
-                  <div className="flex items-start gap-2 pt-2 border-t border-zinc-800/40 text-xs">
-                    <span className="inline-flex items-center text-[9px] font-mono uppercase tracking-wider font-semibold text-[#828cf0] bg-[#5e6ad2]/15 border border-[#5e6ad2]/25 px-1.5 py-0.5 rounded shrink-0 mt-0.5">
+                  <div className="flex items-start gap-2 pt-2 border-t border-[#262626] text-xs">
+                    <span className="inline-flex items-center text-[9px] font-mono uppercase tracking-wider font-semibold text-[#4ade80] bg-[#4ade80]/15 border border-[#4ade80]/25 px-1.5 py-0.5 rounded shrink-0 mt-0.5">
                       Impact
                     </span>
                     <div className="flex-1 text-zinc-300 leading-relaxed">
@@ -441,7 +441,7 @@ function FormattedMessage({ text }: { text: string }) {
 
         {/* Action Steps & Takeaways */}
         {brief.takeaways && brief.takeaways.items.length > 0 && (
-          <div className="rounded-xl border border-emerald-500/25 bg-emerald-950/15 p-3.5 space-y-3 mt-1">
+          <div className="rounded-xl border border-emerald-500/25 bg-emerald-950/15 p-4 space-y-3 mt-1">
             <div className="flex items-center gap-2 text-emerald-400">
               <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />
               <h4 className="text-xs font-semibold tracking-tight text-emerald-300">
@@ -456,7 +456,7 @@ function FormattedMessage({ text }: { text: string }) {
                   </span>
                   <div className="flex-1 text-zinc-300 leading-relaxed">
                     {item.label && (
-                      <strong className="font-semibold text-zinc-100">
+                      <strong className="font-semibold text-white">
                         {item.label}:{' '}
                       </strong>
                     )}
@@ -470,10 +470,10 @@ function FormattedMessage({ text }: { text: string }) {
 
         {/* Sentiment & Context Note */}
         {brief.confidenceNote && (
-          <div className="rounded-xl border border-zinc-800/80 bg-zinc-900/40 p-3 flex items-start gap-2.5 text-xs text-zinc-400 leading-relaxed">
-            <Info className="w-4 h-4 text-[#828cf0] shrink-0 mt-0.5" />
+          <div className="rounded-xl border border-[#262626] bg-[#141414] p-3.5 flex items-start gap-2.5 text-xs text-[#a3a3a3] leading-relaxed">
+            <Info className="w-4 h-4 text-[#4ade80] shrink-0 mt-0.5" />
             <div className="flex-1">
-              <div className="text-[11px] font-medium text-zinc-200 mb-0.5">
+              <div className="text-[11px] font-medium text-white mb-0.5">
                 Sentiment & Context Note
               </div>
               <div className="text-zinc-300">
@@ -485,7 +485,7 @@ function FormattedMessage({ text }: { text: string }) {
 
         {/* Closing Offer */}
         {brief.closing && (
-          <p className="text-xs text-zinc-400 italic pt-1 pl-0.5">
+          <p className="text-xs text-[#a3a3a3] italic pt-1 pl-0.5">
             {renderInlineMarkdown(brief.closing)}
           </p>
         )}
@@ -507,16 +507,16 @@ function FormattedMessage({ text }: { text: string }) {
 
         // Horizontal Rule (--- or ***)
         if (trimmed === '---' || trimmed === '***' || trimmed === '___') {
-          return <hr key={idx} className="border-zinc-800/80 my-3" />;
+          return <hr key={idx} className="border-[#262626] my-3" />;
         }
 
         // Headings (###)
         if (trimmed.startsWith('### ')) {
           const headingText = trimmed.replace(/^###\s+/, '');
           return (
-            <div key={idx} className="mt-4 mb-2 pt-2 border-t border-zinc-800/60 first:border-0 first:pt-0">
+            <div key={idx} className="mt-4 mb-2 pt-2 border-t border-[#262626] first:border-0 first:pt-0">
               <h4 className="text-xs font-semibold text-white tracking-tight flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#5e6ad2] shrink-0" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#4ade80] shrink-0" />
                 <span>{renderInlineMarkdown(headingText)}</span>
               </h4>
             </div>
@@ -526,7 +526,7 @@ function FormattedMessage({ text }: { text: string }) {
         // Headings (# or ##)
         if (trimmed.startsWith('## ') || trimmed.startsWith('# ')) {
           return (
-            <h3 key={idx} className="text-sm font-semibold text-white tracking-tight mt-4 mb-2">
+            <h3 key={idx} className="font-serif font-light text-base text-white tracking-tight mt-4 mb-2">
               {renderInlineMarkdown(trimmed.replace(/^#+\s+/, ''))}
             </h3>
           );
@@ -536,7 +536,7 @@ function FormattedMessage({ text }: { text: string }) {
         const themeHeaderMatch = trimmed.match(/^\*\*(\d+\.\s+.*?)\*\*$/);
         if (themeHeaderMatch) {
           return (
-            <div key={idx} className="mt-4 mb-2 pt-2 border-t border-zinc-800/60 first:border-0 first:pt-0 flex items-center gap-2">
+            <div key={idx} className="mt-4 mb-2 pt-2 border-t border-[#262626] first:border-0 first:pt-0 flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0" />
               <span className="text-xs font-semibold text-white tracking-tight">
                 {themeHeaderMatch[1]}
@@ -551,7 +551,7 @@ function FormattedMessage({ text }: { text: string }) {
           return (
             <blockquote
               key={idx}
-              className="my-2 pl-3 py-1.5 rounded-r-xl border-l-2 border-[#5e6ad2]/70 bg-zinc-900/60 text-zinc-200 italic font-sans text-xs"
+              className="my-2 pl-3 py-1.5 rounded-r-xl border-l-2 border-[#4ade80] bg-[#141414] text-zinc-200 italic font-sans text-xs"
             >
               {renderInlineMarkdown(quoteContent)}
             </blockquote>
@@ -575,7 +575,7 @@ function FormattedMessage({ text }: { text: string }) {
           const val = trimmed.replace(/^Impact:\s*/, '');
           return (
             <div key={idx} className="flex items-start gap-1.5 text-zinc-300">
-              <span className="inline-flex items-center text-[9.5px] font-mono uppercase tracking-wider font-semibold text-[#828cf0] bg-[#5e6ad2]/15 border border-[#5e6ad2]/25 px-1.5 py-0.5 rounded shrink-0">
+              <span className="inline-flex items-center text-[9.5px] font-mono uppercase tracking-wider font-semibold text-[#4ade80] bg-[#4ade80]/15 border border-[#4ade80]/25 px-1.5 py-0.5 rounded shrink-0">
                 Impact
               </span>
               <span className="flex-1">{renderInlineMarkdown(val)}</span>
@@ -600,7 +600,7 @@ function FormattedMessage({ text }: { text: string }) {
           const content = trimmed.replace(/^[-*]\s+/, '');
           return (
             <div key={idx} className="flex items-start gap-2.5 pl-1 text-zinc-300">
-              <span className="w-1.5 h-1.5 rounded-full bg-zinc-500 shrink-0 mt-1.5" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#737373] shrink-0 mt-1.5" />
               <span className="flex-1">{renderInlineMarkdown(content)}</span>
             </div>
           );
@@ -611,7 +611,7 @@ function FormattedMessage({ text }: { text: string }) {
         if (numMatch) {
           return (
             <div key={idx} className="flex items-start gap-2.5 pl-1 text-zinc-300">
-              <span className="font-mono text-[11px] text-zinc-400 font-medium shrink-0 min-w-[14px]">
+              <span className="font-mono text-[11px] text-[#a3a3a3] font-medium shrink-0 min-w-[14px]">
                 {numMatch[1]}.
               </span>
               <span className="flex-1">{renderInlineMarkdown(numMatch[2])}</span>
@@ -769,7 +769,7 @@ export default function AskAiView({ initialQuery }: AskAiViewProps) {
       return googleBusinessUrl;
     }
 
-    // 3. Fallback: Google Maps company search page (opens company listing & reviews, NO person name)
+    // 3. Fallback: Google Maps company search page
     const bizName = activeBusiness?.name || 'Business';
     const loc = activeBusiness?.location ? ` ${activeBusiness.location}` : '';
     const query = encodeURIComponent(`${bizName}${loc}`.trim());
@@ -778,12 +778,12 @@ export default function AskAiView({ initialQuery }: AskAiViewProps) {
 
   if (!activeBusiness) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center p-8 text-center space-y-3 bg-[#010102]">
-        <div className="w-10 h-10 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center mx-auto text-zinc-500">
+      <div className="flex-1 flex flex-col items-center justify-center p-8 text-center space-y-4 bg-[#0a0a0a]">
+        <div className="w-12 h-12 rounded-full bg-[#171717] border border-[#262626] flex items-center justify-center mx-auto text-[#a3a3a3]">
           <MessageSquare className="w-5 h-5" />
         </div>
-        <h3 className="text-sm font-semibold text-zinc-100">No Business Selected</h3>
-        <p className="text-xs text-zinc-400 max-w-sm">
+        <h3 className="font-serif font-light text-xl text-white tracking-[-0.01em]">No Business Selected</h3>
+        <p className="text-xs text-[#a3a3a3] max-w-sm">
           Select an active business profile from the header selector to query verified customer reviews.
         </p>
       </div>
@@ -791,7 +791,7 @@ export default function AskAiView({ initialQuery }: AskAiViewProps) {
   }
 
   return (
-    <div className="flex-1 flex flex-col h-full w-full bg-[#010102] overflow-hidden select-text">
+    <div className="flex-1 flex flex-col h-full w-full bg-[#0a0a0a] overflow-hidden select-text">
       {/* ─────────────────────────────────────────────────────────────
           FULL-BLEED SCROLLABLE MESSAGES STREAM
           ───────────────────────────────────────────────────────────── */}
@@ -800,22 +800,22 @@ export default function AskAiView({ initialQuery }: AskAiViewProps) {
           /* ── ELEGANT MINIMAL EMPTY STATE ── */
           <div className="h-full min-h-[460px] flex flex-col items-center justify-center text-center max-w-3xl mx-auto space-y-8 animate-in fade-in duration-300">
             <div className="space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center mx-auto text-amber-400 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]">
+              <div className="w-12 h-12 rounded-full bg-[#171717] border border-[#262626] flex items-center justify-center mx-auto text-[#4ade80] shadow-sm">
                 <Sparkles className="w-6 h-6" />
               </div>
               <div className="space-y-1.5">
-                <h2 className="text-xl font-semibold text-zinc-100 tracking-tight">
-                  Hi there! How can I assist you today?
+                <h2 className="font-serif font-light text-2xl sm:text-3xl text-white tracking-[-0.02em]">
+                  How can I assist your business today?
                 </h2>
-                <p className="text-xs text-zinc-400 max-w-md mx-auto leading-relaxed">
-                  I'm your friendly feedback assistant for <span className="text-zinc-200 font-medium">{activeBusiness.name}</span>.
-                  Ask me anything about what patients love, common concerns, or ways to delight your customers!
+                <p className="text-xs text-[#a3a3a3] max-w-md mx-auto leading-relaxed">
+                  I'm your reputation analyst for <span className="text-white font-medium">{activeBusiness.name}</span>.
+                  Ask me anything about customer praises, emerging complaints, or operational priorities.
                 </p>
               </div>
             </div>
 
             {/* 2x2 Suggestion Cards Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-2xl text-left">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 w-full max-w-2xl text-left">
               {PRESET_SUGGESTIONS.map((preset) => {
                 const IconComponent = preset.icon;
                 return (
@@ -823,18 +823,18 @@ export default function AskAiView({ initialQuery }: AskAiViewProps) {
                     key={preset.category}
                     type="button"
                     onClick={() => handleSend(preset.query)}
-                    className="p-4 rounded-xl bg-zinc-900/30 border border-zinc-800/80 hover:border-zinc-700 hover:bg-zinc-900/70 transition-all text-left group cursor-pointer space-y-1.5 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.02)] active:scale-[0.99]"
+                    className="p-4 rounded-2xl bg-[#171717] border border-[#262626] hover:border-[#404040] hover:bg-[#1f1f1f] transition-all text-left group cursor-pointer space-y-1.5 shadow-sm active:scale-[0.99]"
                   >
                     <div className="flex items-center justify-between text-xs">
                       <div className="flex items-center gap-2">
-                        <IconComponent className="w-3.5 h-3.5 text-zinc-400 group-hover:text-zinc-200 transition-colors" />
-                        <span className="font-medium text-zinc-200 group-hover:text-white transition-colors">
+                        <IconComponent className="w-3.5 h-3.5 text-[#4ade80] group-hover:scale-110 transition-transform" />
+                        <span className="font-medium text-white transition-colors">
                           {preset.category}
                         </span>
                       </div>
-                      <ArrowUpRight className="w-3.5 h-3.5 text-zinc-500 group-hover:text-zinc-200 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                      <ArrowUpRight className="w-3.5 h-3.5 text-[#737373] group-hover:text-white transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                     </div>
-                    <p className="text-[11px] text-zinc-500 group-hover:text-zinc-400 transition-colors leading-relaxed line-clamp-2">
+                    <p className="text-[11px] text-[#a3a3a3] group-hover:text-zinc-300 transition-colors leading-relaxed line-clamp-2">
                       {preset.description}
                     </p>
                   </button>
@@ -843,7 +843,7 @@ export default function AskAiView({ initialQuery }: AskAiViewProps) {
             </div>
           </div>
         ) : (
-          /* ── ACTIVE MESSAGE STREAM (ERGONOMIC MAX-W COLUMN WITHIN COMPLETE AREA) ── */
+          /* ── ACTIVE MESSAGE STREAM ── */
           <div className="max-w-3xl lg:max-w-4xl mx-auto w-full space-y-6">
             {messages.map((msg) => (
               <div
@@ -852,51 +852,47 @@ export default function AskAiView({ initialQuery }: AskAiViewProps) {
               >
                 {msg.sender === 'assistant' && (
                   <div
-                    className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 border text-xs mt-0.5 ${
-                      msg.isError
+                    className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 border text-xs mt-0.5 ${msg.isError
                         ? 'bg-amber-950/30 border-amber-800/50 text-amber-400'
-                        : 'bg-zinc-900 border-zinc-800 text-zinc-300'
-                    }`}
+                        : 'bg-[#171717] border-[#262626] text-[#4ade80]'
+                      }`}
                   >
                     {msg.isError ? <AlertCircle className="w-3.5 h-3.5" /> : <Bot className="w-3.5 h-3.5" />}
                   </div>
                 )}
 
                 <div
-                  className={`rounded-2xl text-xs space-y-3 ${
-                    msg.sender === 'user'
-                      ? 'max-w-xl p-4 bg-zinc-800/80 border border-zinc-700/60 text-zinc-100 shadow-sm ml-auto'
+                  className={`rounded-2xl text-xs space-y-3 ${msg.sender === 'user'
+                      ? 'max-w-xl p-4 bg-[#1f1f1f] border border-[#262626] text-white shadow-sm ml-auto'
                       : msg.isError
-                      ? 'flex-1 max-w-3xl p-5 bg-zinc-950/90 border border-amber-500/25 text-zinc-200 shadow-[inset_0_1px_0_0_rgba(245,158,11,0.04)]'
-                      : 'flex-1 max-w-3xl p-5 sm:p-6 bg-zinc-900/30 border border-zinc-800/70 text-zinc-200 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.02)]'
-                  }`}
+                        ? 'flex-1 max-w-3xl p-5 bg-[#171717] border border-amber-500/25 text-zinc-200 shadow-sm'
+                        : 'flex-1 max-w-3xl p-5 sm:p-6 bg-[#171717] border border-[#262626] text-zinc-200 shadow-sm'
+                    }`}
                 >
                   {/* Message Meta Header */}
-                  <div className="flex items-center justify-between gap-4 border-b border-zinc-800/40 pb-2">
+                  <div className="flex items-center justify-between gap-4 border-b border-[#262626] pb-2">
                     <div className="flex items-center gap-2">
                       <span
-                        className={`font-mono text-[11px] font-medium ${
-                          msg.sender === 'user' ? 'text-zinc-300' : msg.isError ? 'text-amber-400' : 'text-zinc-400'
-                        }`}
+                        className={`font-mono text-[11px] font-medium ${msg.sender === 'user' ? 'text-zinc-300' : msg.isError ? 'text-amber-400' : 'text-[#a3a3a3]'
+                          }`}
                       >
                         {msg.sender === 'user' ? 'You' : msg.isError ? 'Service Notice' : 'RepScan Assistant'}
                       </span>
                       {msg.sender === 'assistant' && !msg.isError && msg.confidence && (
-                        <span className="inline-flex items-center gap-1.5 text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-900/80 border border-zinc-800">
+                        <span className="inline-flex items-center gap-1.5 text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-[#141414] border border-[#262626]">
                           <span
-                            className={`w-1.5 h-1.5 rounded-full ${
-                              msg.confidence === 'High'
+                            className={`w-1.5 h-1.5 rounded-full ${msg.confidence === 'High'
                                 ? 'bg-emerald-400'
                                 : msg.confidence === 'Medium'
-                                ? 'bg-amber-400'
-                                : 'bg-zinc-500'
-                            }`}
+                                  ? 'bg-amber-400'
+                                  : 'bg-zinc-500'
+                              }`}
                           />
                           <span className="text-zinc-300">{msg.confidence} Confidence</span>
                         </span>
                       )}
                     </div>
-                    <span className="text-[10px] font-mono text-zinc-500">{msg.timestamp}</span>
+                    <span className="text-[10px] font-mono text-[#737373]">{msg.timestamp}</span>
                   </div>
 
                   {/* Body Content */}
@@ -908,16 +904,16 @@ export default function AskAiView({ initialQuery }: AskAiViewProps) {
 
                   {/* Limitation Note Banner */}
                   {msg.sender === 'assistant' && msg.limitationNote && !msg.isError && (
-                    <div className="pt-2 border-t border-zinc-800/60 flex items-start gap-2 text-[11px] font-mono text-zinc-400 bg-zinc-900/40 p-2.5 rounded-lg border border-zinc-800/50">
-                      <Info className="w-3.5 h-3.5 text-zinc-400 shrink-0 mt-0.5" />
+                    <div className="pt-2 border-t border-[#262626] flex items-start gap-2 text-[11px] font-mono text-[#a3a3a3] bg-[#141414] p-3 rounded-xl border border-[#262626]">
+                      <Info className="w-3.5 h-3.5 text-[#4ade80] shrink-0 mt-0.5" />
                       <span>{msg.limitationNote}</span>
                     </div>
                   )}
 
                   {/* Error Retry Option */}
                   {msg.isError && (
-                    <div className="pt-2 border-t border-zinc-800/60 flex items-center justify-between text-[11px]">
-                      <span className="text-zinc-500 font-mono">Status: Undergoing Maintenance</span>
+                    <div className="pt-2 border-t border-[#262626] flex items-center justify-between text-[11px]">
+                      <span className="text-[#737373] font-mono">Status: Undergoing Maintenance</span>
                       <button
                         type="button"
                         onClick={() => {
@@ -934,8 +930,8 @@ export default function AskAiView({ initialQuery }: AskAiViewProps) {
 
                   {/* Verified Cited Evidence Proof Badges */}
                   {msg.sender === 'assistant' && msg.reviewRefs && msg.reviewRefs.length > 0 && (
-                    <div className="pt-3 border-t border-zinc-800/60 space-y-2">
-                      <span className="text-[10px] text-zinc-500 font-mono uppercase tracking-wider block">
+                    <div className="pt-3 border-t border-[#262626] space-y-2">
+                      <span className="text-[10px] text-[#737373] font-mono uppercase tracking-wider block">
                         Verified Review Citations:
                       </span>
                       <div className="flex flex-wrap gap-2">
@@ -945,15 +941,15 @@ export default function AskAiView({ initialQuery }: AskAiViewProps) {
                             href={getCompanyReviewPageUrl(r)}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 text-[11px] font-mono px-3 py-1.5 rounded-lg bg-zinc-900/80 border border-zinc-800 hover:border-zinc-700 hover:bg-zinc-850 text-zinc-300 hover:text-white transition-all cursor-pointer shadow-sm group active:scale-[0.98]"
+                            className="inline-flex items-center gap-1.5 text-[11px] font-mono px-3 py-1.5 rounded-full bg-[#141414] border border-[#262626] hover:border-[#4ade80] text-zinc-300 hover:text-white transition-all cursor-pointer shadow-sm group active:scale-[0.98]"
                             title={`Open ${activeBusiness?.name || 'business'} reviews on Google Maps`}
                           >
-                            <span className="font-medium text-zinc-200">{r.author}</span>
+                            <span className="font-medium text-white">{r.author}</span>
                             {r.rating != null ? (
                               <span className="text-amber-400">({r.rating}★)</span>
                             ) : null}
-                            <span className="text-zinc-500 capitalize">· {r.platform}</span>
-                            <ArrowUpRight className="w-3.5 h-3.5 text-zinc-500 group-hover:text-zinc-200 transition-colors" />
+                            <span className="text-[#737373] capitalize">· {r.platform}</span>
+                            <ArrowUpRight className="w-3.5 h-3.5 text-[#4ade80] group-hover:scale-110 transition-transform" />
                           </a>
                         ))}
                       </div>
@@ -966,16 +962,16 @@ export default function AskAiView({ initialQuery }: AskAiViewProps) {
             {/* Minimal Modern RAG Loader in-stream */}
             {isSending && (
               <div className="flex gap-3.5 justify-start animate-in fade-in duration-200">
-                <div className="w-7 h-7 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-300 flex items-center justify-center shrink-0 text-xs">
+                <div className="w-7 h-7 rounded-full bg-[#171717] border border-[#262626] text-[#4ade80] flex items-center justify-center shrink-0 text-xs">
                   <Bot className="w-3.5 h-3.5" />
                 </div>
-                <div className="rounded-full px-4 py-2 bg-zinc-900/50 border border-zinc-800/80 text-xs text-zinc-400 flex items-center gap-3 font-mono shadow-[inset_0_1px_0_0_rgba(255,255,255,0.02)]">
+                <div className="rounded-full px-4 py-2 bg-[#171717] border border-[#262626] text-xs text-[#a3a3a3] flex items-center gap-3 font-mono shadow-sm">
                   <div className="flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-pulse" style={{ animationDelay: '0ms' }} />
-                    <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-pulse" style={{ animationDelay: '150ms' }} />
-                    <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-pulse" style={{ animationDelay: '300ms' }} />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#4ade80] animate-pulse" style={{ animationDelay: '0ms' }} />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#4ade80] animate-pulse" style={{ animationDelay: '150ms' }} />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#4ade80] animate-pulse" style={{ animationDelay: '300ms' }} />
                   </div>
-                  <span className="text-[11px] text-zinc-400">Looking through customer reviews for you...</span>
+                  <span className="text-[11px] text-[#a3a3a3]">Looking through customer reviews for you...</span>
                 </div>
               </div>
             )}
@@ -988,14 +984,14 @@ export default function AskAiView({ initialQuery }: AskAiViewProps) {
       {/* ─────────────────────────────────────────────────────────────
           DOCKED MINIMAL BOTTOM INPUT BAR (FULL WIDTH CANVAS)
           ───────────────────────────────────────────────────────────── */}
-      <div className="shrink-0 bg-gradient-to-t from-[#010102] via-[#010102]/95 to-transparent pt-3 pb-5 px-4 sm:px-6 lg:px-8">
+      <div className="shrink-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/95 to-transparent pt-3 pb-5 px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl lg:max-w-4xl mx-auto w-full space-y-2">
           <form
             onSubmit={(e) => {
               e.preventDefault();
               handleSend(inputVal);
             }}
-            className="relative flex items-center bg-zinc-900/60 border border-zinc-800 hover:border-zinc-750 focus-within:border-zinc-600 rounded-2xl p-1.5 pl-4 transition-all shadow-[0_4px_24px_rgba(0,0,0,0.5)]"
+            className="relative flex items-center bg-[#171717] border border-[#262626] focus-within:border-[#4ade80] rounded-full p-2 pl-5 transition-all shadow-[0_4px_24px_rgba(0,0,0,0.5)]"
           >
             <textarea
               ref={textareaRef}
@@ -1005,12 +1001,12 @@ export default function AskAiView({ initialQuery }: AskAiViewProps) {
               onKeyDown={handleKeyDown}
               placeholder={`Ask me anything about reviews, customer feedback, or ratings for ${activeBusiness.name}...`}
               disabled={isSending}
-              className="flex-1 bg-transparent py-2 text-xs text-zinc-100 placeholder:text-zinc-500 focus:outline-none resize-none font-sans max-h-32 leading-relaxed"
+              className="flex-1 bg-transparent py-2 text-xs text-white placeholder:text-[#737373] focus:outline-none resize-none font-sans max-h-32 leading-relaxed"
             />
             <button
               type="submit"
               disabled={!inputVal.trim() || isSending}
-              className="w-8 h-8 rounded-xl bg-zinc-100 hover:bg-white text-zinc-950 flex items-center justify-center transition-all active:scale-95 disabled:opacity-20 disabled:cursor-not-allowed shrink-0 cursor-pointer shadow-sm ml-2"
+              className="w-9 h-9 rounded-full bg-white hover:bg-zinc-200 text-[#0a0a0a] flex items-center justify-center transition-all active:scale-95 disabled:opacity-20 disabled:cursor-not-allowed shrink-0 cursor-pointer shadow-sm ml-2"
               title="Send query"
               aria-label="Send query"
             >
@@ -1018,13 +1014,13 @@ export default function AskAiView({ initialQuery }: AskAiViewProps) {
             </button>
           </form>
 
-          <div className="flex items-center justify-between text-[10px] font-mono text-zinc-500 px-2 select-none">
+          <div className="flex items-center justify-between text-[10px] font-mono text-[#737373] px-3 select-none">
             <span>Press <kbd className="text-zinc-400 font-semibold">Enter</kbd> to ask · <kbd className="text-zinc-400 font-semibold">Shift + Enter</kbd> for newline</span>
             {messages.length > 0 ? (
               <button
                 type="button"
                 onClick={handleClearChat}
-                className="text-zinc-500 hover:text-zinc-300 transition-colors cursor-pointer underline underline-offset-2"
+                className="text-[#737373] hover:text-white transition-colors cursor-pointer underline underline-offset-2"
               >
                 Clear conversation
               </button>

@@ -32,7 +32,7 @@ function StarRating({ rating, max = 5 }: { rating: number | string | null | unde
         return (
           <svg
             key={i}
-            className={`w-3 h-3 ${fill ? 'text-amber-400 fill-amber-400' : 'text-zinc-700 fill-transparent'}`}
+            className={`w-3 h-3 ${fill ? 'text-amber-400 fill-amber-400' : 'text-[#404040] fill-transparent'}`}
             viewBox="0 0 20 20"
             stroke="currentColor"
             strokeWidth={fill ? 0 : 1.5}
@@ -185,12 +185,12 @@ export default function ReviewsView({ onOpenProof }: ReviewsViewProps) {
 
   if (!activeBusiness) {
     return (
-      <div className="p-16 max-w-lg mx-auto text-center space-y-3">
-        <div className="w-10 h-10 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center mx-auto text-zinc-400">
+      <div className="p-16 max-w-lg mx-auto text-center space-y-4 font-sans">
+        <div className="w-10 h-10 rounded-full bg-[#1f1f1f] border border-[#262626] flex items-center justify-center mx-auto text-[#737373]">
           <FileText className="w-5 h-5" />
         </div>
-        <h3 className="text-sm font-semibold text-zinc-100">No Business Selected</h3>
-        <p className="text-xs text-zinc-400">
+        <h3 className="font-serif font-light text-2xl text-white">No Business Selected</h3>
+        <p className="text-xs text-[#a3a3a3]">
           Select an active business from the header selector to inspect customer reviews.
         </p>
       </div>
@@ -201,23 +201,19 @@ export default function ReviewsView({ onOpenProof }: ReviewsViewProps) {
   const instagramCount = reviews.filter((r) => r.platform === 'instagram').length;
 
   return (
-    <div className="p-6 lg:p-8 max-w-6xl mx-auto space-y-6">
+    <div className="p-6 lg:p-8 max-w-6xl mx-auto space-y-6 font-sans">
       {/* Channel Division & Selection Tabs */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-800/80 pb-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#262626] pb-4">
         <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={() => setPlatformFilter('all')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all inline-flex items-center gap-2 cursor-pointer ${
-              platformFilter === 'all'
-                ? 'bg-zinc-100 text-zinc-950 font-semibold shadow-sm'
-                : 'bg-zinc-900/60 text-zinc-400 hover:text-zinc-200 border border-zinc-800 hover:border-zinc-700'
-            }`}
+            className={platformFilter === 'all' ? 'btn-pill-primary text-xs py-1.5 px-4' : 'btn-pill-secondary text-xs py-1.5 px-4'}
           >
             <span>All Feedback</span>
             <span
-              className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${
-                platformFilter === 'all' ? 'bg-zinc-300 text-zinc-900' : 'bg-zinc-800 text-zinc-400'
+              className={`text-[10px] font-mono px-2 py-0.5 rounded-full ${
+                platformFilter === 'all' ? 'bg-[#0a0a0a] text-white' : 'bg-[#262626] text-[#a3a3a3]'
               }`}
             >
               {reviews.length}
@@ -227,16 +223,12 @@ export default function ReviewsView({ onOpenProof }: ReviewsViewProps) {
           <button
             type="button"
             onClick={() => setPlatformFilter('google')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all inline-flex items-center gap-2 cursor-pointer ${
-              platformFilter === 'google'
-                ? 'bg-zinc-100 text-zinc-950 font-semibold shadow-sm'
-                : 'bg-zinc-900/60 text-zinc-400 hover:text-zinc-200 border border-zinc-800 hover:border-zinc-700'
-            }`}
+            className={platformFilter === 'google' ? 'btn-pill-primary text-xs py-1.5 px-4' : 'btn-pill-secondary text-xs py-1.5 px-4'}
           >
             <span>Google Reviews</span>
             <span
-              className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${
-                platformFilter === 'google' ? 'bg-zinc-300 text-zinc-900' : 'bg-zinc-800 text-zinc-400'
+              className={`text-[10px] font-mono px-2 py-0.5 rounded-full ${
+                platformFilter === 'google' ? 'bg-[#0a0a0a] text-white' : 'bg-[#262626] text-[#a3a3a3]'
               }`}
             >
               {googleCount}
@@ -246,17 +238,13 @@ export default function ReviewsView({ onOpenProof }: ReviewsViewProps) {
           <button
             type="button"
             onClick={() => setPlatformFilter('instagram')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all inline-flex items-center gap-2 cursor-pointer ${
-              platformFilter === 'instagram'
-                ? 'bg-zinc-100 text-zinc-950 font-semibold shadow-sm'
-                : 'bg-zinc-900/60 text-zinc-400 hover:text-zinc-200 border border-zinc-800 hover:border-zinc-700'
-            }`}
+            className={platformFilter === 'instagram' ? 'btn-pill-primary text-xs py-1.5 px-4' : 'btn-pill-secondary text-xs py-1.5 px-4'}
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 inline-block" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[#4ade80] inline-block" />
             <span>Instagram Comments</span>
             <span
-              className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${
-                platformFilter === 'instagram' ? 'bg-zinc-300 text-zinc-900' : 'bg-zinc-800 text-zinc-400'
+              className={`text-[10px] font-mono px-2 py-0.5 rounded-full ${
+                platformFilter === 'instagram' ? 'bg-[#0a0a0a] text-white' : 'bg-[#262626] text-[#a3a3a3]'
               }`}
             >
               {instagramCount}
@@ -264,24 +252,24 @@ export default function ReviewsView({ onOpenProof }: ReviewsViewProps) {
           </button>
         </div>
 
-        <div className="text-[11px] font-mono text-zinc-500">
+        <div className="text-xs text-[#737373]">
           {platformFilter === 'all' && <span>Combined multi-channel telemetry stream</span>}
           {platformFilter === 'google' && <span>Google Maps reviews (Rated 1-5★)</span>}
-          {platformFilter === 'instagram' && <span>Instagram post comments (Sentiment classified, unrated)</span>}
+          {platformFilter === 'instagram' && <span>Instagram post comments (Sentiment classified)</span>}
         </div>
       </div>
 
       {/* Top Filter Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-xl bg-zinc-950/70 border border-zinc-800/80 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)]">
+      <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl bg-[#171717] border border-[#262626]">
         {/* Search Input */}
         <div className="relative flex-1 min-w-[240px]">
-          <Search className="w-4 h-4 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-[#737373] absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search reviews by keyword, patient name, or treatment tag..."
-            className="w-full h-9 pl-9 pr-3 text-xs rounded-md border border-zinc-800 bg-zinc-900/60 text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-zinc-600 transition-colors"
+            className="w-full h-9 pl-10 pr-4 text-xs rounded-full border border-[#262626] bg-[#1f1f1f] text-white placeholder:text-[#737373] focus:outline-none focus:border-[#404040] transition-colors"
           />
         </div>
 
@@ -297,7 +285,7 @@ export default function ReviewsView({ onOpenProof }: ReviewsViewProps) {
               { value: 'instagram', label: 'Instagram' },
             ]}
             size="sm"
-            variant="default"
+            variant="pill"
             className="w-36"
           />
 
@@ -306,10 +294,10 @@ export default function ReviewsView({ onOpenProof }: ReviewsViewProps) {
             <button
               type="button"
               onClick={() => setSelectedIgAccount(instagramAccounts[0])}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 h-9 rounded-md text-xs font-medium bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 border border-zinc-800 hover:border-zinc-700 transition-colors cursor-pointer active:scale-[0.98]"
+              className="btn-pill-secondary h-9 text-xs"
               title="Inspect crawled Instagram posts and comment threads"
             >
-              <Layers className="w-3.5 h-3.5 text-[#5e6ad2]" />
+              <Layers className="w-3.5 h-3.5 text-[#4ade80]" />
               <span className="hidden sm:inline">Browse Posts ({instagramAccounts[0].posts_count || 0})</span>
               <span className="sm:hidden">Posts</span>
             </button>
@@ -324,12 +312,12 @@ export default function ReviewsView({ onOpenProof }: ReviewsViewProps) {
               {
                 value: 'positive',
                 label: 'Positive',
-                icon: <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0" />,
+                icon: <span className="w-2 h-2 rounded-full bg-[#22c55e] shrink-0" />,
               },
               {
                 value: 'neutral',
                 label: 'Neutral',
-                icon: <span className="w-2 h-2 rounded-full bg-zinc-400 shrink-0" />,
+                icon: <span className="w-2 h-2 rounded-full bg-[#737373] shrink-0" />,
               },
               {
                 value: 'negative',
@@ -338,7 +326,7 @@ export default function ReviewsView({ onOpenProof }: ReviewsViewProps) {
               },
             ]}
             size="sm"
-            variant="default"
+            variant="pill"
             className="w-40"
           />
         </div>
@@ -350,16 +338,16 @@ export default function ReviewsView({ onOpenProof }: ReviewsViewProps) {
       {/* Reviews List & Pagination */}
       {isLoading ? (
         <div className="p-16 flex flex-col items-center justify-center text-center space-y-3">
-          <Loader2 className="w-5 h-5 text-zinc-400 animate-spin" />
-          <p className="text-xs text-zinc-500 font-mono">Loading reviews from database...</p>
+          <Loader2 className="w-5 h-5 text-[#4ade80] animate-spin" />
+          <p className="text-xs text-[#a3a3a3] font-mono">Loading reviews from database...</p>
         </div>
       ) : filteredReviews.length === 0 ? (
-        <div className="p-16 rounded-xl bg-zinc-950/70 border border-zinc-800/80 text-center space-y-3">
-          <div className="w-10 h-10 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center mx-auto text-zinc-500">
+        <div className="p-16 rounded-2xl bg-[#171717] border border-[#262626] text-center space-y-3">
+          <div className="w-10 h-10 rounded-full bg-[#1f1f1f] border border-[#262626] flex items-center justify-center mx-auto text-[#737373]">
             <FileText className="w-5 h-5" />
           </div>
-          <h3 className="text-sm font-semibold text-zinc-100">No Customer Reviews Found</h3>
-          <p className="text-xs text-zinc-400 max-w-sm mx-auto">
+          <h3 className="font-serif font-light text-xl text-white">No Customer Reviews Found</h3>
+          <p className="text-xs text-[#a3a3a3] max-w-sm mx-auto">
             {reviews.length === 0
               ? `No reviews have been ingested yet for ${activeBusiness?.name || 'this business'}. Connect Google Reviews in Settings to run a crawl.`
               : 'No reviews match your current search and filter criteria.'}
@@ -373,23 +361,23 @@ export default function ReviewsView({ onOpenProof }: ReviewsViewProps) {
               return (
                 <div
                   key={rev.id}
-                  className="p-5 rounded-xl bg-zinc-950/70 border border-zinc-800/80 hover:border-zinc-700/80 transition-all space-y-3 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.02)] group"
+                  className="p-6 rounded-2xl bg-[#171717] border border-[#262626] hover:border-[#404040] transition-colors space-y-3 group"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="space-y-1.5">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-xs font-medium text-zinc-200">
+                      <div className="flex flex-wrap items-center gap-2 text-xs">
+                        <span className="font-medium text-white">
                           {rev.platform === 'instagram' ? `@${rev.author}` : rev.author}
                         </span>
-                        <span className="text-zinc-600 font-mono">/</span>
-                        <span className="text-[11px] font-mono text-zinc-500">{rev.date}</span>
-                        <span className="text-zinc-600 font-mono">/</span>
-                        <span className="text-[10px] px-2 py-0.5 rounded font-mono uppercase tracking-wider border border-zinc-800 bg-zinc-900/60 text-zinc-300 inline-flex items-center gap-1.5">
+                        <span className="text-[#404040]">/</span>
+                        <span className="text-xs text-[#737373]">{rev.date}</span>
+                        <span className="text-[#404040]">/</span>
+                        <span className="text-[10px] px-2.5 py-0.5 rounded-full uppercase tracking-wider border border-[#262626] bg-[#1f1f1f] text-white inline-flex items-center gap-1.5 font-medium">
                           {rev.platform === 'google' ? (
                             <span>Google Review</span>
                           ) : (
-                            <span className="text-zinc-300 flex items-center gap-1 font-semibold">
-                              <span className="w-2 h-2 rounded-full bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 inline-block" />
+                            <span className="text-white flex items-center gap-1">
+                              <span className="w-1.5 h-1.5 rounded-full bg-[#4ade80] inline-block" />
                               <span>Instagram</span>
                             </span>
                           )}
@@ -400,21 +388,21 @@ export default function ReviewsView({ onOpenProof }: ReviewsViewProps) {
                         rev.rating != null ? (
                           <div className="flex items-center gap-2">
                             <StarRating rating={rev.rating} />
-                            <span className="text-[11px] font-mono text-zinc-400">
+                            <span className="text-xs text-[#a3a3a3]">
                               {Number(rev.rating).toFixed(1)} / 5.0 (Google Review)
                             </span>
                           </div>
                         ) : (
                           <div className="flex items-center gap-2">
-                            <span className="text-[11px] font-mono text-zinc-500">
+                            <span className="text-xs text-[#737373]">
                               Google Review • Unrated
                             </span>
                           </div>
                         )
                       ) : (
                         <div className="flex items-center gap-2">
-                          <span className="text-[11px] font-mono text-zinc-500">
-                            Instagram Comment • Social Sentiment Only (No Star Rating)
+                          <span className="text-xs text-[#737373]">
+                            Instagram Comment • Social Sentiment
                           </span>
                         </div>
                       )}
@@ -423,21 +411,21 @@ export default function ReviewsView({ onOpenProof }: ReviewsViewProps) {
                     {/* Sentiment Badge & Actions */}
                     <div className="flex items-center gap-2">
                       <span
-                        className={`inline-flex items-center gap-1.5 text-[10px] font-mono px-2 py-0.5 rounded border ${
+                        className={`inline-flex items-center gap-1.5 text-[10px] font-mono px-2.5 py-0.5 rounded-full border ${
                           rev.sentiment === 'positive'
-                            ? 'bg-emerald-950/30 text-emerald-300 border-emerald-900/40'
+                            ? 'bg-[#22c55e]/15 text-[#22c55e] border-[#22c55e]/30'
                             : rev.sentiment === 'negative'
-                              ? 'bg-rose-950/30 text-rose-300 border-rose-900/40'
-                              : 'bg-zinc-900 text-zinc-400 border-zinc-800'
+                              ? 'bg-rose-500/15 text-rose-400 border-rose-500/30'
+                              : 'bg-[#1f1f1f] text-[#a3a3a3] border-[#262626]'
                         }`}
                       >
                         <span
                           className={`w-1.5 h-1.5 rounded-full ${
                             rev.sentiment === 'positive'
-                              ? 'bg-emerald-400'
+                              ? 'bg-[#22c55e]'
                               : rev.sentiment === 'negative'
                                 ? 'bg-rose-400'
-                                : 'bg-zinc-500'
+                                : 'bg-[#737373]'
                           }`}
                         />
                         <span className="capitalize">{rev.sentiment}</span>
@@ -448,7 +436,7 @@ export default function ReviewsView({ onOpenProof }: ReviewsViewProps) {
                   {/* Review Text */}
                   <p
                     onClick={() => onOpenProof(rev)}
-                    className="text-xs text-zinc-300 leading-relaxed cursor-pointer hover:text-zinc-100 transition-colors"
+                    className="text-xs text-[#a3a3a3] leading-relaxed cursor-pointer hover:text-white transition-colors"
                   >
                     {rev.content}
                   </p>
@@ -459,7 +447,7 @@ export default function ReviewsView({ onOpenProof }: ReviewsViewProps) {
                       {rev.themes.map((t: string, idx: number) => (
                         <span
                           key={`${t}-${idx}`}
-                          className="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-900/80 border border-zinc-800 text-zinc-400"
+                          className="badge-neutral text-[10px]"
                         >
                           #{t}
                         </span>
@@ -473,21 +461,21 @@ export default function ReviewsView({ onOpenProof }: ReviewsViewProps) {
 
           {/* Clean Pagination Bar */}
           {totalReviewsCount > 0 && (
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-xl bg-zinc-950/70 border border-zinc-800/80 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)] text-xs font-mono">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl bg-[#171717] border border-[#262626] text-xs font-sans">
               {/* Left: Summary */}
-              <div className="text-zinc-400">
-                Showing <span className="font-semibold text-zinc-100">{startIndex + 1}</span>–
-                <span className="font-semibold text-zinc-100">{endIndex}</span> of{' '}
-                <span className="font-semibold text-zinc-100">{totalReviewsCount}</span> reviews
+              <div className="text-[#a3a3a3]">
+                Showing <span className="font-medium text-white">{startIndex + 1}</span>–
+                <span className="font-medium text-white">{endIndex}</span> of{' '}
+                <span className="font-medium text-white">{totalReviewsCount}</span> reviews
               </div>
 
               {/* Center: Rows per page */}
-              <div className="flex items-center gap-2 text-zinc-400">
+              <div className="flex items-center gap-2 text-[#a3a3a3]">
                 <span>Rows per page:</span>
                 <select
                   value={pageSize}
                   onChange={(e) => setPageSize(Number(e.target.value))}
-                  className="h-8 px-2.5 rounded-md bg-zinc-900 border border-zinc-800 text-zinc-200 focus:outline-none focus:border-zinc-700 cursor-pointer"
+                  className="h-8 px-3 rounded-full bg-[#1f1f1f] border border-[#262626] text-white focus:outline-none focus:border-[#404040] cursor-pointer"
                 >
                   <option value={10}>10</option>
                   <option value={20}>20</option>
@@ -503,9 +491,9 @@ export default function ReviewsView({ onOpenProof }: ReviewsViewProps) {
                   onClick={() => handlePageChange(1)}
                   disabled={safeCurrentPage === 1}
                   title="First Page"
-                  className="p-1.5 rounded-md border border-zinc-800 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                  className="btn-pill-secondary p-2 disabled:opacity-30 disabled:pointer-events-none"
                 >
-                  <ChevronsLeft className="w-4 h-4" />
+                  <ChevronsLeft className="w-3.5 h-3.5" />
                 </button>
 
                 <button
@@ -513,9 +501,9 @@ export default function ReviewsView({ onOpenProof }: ReviewsViewProps) {
                   onClick={() => handlePageChange(safeCurrentPage - 1)}
                   disabled={safeCurrentPage === 1}
                   title="Previous Page"
-                  className="p-1.5 rounded-md border border-zinc-800 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                  className="btn-pill-secondary p-2 disabled:opacity-30 disabled:pointer-events-none"
                 >
-                  <ChevronLeft className="w-4 h-4" />
+                  <ChevronLeft className="w-3.5 h-3.5" />
                 </button>
 
                 {/* Numbered buttons */}
@@ -523,7 +511,7 @@ export default function ReviewsView({ onOpenProof }: ReviewsViewProps) {
                   {pageNumbers.map((p, idx) => {
                     if (p === '...') {
                       return (
-                        <span key={`ellipsis-${idx}`} className="px-2 py-1 text-zinc-600 select-none">
+                        <span key={`ellipsis-${idx}`} className="px-2 py-1 text-[#737373] select-none">
                           …
                         </span>
                       );
@@ -535,10 +523,10 @@ export default function ReviewsView({ onOpenProof }: ReviewsViewProps) {
                         key={pageNum}
                         type="button"
                         onClick={() => handlePageChange(pageNum)}
-                        className={`min-w-8 h-8 px-2 rounded-md font-mono text-xs transition-colors cursor-pointer ${
+                        className={`min-w-8 h-8 px-2.5 rounded-full text-xs font-mono transition-colors cursor-pointer ${
                           isActive
-                            ? 'bg-zinc-100 text-zinc-950 font-bold border border-zinc-100 shadow-sm'
-                            : 'bg-zinc-900/60 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 border border-zinc-800'
+                            ? 'bg-white text-[#0a0a0a] font-medium shadow-sm'
+                            : 'bg-[#1f1f1f] hover:bg-[#262626] text-[#a3a3a3] hover:text-white border border-[#262626]'
                         }`}
                       >
                         {pageNum}
@@ -552,9 +540,9 @@ export default function ReviewsView({ onOpenProof }: ReviewsViewProps) {
                   onClick={() => handlePageChange(safeCurrentPage + 1)}
                   disabled={safeCurrentPage === totalPages}
                   title="Next Page"
-                  className="p-1.5 rounded-md border border-zinc-800 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                  className="btn-pill-secondary p-2 disabled:opacity-30 disabled:pointer-events-none"
                 >
-                  <ChevronRight className="w-4 h-4" />
+                  <ChevronRight className="w-3.5 h-3.5" />
                 </button>
 
                 <button
@@ -562,9 +550,9 @@ export default function ReviewsView({ onOpenProof }: ReviewsViewProps) {
                   onClick={() => handlePageChange(totalPages)}
                   disabled={safeCurrentPage === totalPages}
                   title="Last Page"
-                  className="p-1.5 rounded-md border border-zinc-800 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                  className="btn-pill-secondary p-2 disabled:opacity-30 disabled:pointer-events-none"
                 >
-                  <ChevronsRight className="w-4 h-4" />
+                  <ChevronsRight className="w-3.5 h-3.5" />
                 </button>
               </div>
             </div>

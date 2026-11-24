@@ -1,13 +1,66 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --color-canvas: #0a0a0a;
+  --color-surface: #171717;
+  --color-surface-elevated: #1f1f1f;
+  --color-ink: #ffffff;
+  --color-ink-muted: #a3a3a3;
+  --color-ink-dim: #737373;
+  --color-action: #ec4899;
+  --color-action-subtle: #be185d;
+  --color-success: #22c55e;
+  --color-border: #262626;
+  --color-border-subtle: #404040;
+
   --font-serif: 'Instrument Serif', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', Menlo, Monaco, monospace;
 }
 
+/* ─────────────────────────────────────────────────────────────
+   SUNO-INSPIRED DESIGN SYSTEM TOKENS (Design.md)
+   Near-black canvas #0a0a0a, surface #171717, surface-elevated #1f1f1f,
+   ink #ffffff, ink-muted #a3a3a3, ink-dim #737373,
+   action pink #ec4899, success green #22c55e, border #262626.
+   ───────────────────────────────────────────────────────────── */
+:root {
+  --canvas: #0a0a0a;
+  --surface: #171717;
+  --surface-elevated: #1f1f1f;
+  --ink: #ffffff;
+  --ink-muted: #a3a3a3;
+  --ink-dim: #737373;
+  --action: #ec4899;
+  --action-subtle: #be185d;
+  --success: #22c55e;
+  --border: #262626;
+  --border-subtle: #404040;
+}
+
+/* Base resets & typography */
+html {
+  scroll-behavior: smooth;
+  color-scheme: dark;
+  background-color: #0a0a0a;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #ffffff;
+  background-color: #0a0a0a;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+  letter-spacing: -0.01em;
+}
+
+/* Editorial Serif Light (strict weight 300) */
 .font-serif {
   font-family: 'Instrument Serif', Georgia, serif;
+  font-weight: 300 !important;
+  letter-spacing: -0.02em;
 }
 
 .font-sans {
@@ -18,62 +71,13 @@
   font-family: 'JetBrains Mono', Menlo, Monaco, monospace;
 }
 
-/* ─────────────────────────────────────────────────────────────
-   LINEAR DESIGN SYSTEM TOKENS (linear.app/DESIGN.md)
-   Near-black canvas #010102, 4-step surface ladder, hairline borders,
-   and signature Linear lavender-blue #5e6ad2 accent.
-   ───────────────────────────────────────────────────────────── */
-:root {
-  --canvas: #09090b;
-  --surface-1: #0f1011;
-  --surface-2: #141516;
-  --surface-3: #18191b;
-  --surface-4: #202124;
-
-  --hairline: #27272a;
-  --hairline-strong: #3f3f46;
-  --hairline-tertiary: #52525b;
-
-  --primary: #f4f4f5;
-  --primary-hover: #ffffff;
-  --primary-focus: #e4e4e7;
-  --on-primary: #09090b;
-
-  --ink: #f4f4f5;
-  --ink-muted: #d4d4d8;
-  --ink-subtle: #a1a1aa;
-  --ink-tertiary: #71717a;
-
-  --semantic-success: #10b981;
-  --semantic-overlay: #000000;
-  --brand-secure: #a1a1aa;
-}
-
-/* Base resets & typography */
-html {
-  scroll-behavior: smooth;
-  color-scheme: dark;
-  background-color: var(--canvas);
-}
-
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  color: var(--ink);
-  background-color: var(--canvas);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-  overflow-x: hidden;
-  letter-spacing: -0.011em;
-}
-
-/* Custom Selection in subtle neutral highlight */
+/* Selection highlight using action pink subtle */
 ::selection {
-  background-color: #27272a;
-  color: #f4f4f5;
+  background-color: rgba(236, 72, 153, 0.3);
+  color: #ffffff;
 }
 
-/* Custom Linear Dark Scrollbar */
+/* Minimal Dark Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -84,23 +88,21 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #27272a;
-  border-radius: 3px;
+  background: #262626;
+  border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #3f3f46;
+  background: #404040;
 }
 
-/* Headings with measured negative tracking */
+/* Headings with balanced wraps */
 h1,
 h2,
 h3,
 h4 {
   text-wrap: balance;
-  letter-spacing: -0.025em;
-  font-weight: 600;
-  color: var(--ink);
+  color: #ffffff;
 }
 
 /* Tabular numbers for metrics and stats */
@@ -108,120 +110,241 @@ h4 {
   font-variant-numeric: tabular-nums;
 }
 
-/* Eyebrow / Taxonomy text */
-.linear-eyebrow {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--ink-subtle);
-}
-
 /* ─────────────────────────────────────────────────────────────
-   COMPONENT UTILITIES - TASTE COMPLIANT (HANDCRAFTED MINIMAL)
+   HANDCRAFTED MINIMAL PILL BUTTONS (Design.md)
+   White pills for primary, dark pills for secondary,
+   action pink for badges and conversion signals.
    ───────────────────────────────────────────────────────────── */
 
-/* Primary CTA Button (High-Contrast Neutral) */
+/* Primary Pill Button */
+.btn-pill-primary,
 .linear-btn-primary,
 .cal-button-primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
   font-weight: 500;
-  border-radius: 6px;
-  padding: 7px 14px;
-  background-color: #f4f4f5;
-  color: #09090b;
+  border-radius: 9999px;
+  padding: 0.55rem 1.35rem;
+  background-color: #ffffff;
+  color: #0a0a0a;
   border: 1px solid #ffffff;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
-  transition: background-color 0.15s ease, transform 0.1s ease, opacity 0.15s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  transition: all 0.15s ease;
   cursor: pointer;
+  text-decoration: none;
 }
 
+.btn-pill-primary:hover,
 .linear-btn-primary:hover,
 .cal-button-primary:hover {
-  background-color: #ffffff;
+  background-color: #e5e5e5;
+  border-color: #e5e5e5;
+  color: #0a0a0a;
 }
 
+.btn-pill-primary:active,
 .linear-btn-primary:active,
 .cal-button-primary:active {
   transform: scale(0.98);
 }
 
+.btn-pill-primary:disabled,
 .linear-btn-primary:disabled,
 .cal-button-primary:disabled {
-  opacity: 0.5;
+  opacity: 0.45;
   cursor: not-allowed;
+  transform: none;
 }
 
-/* Secondary Neutral Button */
+/* Secondary Pill Button */
+.btn-pill-secondary,
 .linear-btn-secondary,
 .cal-button-secondary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
   font-weight: 500;
-  border-radius: 6px;
-  padding: 7px 14px;
-  background-color: #18181b;
-  color: #e4e4e7;
-  border: 1px solid #27272a;
-  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
+  border-radius: 9999px;
+  padding: 0.55rem 1.35rem;
+  background-color: #1f1f1f;
+  color: #ffffff;
+  border: 1px solid #262626;
+  transition: all 0.15s ease;
   cursor: pointer;
+  text-decoration: none;
 }
 
+.btn-pill-secondary:hover,
 .linear-btn-secondary:hover,
 .cal-button-secondary:hover {
-  background-color: #27272a;
-  border-color: #3f3f46;
-  color: #f4f4f5;
+  background-color: #262626;
+  border-color: #404040;
+  color: #ffffff;
 }
 
+.btn-pill-secondary:active,
 .linear-btn-secondary:active,
 .cal-button-secondary:active {
   transform: scale(0.98);
 }
 
+.btn-pill-secondary:disabled,
 .linear-btn-secondary:disabled,
 .cal-button-secondary:disabled {
-  opacity: 0.5;
+  opacity: 0.45;
   cursor: not-allowed;
+  transform: none;
 }
 
-/* Card Base with hairline border */
+/* Action Light Green Pill Button */
+.btn-pill-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  padding: 0.55rem 1.35rem;
+  background-color: #ec4899;
+  color: #0a0a0a;
+  border: 1px solid #ec4899;
+  transition: all 0.15s ease;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn-pill-action:hover {
+  background-color: #be185d;
+  border-color: #be185d;
+  color: #0a0a0a;
+}
+
+.btn-pill-action:active {
+  transform: scale(0.98);
+}
+
+/* Badges */
+.badge-action-green,
+.badge-action-pink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-radius: 9999px;
+  padding: 0.2rem 0.65rem;
+  background-color: #ec4899;
+  color: #0a0a0a;
+}
+
+.badge-action-subtle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  border-radius: 9999px;
+  padding: 0.2rem 0.65rem;
+  background-color: rgba(236, 72, 153, 0.12);
+  color: #ec4899;
+  border: 1px solid rgba(236, 72, 153, 0.28);
+}
+
+.badge-success {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  border-radius: 9999px;
+  padding: 0.2rem 0.65rem;
+  background-color: rgba(34, 197, 94, 0.12);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.28);
+}
+
+.badge-neutral {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  border-radius: 9999px;
+  padding: 0.2rem 0.65rem;
+  background-color: #1f1f1f;
+  color: #a3a3a3;
+  border: 1px solid #262626;
+}
+
+/* Card Containers */
+.card-surface,
 .linear-card {
-  background-color: #0c0d0e;
-  border: 1px solid #27272a;
-  border-radius: 8px;
+  background-color: #171717;
+  border: 1px solid #262626;
+  border-radius: 1rem;
 }
 
-/* Card Lifted */
+.card-surface-elevated,
 .linear-card-lifted {
-  background-color: #141416;
-  border: 1px solid #3f3f46;
-  border-radius: 8px;
+  background-color: #1f1f1f;
+  border: 1px solid #262626;
+  border-radius: 1rem;
 }
 
-/* Text Input Styling */
+.card-featured {
+  background-color: #1f1f1f;
+  border: 1px solid #ec4899;
+  border-radius: 1rem;
+}
+
+/* Input Fields */
+.input-pill,
 .linear-input {
-  background-color: #141416;
-  border: 1px solid #27272a;
-  color: #f4f4f5;
-  border-radius: 6px;
-  font-size: 12px;
+  background-color: #171717;
+  border: 1px solid #262626;
+  color: #ffffff;
+  border-radius: 9999px;
+  padding: 0.45rem 1rem;
+  font-size: 0.75rem;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.input-pill:focus,
+.linear-input:focus,
+.input-pill:focus-visible,
+.linear-input:focus-visible {
+  outline: none;
+  border-color: #404040;
+  background-color: #1f1f1f;
+}
+
+.input-pill::placeholder,
+.linear-input::placeholder {
+  color: #737373;
+}
+
+/* Form Area / Textarea */
+textarea.input-surface {
+  background-color: #171717;
+  border: 1px solid #262626;
+  color: #ffffff;
+  border-radius: 0.75rem;
+  padding: 0.65rem 0.9rem;
+  font-size: 0.75rem;
   transition: border-color 0.15s ease;
 }
 
-.linear-input:focus,
-.linear-input:focus-visible {
+textarea.input-surface:focus {
   outline: none;
-  border-color: #71717a;
-}
-
-.linear-input::placeholder {
-  color: #71717a;
+  border-color: #404040;
 }
 
 /* Accessible focus visible states */
@@ -230,8 +353,8 @@ button:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  outline: none;
-  border-color: #71717a;
+  outline: 2px solid #ec4899;
+  outline-offset: 2px;
 }
 
 /* Reduced motion support */
@@ -247,10 +370,7 @@ textarea:focus-visible {
   }
 }
 
-/* ─────────────────────────────────────────────────────────────
-   SKELETON SHIMMER EFFECT
-   Subtle Linear/Vercel-style gradient sweep over skeleton blocks
-   ───────────────────────────────────────────────────────────── */
+/* Skeleton Shimmer */
 @keyframes skeleton-sweep {
   0% {
     transform: translateX(-100%);
@@ -264,6 +384,7 @@ textarea:focus-visible {
 .skeleton-shimmer {
   position: relative;
   overflow: hidden;
+  background-color: #171717;
 }
 
 .skeleton-shimmer::after {

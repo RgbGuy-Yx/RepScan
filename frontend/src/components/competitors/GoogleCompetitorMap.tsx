@@ -118,9 +118,9 @@ export default function GoogleCompetitorMap({
           map,
           center: businessLocation,
           radius: radiusMeters,
-          fillColor: '#5e6ad2',
+          fillColor: '#4ade80',
           fillOpacity: 0.05,
-          strokeColor: '#5e6ad2',
+          strokeColor: '#4ade80',
           strokeOpacity: 0.35,
           strokeWeight: 1.5,
           clickable: false,
@@ -390,7 +390,7 @@ export default function GoogleCompetitorMap({
         <button
           onClick={handleResetCenter}
           title="Recenter on HQ"
-          className="w-7 h-7 rounded-xl flex items-center justify-center text-zinc-400 hover:text-[#5e6ad2] hover:bg-zinc-800/80 active:scale-[0.90] transition-all"
+          className="w-7 h-7 rounded-xl flex items-center justify-center text-zinc-400 hover:text-[#4ade80] hover:bg-zinc-800/80 active:scale-[0.90] transition-all"
         >
           <Navigation className="w-3.5 h-3.5" />
         </button>
@@ -411,7 +411,7 @@ export default function GoogleCompetitorMap({
       {/* Loading Overlay */}
       {isLoadingMap && (
         <div className="absolute inset-0 bg-[#08090d]/85 backdrop-blur-md flex flex-col items-center justify-center gap-3 z-30">
-          <Loader2 className="w-6 h-6 text-[#5e6ad2] animate-spin" />
+          <Loader2 className="w-6 h-6 text-[#4ade80] animate-spin" />
           <span className="text-xs text-zinc-400 font-mono">Initializing Radar Map...</span>
         </div>
       )}

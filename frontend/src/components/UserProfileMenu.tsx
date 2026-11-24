@@ -1,9 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import {
   LogOut,
-  LayoutDashboard,
-  Settings,
   ChevronDown,
 } from 'lucide-react';
 import { useBusiness } from '../context/BusinessContext';
@@ -59,8 +57,8 @@ export default function UserProfileMenu({ align = 'right' }: UserProfileMenuProp
   const initial = userProfile?.name
     ? userProfile.name.charAt(0).toUpperCase()
     : userProfile?.email
-    ? userProfile.email.charAt(0).toUpperCase()
-    : 'U';
+      ? userProfile.email.charAt(0).toUpperCase()
+      : 'U';
 
   const displayName =
     userProfile?.name ||
@@ -70,89 +68,48 @@ export default function UserProfileMenu({ align = 'right' }: UserProfileMenuProp
   return (
     <div
       ref={menuRef}
-      className="relative inline-block"
+      className="relative inline-block font-sans"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      {/* Trigger Avatar Button */}
+      {/* Trigger Pill Button */}
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
+        className="flex items-center gap-2 pl-1 pr-3 py-1 rounded-full bg-[#171717] border border-[#262626] hover:border-[#404040] hover:bg-[#1f1f1f] transition-colors cursor-pointer select-none"
         aria-expanded={isOpen}
-        className="flex items-center gap-2 px-2.5 py-1.5 rounded-md border border-zinc-800 bg-zinc-900 hover:bg-zinc-850 hover:border-zinc-700 transition-colors cursor-pointer group active:scale-[0.98]"
       >
-        <div className="relative">
-          <div className="w-5 h-5 rounded bg-zinc-800 border border-zinc-700 text-zinc-200 font-mono font-semibold text-[10px] flex items-center justify-center">
-            {initial}
-          </div>
-          <span className="absolute -bottom-0.5 -right-0.5 w-1.5 h-1.5 bg-emerald-500 rounded-full" />
-        </div>
-
-        <span className="text-xs font-medium text-zinc-300 group-hover:text-zinc-100 max-w-[120px] truncate hidden md:inline-block">
+        <span className="w-6 h-6 rounded-full bg-white text-[#0a0a0a] font-medium text-xs flex items-center justify-center">
+          {initial}
+        </span>
+        <span className="text-xs font-medium text-white max-w-[100px] truncate hidden sm:inline">
           {displayName}
         </span>
-
-        <ChevronDown
-          className={`w-3 h-3 text-zinc-500 group-hover:text-zinc-300 transition-transform duration-150 ${
-            isOpen ? 'rotate-180 text-zinc-200' : ''
-          }`}
-        />
+        <ChevronDown className={`w-3 h-3 text-[#737373] transition-transform duration-200 ${isOpen ? 'rotate-180 text-white' : ''}`} />
       </button>
 
-      {/* Hover / Click Profile Dropdown Menu */}
+      {/* Dropdown Menu */}
       {isOpen && (
         <div
-          className={`absolute ${
-            align === 'right' ? 'right-0' : 'left-0'
-          } mt-1.5 w-60 rounded-xl bg-zinc-950/95 backdrop-blur-md border border-zinc-800/90 shadow-2xl shadow-black/80 ring-1 ring-white/5 py-1.5 z-50 animate-in fade-in zoom-in-95 duration-150`}
+          className={`absolute ${align === 'right' ? 'right-0' : 'left-0'} mt-2 w-56 rounded-2xl bg-[#171717] border border-[#262626] shadow-2xl p-2 z-50 animate-in fade-in zoom-in-95 duration-100`}
         >
-          {/* User Details Header */}
-          <div className="px-3 py-2 border-b border-zinc-800/80 space-y-0.5">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-zinc-100 truncate block">
-                {displayName}
-              </span>
-              <span className="inline-flex items-center gap-1 text-[9px] font-mono text-emerald-400 bg-emerald-950/40 px-1.5 py-0.2 rounded border border-emerald-800/40 uppercase">
-                Live
-              </span>
-            </div>
-            {displayEmail ? (
-              <p className="text-[11px] text-zinc-500 truncate font-mono">
-                {displayEmail}
-              </p>
-            ) : null}
+          {/* User Details */}
+          <div className="px-3 py-2 border-b border-[#262626]">
+            <p className="text-xs font-medium text-white truncate">{displayName}</p>
+            {displayEmail && (
+              <p className="text-[11px] text-[#737373] font-mono truncate mt-0.5">{displayEmail}</p>
+            )}
           </div>
 
-          {/* Quick Route Links */}
-          <div className="py-1 px-1 space-y-0.5">
-            <Link
-              to="/dashboard"
-              onClick={() => setIsOpen(false)}
-              className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-medium text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900 transition-colors"
-            >
-              <LayoutDashboard className="w-3.5 h-3.5 text-zinc-400" />
-              <span>Overview Telemetry</span>
-            </Link>
-
-            <Link
-              to="/dashboard/settings"
-              onClick={() => setIsOpen(false)}
-              className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-medium text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900 transition-colors"
-            >
-              <Settings className="w-3.5 h-3.5 text-zinc-400" />
-              <span>Workspace Settings</span>
-            </Link>
-          </div>
-
-          {/* Security & Logout Section */}
-          <div className="pt-1 px-1 border-t border-zinc-800/80">
+          {/* Actions */}
+          <div className="pt-1.5">
             <button
               type="button"
               onClick={handleLogoutClick}
-              className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-medium text-rose-400 hover:text-rose-300 hover:bg-rose-950/20 transition-colors cursor-pointer group"
+              className="w-full flex items-center gap-2 px-3 py-2 text-xs text-[#4ade80] hover:bg-[#1f1f1f] rounded-xl transition-colors cursor-pointer"
             >
-              <LogOut className="w-3.5 h-3.5 text-rose-400" />
-              <span>Log Out</span>
+              <LogOut className="w-3.5 h-3.5" />
+              <span>Sign Out</span>
             </button>
           </div>
         </div>

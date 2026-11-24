@@ -80,22 +80,22 @@ export default function InstagramPostsDrawer({
   const getMediaIcon = (type?: string | null) => {
     const lower = (type || '').toLowerCase();
     if (lower.includes('video') || lower.includes('reel')) {
-      return <Video className="w-3.5 h-3.5 text-indigo-400" />;
+      return <Video className="w-3.5 h-3.5 text-[#4ade80]" />;
     }
     if (lower.includes('sidecar') || lower.includes('carousel')) {
       return <Layers className="w-3.5 h-3.5 text-amber-400" />;
     }
-    return <ImageIcon className="w-3.5 h-3.5 text-zinc-400" />;
+    return <ImageIcon className="w-3.5 h-3.5 text-[#a3a3a3]" />;
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex justify-end animate-in fade-in duration-200">
-      <div className="w-full max-w-2xl bg-[#0f1011] border-l border-zinc-800 h-full flex flex-col text-zinc-100 shadow-2xl">
+    <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex justify-end animate-in fade-in duration-200">
+      <div className="w-full max-w-2xl bg-[#171717] border-l border-[#262626] h-full flex flex-col text-zinc-100 shadow-2xl">
         {/* Header */}
-        <div className="p-5 border-b border-zinc-800 flex items-center justify-between">
+        <div className="p-5 border-b border-[#262626] flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 p-[2px]">
-              <div className="w-full h-full rounded-full bg-zinc-950 flex items-center justify-center overflow-hidden">
+              <div className="w-full h-full rounded-full bg-[#0a0a0a] flex items-center justify-center overflow-hidden">
                 {account.profile_pic_url ? (
                   <img
                     src={account.profile_pic_url}
@@ -111,17 +111,17 @@ export default function InstagramPostsDrawer({
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-sm font-bold text-zinc-100">@{account.username}</h3>
+                <h3 className="font-serif font-light text-xl text-white tracking-[-0.01em]">@{account.username}</h3>
                 <a
                   href={account.profile_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-zinc-500 hover:text-zinc-300 transition-colors"
+                  className="text-[#737373] hover:text-white transition-colors"
                 >
                   <ExternalLink className="w-3.5 h-3.5" />
                 </a>
               </div>
-              <p className="text-[11px] text-zinc-400 font-mono">
+              <p className="text-[11px] text-[#a3a3a3] font-mono">
                 {totalPosts} ingested posts & reels
               </p>
             </div>
@@ -129,7 +129,7 @@ export default function InstagramPostsDrawer({
 
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-lg border border-zinc-800 hover:bg-zinc-800/80 text-zinc-400 hover:text-zinc-200 flex items-center justify-center transition-colors cursor-pointer"
+            className="w-8 h-8 rounded-full border border-[#262626] bg-[#1f1f1f] hover:bg-[#262626] text-[#a3a3a3] hover:text-white flex items-center justify-center transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -139,19 +139,19 @@ export default function InstagramPostsDrawer({
         <div className="flex-1 overflow-y-auto p-5 space-y-4">
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-20 space-y-3">
-              <Loader2 className="w-6 h-6 text-[#5e6ad2] animate-spin" />
-              <p className="text-xs text-zinc-400 font-mono">Loading ingested posts & media...</p>
+              <Loader2 className="w-6 h-6 text-[#4ade80] animate-spin" />
+              <p className="text-xs text-[#a3a3a3] font-mono">Loading ingested posts & media...</p>
             </div>
           ) : error ? (
-            <div className="p-4 rounded-xl border border-rose-900/40 bg-rose-950/20 text-rose-300 text-xs flex items-center gap-2.5">
+            <div className="p-4 rounded-2xl border border-rose-900/40 bg-rose-950/20 text-rose-300 text-xs flex items-center gap-2.5">
               <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
               <span>{error}</span>
             </div>
           ) : posts.length === 0 ? (
-            <div className="p-12 text-center border border-dashed border-zinc-800 rounded-xl space-y-2">
-              <MessageSquare className="w-8 h-8 text-zinc-600 mx-auto" />
-              <p className="text-xs text-zinc-300 font-medium">No posts ingested yet</p>
-              <p className="text-[11px] text-zinc-500">
+            <div className="p-12 text-center border border-dashed border-[#262626] rounded-2xl bg-[#141414] space-y-2">
+              <MessageSquare className="w-8 h-8 text-[#737373] mx-auto" />
+              <p className="text-xs text-white font-medium">No posts ingested yet</p>
+              <p className="text-[11px] text-[#737373]">
                 Trigger a synchronization to scrape the latest posts and reels via Apify.
               </p>
             </div>
@@ -159,21 +159,21 @@ export default function InstagramPostsDrawer({
             posts.map((post) => (
               <div
                 key={post.id}
-                className="p-4 rounded-xl border border-zinc-800/80 bg-zinc-900/40 space-y-3 transition-colors hover:border-zinc-700/80"
+                className="p-4 rounded-2xl border border-[#262626] bg-[#141414] space-y-3 transition-colors hover:border-[#404040]"
               >
                 {/* Post Top Row */}
                 <div className="flex items-center justify-between gap-3 text-xs">
                   <div className="flex items-center gap-2">
-                    <span className="p-1.5 rounded-md bg-zinc-800/80 border border-zinc-700/50">
+                    <span className="p-1.5 rounded-full bg-[#1f1f1f] border border-[#262626]">
                       {getMediaIcon(post.content_type)}
                     </span>
-                    <span className="text-[11px] font-mono text-zinc-400 capitalize">
+                    <span className="text-[11px] font-mono text-[#a3a3a3] capitalize">
                       {post.content_type || 'Post'}
                     </span>
                     {post.published_at && (
                       <>
-                        <span className="text-zinc-600">•</span>
-                        <span className="text-[11px] font-mono text-zinc-500">
+                        <span className="text-[#404040]">•</span>
+                        <span className="text-[11px] font-mono text-[#737373]">
                           {new Date(post.published_at).toLocaleDateString()}
                         </span>
                       </>
@@ -184,7 +184,7 @@ export default function InstagramPostsDrawer({
                     href={post.post_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1 text-[11px] text-[#828cf0] hover:text-[#9ea6f7] transition-colors font-mono"
+                    className="flex items-center gap-1 text-[11px] text-[#4ade80] hover:underline transition-colors font-mono"
                   >
                     <span>View on IG</span>
                     <ExternalLink className="w-3 h-3" />
@@ -197,13 +197,13 @@ export default function InstagramPostsDrawer({
                     {post.caption}
                   </p>
                 ) : (
-                  <p className="text-xs text-zinc-500 italic">No caption provided</p>
+                  <p className="text-xs text-[#737373] italic">No caption provided</p>
                 )}
 
                 {/* AI Classification & Engagement row */}
-                <div className="pt-2 border-t border-zinc-800/60 flex flex-wrap items-center justify-between gap-2 text-xs">
+                <div className="pt-2 border-t border-[#262626] flex flex-wrap items-center justify-between gap-2 text-xs">
                   <div className="flex items-center gap-3 font-mono text-[11px]">
-                    <span className="flex items-center gap-1.5 text-zinc-400">
+                    <span className="flex items-center gap-1.5 text-[#a3a3a3]">
                       <Heart className="w-3.5 h-3.5 text-rose-400 fill-rose-400/20" />
                       <span>{post.likes_count != null ? post.likes_count.toLocaleString() : '–'}</span>
                     </span>
@@ -211,11 +211,11 @@ export default function InstagramPostsDrawer({
                     <button
                       type="button"
                       onClick={() => loadCommentsForPost(post.id)}
-                      className="flex items-center gap-1.5 text-zinc-400 hover:text-zinc-200 transition-colors cursor-pointer"
+                      className="flex items-center gap-1.5 text-[#a3a3a3] hover:text-white transition-colors cursor-pointer"
                     >
-                      <MessageCircle className="w-3.5 h-3.5 text-indigo-400" />
+                      <MessageCircle className="w-3.5 h-3.5 text-[#4ade80]" />
                       <span>{post.comments_count != null ? post.comments_count.toLocaleString() : '–'}</span>
-                      <span className="text-[10px] text-zinc-500 underline ml-0.5">
+                      <span className="text-[10px] text-[#737373] underline ml-0.5">
                         {selectedPostId === post.id ? 'Hide Comments' : 'View Comments'}
                       </span>
                     </button>
@@ -227,18 +227,18 @@ export default function InstagramPostsDrawer({
                       {post.ai_analysis.classification === 'business_promotional' ? (
                         <span
                           title="Authored by the brand as promotional content. Not counted towards customer sentiment."
-                          className="px-2 py-0.5 rounded font-mono text-[10px] bg-zinc-800 text-zinc-300 border border-zinc-700/60"
+                          className="px-2.5 py-0.5 rounded-full font-mono text-[10px] bg-[#1f1f1f] text-[#a3a3a3] border border-[#262626]"
                         >
                           Promotional
                         </span>
                       ) : post.ai_analysis.sentiment_label ? (
                         <span
-                          className={`px-2 py-0.5 rounded font-mono text-[10px] flex items-center gap-1 border ${
+                          className={`px-2.5 py-0.5 rounded-full font-mono text-[10px] flex items-center gap-1 border font-semibold ${
                             post.ai_analysis.sentiment_label === 'positive'
                               ? 'bg-emerald-950/40 text-emerald-400 border-emerald-800/40'
                               : post.ai_analysis.sentiment_label === 'negative'
                               ? 'bg-rose-950/40 text-rose-400 border-rose-800/40'
-                              : 'bg-zinc-800 text-zinc-300 border-zinc-700'
+                              : 'bg-[#1f1f1f] text-[#a3a3a3] border-[#262626]'
                           }`}
                         >
                           {post.ai_analysis.sentiment_label === 'positive' ? (
@@ -257,19 +257,19 @@ export default function InstagramPostsDrawer({
 
                 {/* Expandable Comments Drawer */}
                 {selectedPostId === post.id && (
-                  <div className="mt-3 p-3.5 rounded-lg bg-zinc-950 border border-zinc-800/80 space-y-2.5">
-                    <div className="flex items-center justify-between text-[11px] font-semibold text-zinc-400 border-b border-zinc-800/60 pb-1.5">
+                  <div className="mt-3 p-4 rounded-xl bg-[#0a0a0a] border border-[#262626] space-y-2.5">
+                    <div className="flex items-center justify-between text-[11px] font-semibold text-[#a3a3a3] border-b border-[#262626] pb-1.5">
                       <span>Public Customer Comments</span>
-                      <span className="font-mono text-zinc-500">{comments.length} loaded</span>
+                      <span className="font-mono text-[#737373]">{comments.length} loaded</span>
                     </div>
 
                     {isLoadingComments ? (
-                      <div className="flex items-center justify-center py-4 gap-2 text-xs text-zinc-500 font-mono">
-                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <div className="flex items-center justify-center py-4 gap-2 text-xs text-[#a3a3a3] font-mono">
+                        <Loader2 className="w-3.5 h-3.5 animate-spin text-[#4ade80]" />
                         <span>Loading comments...</span>
                       </div>
                     ) : comments.length === 0 ? (
-                      <p className="text-xs text-zinc-500 italic py-2">
+                      <p className="text-xs text-[#737373] italic py-2">
                         No public comments returned by the scraper for this post.
                       </p>
                     ) : (
@@ -277,21 +277,21 @@ export default function InstagramPostsDrawer({
                         {comments.map((c) => (
                           <div
                             key={c.id}
-                            className="p-2.5 rounded-md bg-zinc-900/60 border border-zinc-800/60 space-y-1"
+                            className="p-3 rounded-xl bg-[#141414] border border-[#262626] space-y-1"
                           >
                             <div className="flex items-center justify-between text-[10.5px]">
-                              <span className="font-semibold text-zinc-300">
+                              <span className="font-semibold text-white">
                                 @{c.author_username || 'customer'}
                               </span>
 
                               {c.ai_analysis?.sentiment_label && (
                                 <span
-                                  className={`px-1.5 py-0.2 rounded font-mono text-[9px] uppercase ${
+                                  className={`px-2 py-0.5 rounded-full font-mono text-[9px] uppercase font-semibold ${
                                     c.ai_analysis.sentiment_label === 'positive'
-                                      ? 'text-emerald-400 bg-emerald-950/40'
+                                      ? 'text-emerald-400 bg-emerald-950/40 border border-emerald-800/40'
                                       : c.ai_analysis.sentiment_label === 'negative'
-                                      ? 'text-rose-400 bg-rose-950/40'
-                                      : 'text-zinc-400 bg-zinc-800'
+                                      ? 'text-rose-400 bg-rose-950/40 border border-rose-800/40'
+                                      : 'text-[#a3a3a3] bg-[#1f1f1f] border border-[#262626]'
                                   }`}
                                 >
                                   {c.ai_analysis.sentiment_label}

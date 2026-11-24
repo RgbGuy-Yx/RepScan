@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { Database, ShieldCheck, Languages, ArrowUpRight, CheckCircle2 } from 'lucide-react';
+import { TrendingUp, ShieldCheck, Languages, ArrowUpRight, CheckCircle2, MessageSquare } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import type { ProofItem } from '../../types';
@@ -14,7 +14,7 @@ export default function LandingArchitecture({ onOpenProof }: LandingArchitecture
   const containerRef = useRef<HTMLElement>(null);
 
   const auditSampleProof: ProofItem = {
-    theme: 'Clinical Consultation Latency & Waiting Queue',
+    theme: 'Clinic Wait Times & Appointment Delays',
     author: 'Rahul Sharma',
     date: 'Sep 29, 2026',
     rating: 2,
@@ -65,165 +65,170 @@ export default function LandingArchitecture({ onOpenProof }: LandingArchitecture
   return (
     <section
       ref={containerRef}
-      id="architecture"
-      className="py-28 max-w-7xl mx-auto px-6 lg:px-8 border-t border-[#23252a] bg-[#010102]"
+      id="how-it-works"
+      className="py-28 max-w-7xl mx-auto px-6 lg:px-8 border-t border-[#262626] bg-[#0a0a0a]"
     >
       {/* Section Header */}
       <div className="gsap-arch-header max-w-3xl space-y-3">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#0f1011] border border-[#23252a] text-xs font-mono shadow-xs">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-          <span className="text-zinc-300 font-medium tracking-wider uppercase text-[11px]">
-            CORE ARCHITECTURE
-          </span>
+        <div className="badge-action-subtle">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#4ade80]" />
+          <span>How It Works</span>
         </div>
 
-        <h2 className="font-sans text-3xl sm:text-5xl font-semibold tracking-[-0.035em] text-[#f7f8f8] leading-[1.1] text-balance">
-          Engineered for ground truth.
-          <span className="font-serif italic font-normal text-zinc-400 block mt-1.5">
-            Not plausible fiction.
+        <h2 className="font-serif font-light text-4xl sm:text-5xl lg:text-6xl text-white tracking-[-0.01em] leading-[1.08] text-balance">
+          Know what your customers think.
+          <span className="text-[#a3a3a3] italic font-serif font-light block mt-1.5">
+            Without the guesswork.
           </span>
         </h2>
 
-        <p className="text-sm sm:text-base text-[#8a8f98] leading-relaxed font-sans pt-1">
-          Traditional LLMs invent summaries when prompted. RepScan operates as a deterministic
-          pipeline: multi-channel ingestion, 2σ statistical anomaly detection, and cryptographic
-          citation grounding.
+        <p className="text-sm sm:text-base text-[#a3a3a3] leading-relaxed font-sans pt-1">
+          RepScan brings together public feedback across your Google Maps and Instagram profiles,
+          spots recurring problems before they hurt your ratings, and links every single takeaway
+          back to the real customer review.
         </p>
       </div>
 
-      {/* 3 High-Craft Architectural Panels */}
+      {/* 3 High-Craft Cards in Surface #171717 */}
       <div className="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Panel 1: Code-Mixed Regional NLU */}
-        <div className="gsap-arch-panel p-6 sm:p-7 rounded-2xl bg-[#0f1011] border border-[#23252a] hover:border-zinc-700/80 transition-all duration-200 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)] flex flex-col justify-between space-y-6">
+        {/* Panel 1: Mixed Regional Languages */}
+        <div className="gsap-arch-panel p-7 rounded-2xl bg-[#171717] border border-[#262626] hover:border-[#404040] transition-colors flex flex-col justify-between space-y-6">
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <div className="w-9 h-9 rounded-lg bg-[#141516] border border-[#23252a] flex items-center justify-center text-zinc-300">
-                <Languages className="w-4 h-4 text-sky-400" />
+              <div className="w-9 h-9 rounded-full bg-[#1f1f1f] border border-[#262626] flex items-center justify-center text-white">
+                <Languages className="w-4 h-4 text-[#4ade80]" />
               </div>
-              <span className="font-mono text-[10px] text-zinc-400 uppercase tracking-wider px-2 py-0.5 rounded bg-[#141516] border border-[#23252a]">
-                Multi-Dialect
+              <span className="badge-neutral text-[10px]">
+                Mixed Languages
               </span>
             </div>
 
             <div className="space-y-1.5">
-              <h3 className="font-sans text-base font-semibold text-[#f7f8f8] tracking-tight">
-                Code-Mixed Regional NLU
+              <h3 className="font-serif font-light text-xl text-white tracking-tight">
+                Understands how real customers talk
               </h3>
-              <p className="text-xs text-[#8a8f98] leading-relaxed font-sans">
-                Real customers don't write in textbook English. RepScan natively parses Hinglish,
-                Telugu-English, and Tamil-English without semantic degradation.
+              <p className="text-xs text-[#a3a3a3] leading-relaxed font-sans">
+                Customers rarely write in formal textbook English. RepScan understands mixed regional
+                phrasing, casual dialect, and slang—so you never lose the real meaning behind a review.
               </p>
             </div>
 
             {/* Micro Demo Card */}
-            <div className="p-3.5 rounded-xl bg-[#141516] border border-[#23252a] space-y-2 text-xs font-mono">
-              <div className="text-[10px] text-zinc-500 uppercase tracking-wider">Raw Input</div>
-              <p className="text-zinc-200 font-sans text-xs italic">
+            <div className="p-4 rounded-xl bg-[#1f1f1f] border border-[#262626] space-y-2 text-xs">
+              <div className="text-[10px] text-[#737373] uppercase tracking-wider font-mono flex items-center gap-1.5">
+                <MessageSquare className="w-3 h-3 text-[#737373]" />
+                <span>Customer Review Example</span>
+              </div>
+              <p className="text-white font-sans text-xs italic">
                 &ldquo;Doctor consultation chaala baavundi, but billing counter pe 35 min lag gaye.&rdquo;
               </p>
-              <div className="pt-2 border-t border-[#23252a] flex items-center justify-between text-[11px]">
-                <span className="text-emerald-400 font-mono">Care: Positive</span>
-                <span className="text-rose-400 font-mono">Billing: Friction Alert</span>
+              <div className="pt-2 border-t border-[#262626] flex items-center justify-between text-[11px]">
+                <span className="text-[#22c55e] font-medium flex items-center gap-1">
+                  <span>✓</span> Doctor Care: Good
+                </span>
+                <span className="text-[#4ade80] font-medium flex items-center gap-1">
+                  <span>!</span> Billing: Needs Attention
+                </span>
               </div>
             </div>
           </div>
 
-          <div className="pt-4 border-t border-[#23252a] flex items-center justify-between text-[11px] font-mono text-zinc-500">
-            <span>Sarvam NLU Engine</span>
-            <span>Zero Lost Context</span>
+          <div className="pt-4 border-t border-[#262626] flex items-center justify-between text-[11px] text-[#737373]">
+            <span>Casual &amp; Regional Phrasing</span>
+            <span className="text-white font-medium">Clear Sentiment</span>
           </div>
         </div>
 
-        {/* Panel 2: Statistical Anomaly Detection */}
-        <div className="gsap-arch-panel p-6 sm:p-7 rounded-2xl bg-[#0f1011] border border-[#23252a] hover:border-zinc-700/80 transition-all duration-200 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)] flex flex-col justify-between space-y-6">
+        {/* Panel 2: Trend & Problem Spikes */}
+        <div className="gsap-arch-panel p-7 rounded-2xl bg-[#171717] border border-[#262626] hover:border-[#404040] transition-colors flex flex-col justify-between space-y-6">
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <div className="w-9 h-9 rounded-lg bg-[#141516] border border-[#23252a] flex items-center justify-center text-zinc-300">
-                <Database className="w-4 h-4 text-emerald-400" />
+              <div className="w-9 h-9 rounded-full bg-[#1f1f1f] border border-[#262626] flex items-center justify-center text-white">
+                <TrendingUp className="w-4 h-4 text-[#4ade80]" />
               </div>
-              <span className="font-mono text-[10px] text-zinc-400 uppercase tracking-wider px-2 py-0.5 rounded bg-[#141516] border border-[#23252a]">
-                Mathematical 2σ
+              <span className="badge-neutral text-[10px]">
+                Early Warning
               </span>
             </div>
 
             <div className="space-y-1.5">
-              <h3 className="font-sans text-base font-semibold text-[#f7f8f8] tracking-tight">
-                What Changed Velocity Math
+              <h3 className="font-serif font-light text-xl text-white tracking-tight">
+                Catches recurring problems early
               </h3>
-              <p className="text-xs text-[#8a8f98] leading-relaxed font-sans">
-                Never guess whether a negative review is isolated noise or an emerging crisis.
-                Our algorithm isolates statistical velocity spikes against historical crawl baselines.
+              <p className="text-xs text-[#a3a3a3] leading-relaxed font-sans">
+                Never wonder whether a negative review was a one-off bad day or an emerging crisis.
+                RepScan monitors trend velocity and flags sudden surges in complaints immediately.
               </p>
             </div>
 
-            {/* Micro Telemetry Display */}
-            <div className="p-3.5 rounded-xl bg-[#141516] border border-[#23252a] space-y-2.5 text-xs font-mono">
+            {/* Micro Trend Alert Display */}
+            <div className="p-4 rounded-xl bg-[#1f1f1f] border border-[#262626] space-y-2.5 text-xs">
               <div className="flex items-center justify-between text-[11px]">
-                <span className="text-zinc-400">Shift Magnitude</span>
-                <span className="text-rose-400 font-semibold">+24% Spike</span>
+                <span className="text-[#a3a3a3]">Wait Time Complaints</span>
+                <span className="text-[#4ade80] font-semibold">+24% Spike</span>
               </div>
-              <div className="w-full bg-[#1e2023] h-1.5 rounded-full overflow-hidden">
-                <div className="bg-rose-500 h-full rounded-full w-[78%]" />
+              <div className="w-full bg-[#171717] h-1.5 rounded-full overflow-hidden">
+                <div className="bg-[#4ade80] h-full rounded-full w-[78%]" />
               </div>
-              <div className="flex items-center justify-between text-[10px] text-zinc-500 pt-1">
-                <span>p = 0.003 (Significant)</span>
-                <span>Threshold: &gt; 2σ</span>
+              <div className="flex items-center justify-between text-[10px] text-[#737373] pt-0.5">
+                <span>12 delays reported this weekend</span>
+                <span className="text-[#4ade80]">Action Recommended</span>
               </div>
             </div>
           </div>
 
-          <div className="pt-4 border-t border-[#23252a] flex items-center justify-between text-[11px] font-mono text-zinc-500">
-            <span>Deterministic Deltas</span>
-            <span>PostgreSQL Compute</span>
+          <div className="pt-4 border-t border-[#262626] flex items-center justify-between text-[11px] text-[#737373]">
+            <span>Automatic Trend Alerts</span>
+            <span className="text-white font-medium">No Manual Reading</span>
           </div>
         </div>
 
-        {/* Panel 3: Cryptographic Grounding Trace */}
-        <div className="gsap-arch-panel p-6 sm:p-7 rounded-2xl bg-[#0f1011] border border-[#23252a] hover:border-zinc-700/80 transition-all duration-200 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)] flex flex-col justify-between space-y-6">
+        {/* Panel 3: Verifiable Proof */}
+        <div className="gsap-arch-panel p-7 rounded-2xl bg-[#171717] border border-[#262626] hover:border-[#404040] transition-colors flex flex-col justify-between space-y-6">
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <div className="w-9 h-9 rounded-lg bg-[#141516] border border-[#23252a] flex items-center justify-center text-zinc-300">
-                <ShieldCheck className="w-4 h-4 text-amber-400" />
+              <div className="w-9 h-9 rounded-full bg-[#1f1f1f] border border-[#262626] flex items-center justify-center text-white">
+                <ShieldCheck className="w-4 h-4 text-white" />
               </div>
-              <span className="font-mono text-[10px] text-zinc-400 uppercase tracking-wider px-2 py-0.5 rounded bg-[#141516] border border-[#23252a]">
-                Zero Hallucinations
+              <span className="badge-neutral text-[10px]">
+                100% Verifiable
               </span>
             </div>
 
             <div className="space-y-1.5">
-              <h3 className="font-sans text-base font-semibold text-[#f7f8f8] tracking-tight">
-                Direct Citation Grounding
+              <h3 className="font-serif font-light text-xl text-white tracking-tight">
+                Every insight links to the real review
               </h3>
-              <p className="text-xs text-[#8a8f98] leading-relaxed font-sans">
-                Every executive summary sentence is backed by an immutable foreign key pointing to the
-                verifiable customer review UUID in your database.
+              <p className="text-xs text-[#a3a3a3] leading-relaxed font-sans">
+                You never have to guess whether an insight is real. Click any takeaway to inspect
+                the actual customer review, complete with author name, date, and rating.
               </p>
             </div>
 
             {/* Clickable Citation Preview Button */}
             <div
               onClick={() => onOpenProof?.(auditSampleProof)}
-              className="p-3.5 rounded-xl bg-[#141516] border border-[#23252a] hover:border-zinc-600 transition-colors cursor-pointer group/card space-y-2"
+              className="p-4 rounded-xl bg-[#1f1f1f] border border-[#262626] hover:border-[#404040] transition-colors cursor-pointer group/card space-y-2"
             >
-              <div className="flex items-center justify-between text-[11px] font-mono">
-                <span className="text-zinc-300 flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                  Citation: rev_08a9d4
+              <div className="flex items-center justify-between text-[11px]">
+                <span className="text-white flex items-center gap-1.5 font-medium">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-[#22c55e]" />
+                  <span>Rahul Sharma • Google Review</span>
                 </span>
-                <span className="text-emerald-400 group-hover/card:underline inline-flex items-center gap-1 text-[11px]">
-                  <span>Inspect</span>
+                <span className="text-[#4ade80] group-hover/card:underline inline-flex items-center gap-1 text-[11px]">
+                  <span>View Review</span>
                   <ArrowUpRight className="w-3 h-3" />
                 </span>
               </div>
-              <p className="text-[11px] text-[#8a8f98] font-sans line-clamp-2">
-                &ldquo;...wait times exceeded 45 minutes past our scheduled appointment slot.&rdquo;
+              <p className="text-[11px] text-[#a3a3a3] font-sans line-clamp-2">
+                &ldquo;...the clinic was clean and doctor polite, but wait times exceeded 45 minutes past our scheduled appointment.&rdquo;
               </p>
             </div>
           </div>
 
-          <div className="pt-4 border-t border-[#23252a] flex items-center justify-between text-[11px] font-mono text-zinc-500">
-            <span>RAG Citation Engine</span>
-            <span>100% Auditable</span>
+          <div className="pt-4 border-t border-[#262626] flex items-center justify-between text-[11px] text-[#737373]">
+            <span>Direct Customer Proof</span>
+            <span className="text-white font-medium">Click to Verify</span>
           </div>
         </div>
       </div>

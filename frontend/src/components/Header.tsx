@@ -84,59 +84,57 @@ export default function Header({
   }, [bizDropdownOpen]);
 
   return (
-    <header className="h-16 px-6 lg:px-8 flex items-center justify-between border-b border-zinc-800/80 bg-zinc-950/85 backdrop-blur-md sticky top-0 z-20">
-      {/* Title & Active Business Breadcrumb */}
+    <header className="h-16 px-6 lg:px-8 flex items-center justify-between border-b border-[#262626] bg-[#0a0a0a]/85 backdrop-blur-md sticky top-0 z-20 font-sans">
+      {/* Title & Active Business Breadcrumb — Editorial Serif Light for Page Title */}
       <div className="flex items-center gap-4 min-w-0">
         <div className="min-w-0">
           <div className="flex items-center gap-2.5">
-            <h1 className="text-sm font-semibold text-zinc-100 tracking-tight truncate">
+            <h1 className="font-serif font-light text-xl text-white tracking-[-0.01em] truncate">
               {current.title}
             </h1>
             {activeBusiness && (
-              <span className="hidden sm:inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-mono bg-zinc-900 text-zinc-400 border border-zinc-800">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                <span className="text-zinc-200 font-medium">{activeBusiness.name}</span>
+              <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] bg-[#171717] text-[#a3a3a3] border border-[#262626]">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e]" />
+                <span className="text-white font-medium">{activeBusiness.name}</span>
               </span>
             )}
           </div>
-          <p className="text-[11px] text-zinc-500 mt-0.5 truncate hidden sm:block font-sans">
+          <p className="text-xs text-[#a3a3a3] mt-0.5 truncate hidden sm:block">
             {current.subtitle}
           </p>
         </div>
       </div>
 
-      {/* Right Controls: Business Selector + Clerk Auth */}
-      <div className="flex items-center gap-2 shrink-0">
-        {/* Business Selector Dropdown */}
+      {/* Right Controls: Business Selector Pill + User Profile */}
+      <div className="flex items-center gap-2.5 shrink-0">
+        {/* Business Selector Pill Dropdown */}
         <div ref={bizDropdownRef} className="relative">
           <button
             type="button"
             onClick={() => setBizDropdownOpen(!bizDropdownOpen)}
             aria-expanded={bizDropdownOpen}
-            className={`inline-flex items-center gap-2 px-2.5 py-1.5 rounded-lg border text-xs font-medium transition-all duration-150 cursor-pointer select-none active:scale-[0.98] ${
-              bizDropdownOpen
-                ? 'border-zinc-700 bg-zinc-900 text-zinc-100 ring-1 ring-zinc-700'
-                : 'border-zinc-800 bg-zinc-900/80 hover:bg-zinc-900 hover:border-zinc-700 text-zinc-300 hover:text-zinc-100'
-            }`}
+            className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border text-xs font-medium transition-colors cursor-pointer select-none ${bizDropdownOpen
+                ? 'border-[#404040] bg-[#1f1f1f] text-white'
+                : 'border-[#262626] bg-[#171717] hover:bg-[#1f1f1f] hover:border-[#404040] text-[#a3a3a3] hover:text-white'
+              }`}
           >
-            <Briefcase className="w-3.5 h-3.5 text-zinc-400" />
+            <Briefcase className="w-3.5 h-3.5 text-[#a3a3a3]" />
             <span className="max-w-[140px] truncate">
               {activeBusiness?.name || 'Select Business'}
             </span>
             <ChevronDown
-              className={`w-3.5 h-3.5 text-zinc-400 transition-transform duration-200 ${
-                bizDropdownOpen ? 'rotate-180 text-zinc-200' : ''
-              }`}
+              className={`w-3.5 h-3.5 text-[#737373] transition-transform duration-200 ${bizDropdownOpen ? 'rotate-180 text-white' : ''
+                }`}
             />
           </button>
 
           {bizDropdownOpen && (
-            <div className="absolute right-0 mt-1.5 w-64 rounded-xl bg-zinc-950/95 backdrop-blur-md border border-zinc-800/90 shadow-2xl shadow-black/80 ring-1 ring-white/5 py-1.5 z-50 animate-in fade-in zoom-in-95 duration-150">
-              <div className="px-3 py-1.5 border-b border-zinc-800/80 flex items-center justify-between">
-                <span className="text-[10px] uppercase font-mono font-medium tracking-wider text-zinc-400">
+            <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-[#171717] border border-[#262626] shadow-2xl py-2 z-50 animate-in fade-in zoom-in-95 duration-100">
+              <div className="px-3.5 py-1.5 border-b border-[#262626] flex items-center justify-between">
+                <span className="text-[10px] uppercase font-mono font-medium tracking-wider text-[#737373]">
                   Businesses
                 </span>
-                <span className="text-[10px] font-mono text-zinc-400">
+                <span className="text-[10px] font-mono text-[#737373]">
                   {businesses.length} total
                 </span>
               </div>
@@ -150,38 +148,37 @@ export default function Header({
                       setActiveBusiness(biz);
                       setBizDropdownOpen(false);
                     }}
-                    className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between hover:bg-zinc-900/80 transition-colors cursor-pointer ${
-                      biz.id === activeBusiness?.id
-                        ? 'text-zinc-100 font-medium bg-zinc-900'
-                        : 'text-zinc-400 hover:text-zinc-200'
-                    }`}
+                    className={`w-full text-left px-3.5 py-2 text-xs flex items-center justify-between hover:bg-[#1f1f1f] transition-colors cursor-pointer ${biz.id === activeBusiness?.id
+                        ? 'text-white font-medium bg-[#1f1f1f]'
+                        : 'text-[#a3a3a3] hover:text-white'
+                      }`}
                   >
                     <div className="flex flex-col min-w-0 pr-2">
-                      <span className="truncate text-zinc-200">{biz.name}</span>
+                      <span className="truncate text-white">{biz.name}</span>
                       {biz.location && (
-                        <span className="text-[10px] text-zinc-400 truncate font-mono mt-0.5">
+                        <span className="text-[10px] text-[#737373] truncate font-mono mt-0.5">
                           {biz.location}
                         </span>
                       )}
                     </div>
                     {biz.id === activeBusiness?.id && (
-                      <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                      <Check className="w-3.5 h-3.5 text-[#22c55e] shrink-0" />
                     )}
                   </button>
                 ))}
               </div>
 
               {onOpenCreateBusiness && (
-                <div className="p-1.5 border-t border-zinc-800/80">
+                <div className="p-2 border-t border-[#262626]">
                   <button
                     type="button"
                     onClick={() => {
                       setBizDropdownOpen(false);
                       onOpenCreateBusiness();
                     }}
-                    className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-300 hover:text-zinc-100 hover:bg-zinc-900 transition-colors flex items-center gap-2 cursor-pointer"
+                    className="w-full text-left px-3 py-1.5 rounded-full text-xs font-medium text-[#a3a3a3] hover:text-white hover:bg-[#1f1f1f] transition-colors flex items-center gap-2 cursor-pointer"
                   >
-                    <Plus className="w-3.5 h-3.5 text-zinc-400" />
+                    <Plus className="w-3.5 h-3.5 text-[#4ade80]" />
                     <span>Add new business</span>
                   </button>
                 </div>
@@ -190,22 +187,20 @@ export default function Header({
           )}
         </div>
 
-        {/* ─────────────────────────────────────────────────────────────
-            USER PROFILE WITH HOVER DROPDOWN & LOGOUT
-            ───────────────────────────────────────────────────────────── */}
+        {/* User Profile Menu */}
         {isAuthenticated ? (
           <UserProfileMenu align="right" />
         ) : (
           <div className="flex items-center gap-2">
             <Link
               to="/sign-in"
-              className="px-2.5 py-1.5 text-xs font-medium text-zinc-400 hover:text-zinc-100 transition-colors"
+              className="px-3 py-1.5 text-xs font-medium text-[#a3a3a3] hover:text-white transition-colors"
             >
               Sign In
             </Link>
             <Link
               to="/sign-up"
-              className="px-3 py-1.5 rounded-md bg-zinc-100 hover:bg-white text-zinc-950 text-xs font-medium transition-colors"
+              className="btn-pill-primary text-xs"
             >
               Sign Up
             </Link>

@@ -76,7 +76,7 @@ export default function CompetitorsView() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  // Dynamic Real-time Location Resolution (Zero Hardcoded Coordinates)
+  // Dynamic Real-time Location Resolution
   const [resolvedLocation, setResolvedLocation] = useState<{
     lat: number;
     lng: number;
@@ -96,7 +96,6 @@ export default function CompetitorsView() {
     let isCancelled = false;
 
     async function resolveLocation() {
-      // 1. If activeBusiness already has coordinates, use them immediately
       if (currentBiz.latitude != null && currentBiz.longitude != null) {
         setResolvedLocation({
           lat: Number(currentBiz.latitude),
@@ -107,7 +106,6 @@ export default function CompetitorsView() {
         return;
       }
 
-      // 2. Otherwise extract in real time from Google Places API
       setIsResolvingLocation(true);
       setErrorMsg(null);
 
@@ -127,7 +125,6 @@ export default function CompetitorsView() {
               placeId: extracted.place_id,
             });
 
-            // Asynchronously sync the dynamically extracted location & Place ID back to PostgreSQL
             if (currentBiz.id) {
               businessApi
                 .updateBusiness(currentBiz.id, {
@@ -200,7 +197,7 @@ export default function CompetitorsView() {
     fetchTrackedCompetitors();
   }, [fetchTrackedCompetitors]);
 
-  // 2. Discover Nearby Competitors using Google Places API (New)
+  // 2. Discover Nearby Competitors using Google Places API
   const discoverCompetitors = useCallback(async () => {
     if (!activeBusiness || !businessLocation) return;
 
@@ -330,12 +327,12 @@ export default function CompetitorsView() {
     SORT_OPTIONS.find((s) => s.value === selectedSort)?.label || 'Distance';
 
   return (
-    <div className="min-h-[100dvh] bg-[#010102] text-zinc-100 pb-16">
+    <div className="min-h-[100dvh] bg-[#0a0a0a] text-zinc-100 pb-16">
       {/* 1. TOP HEADER BAR */}
-      <div className="px-4 sm:px-6 lg:px-8 py-5 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-900/60">
+      <div className="px-4 sm:px-6 lg:px-8 py-5 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#262626]">
         <div>
-          <h1 className="text-xl sm:text-2xl font-semibold text-zinc-100 tracking-tight">Competitor Radar</h1>
-          <p className="text-xs text-zinc-400 mt-1 max-w-[65ch]">
+          <h1 className="font-serif font-light text-2xl sm:text-3xl text-white tracking-[-0.02em]">Competitor Radar</h1>
+          <p className="text-xs text-[#a3a3a3] mt-1 max-w-[65ch]">
             Real-time geospatial intelligence and market positioning powered by Google Places.
           </p>
         </div>
@@ -346,17 +343,17 @@ export default function CompetitorsView() {
           <div className="relative">
             <button
               onClick={() => setIsBizMenuOpen(!isBizMenuOpen)}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-zinc-900/70 border border-zinc-800 text-xs font-semibold text-zinc-200 hover:bg-zinc-900 hover:border-zinc-700 transition-all active:scale-[0.98]"
+              className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#171717] border border-[#262626] text-xs font-semibold text-white hover:bg-[#1f1f1f] hover:border-[#404040] transition-all active:scale-[0.98] cursor-pointer"
             >
-              <div className="w-5 h-5 rounded-md bg-[#5e6ad2]/20 text-[#828cf0] flex items-center justify-center text-[10px] font-bold">
+              <div className="w-5 h-5 rounded-full bg-[#4ade80]/20 text-[#4ade80] flex items-center justify-center text-[10px] font-bold">
                 {activeBusiness?.name?.charAt(0) || 'B'}
               </div>
               <span className="truncate max-w-[160px]">{activeBusiness?.name || 'Select Business'}</span>
-              <ChevronDown className="w-3.5 h-3.5 text-zinc-500" />
+              <ChevronDown className="w-3.5 h-3.5 text-[#737373]" />
             </button>
 
             {isBizMenuOpen && businesses.length > 0 && (
-              <div className="absolute right-0 mt-1.5 w-56 rounded-xl bg-[#0f1011] border border-zinc-800 shadow-2xl py-1 z-50 text-xs">
+              <div className="absolute right-0 mt-1.5 w-56 rounded-2xl bg-[#171717] border border-[#262626] shadow-2xl py-1 z-50 text-xs">
                 {businesses.map((b) => (
                   <button
                     key={b.id}
@@ -364,11 +361,10 @@ export default function CompetitorsView() {
                       setActiveBusiness(b);
                       setIsBizMenuOpen(false);
                     }}
-                    className={`w-full text-left px-3 py-2 flex items-center gap-2 hover:bg-zinc-800/60 transition-colors ${
-                      activeBusiness?.id === b.id ? 'bg-[#5e6ad2]/20 text-[#828cf0] font-semibold' : 'text-zinc-300'
-                    }`}
+                    className={`w-full text-left px-3.5 py-2 flex items-center gap-2 hover:bg-[#1f1f1f] transition-colors cursor-pointer ${activeBusiness?.id === b.id ? 'bg-[#4ade80]/15 text-[#4ade80] font-semibold' : 'text-zinc-300'
+                      }`}
                   >
-                    <Building2 className="w-3.5 h-3.5 text-zinc-500" />
+                    <Building2 className="w-3.5 h-3.5 text-[#737373]" />
                     <span className="truncate">{b.name}</span>
                   </button>
                 ))}
@@ -380,15 +376,15 @@ export default function CompetitorsView() {
           <div className="relative">
             <button
               onClick={() => setIsTimeframeOpen(!isTimeframeOpen)}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-zinc-900/70 border border-zinc-800 text-xs font-medium text-zinc-300 hover:bg-zinc-900 hover:border-zinc-700 transition-all active:scale-[0.98]"
+              className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#171717] border border-[#262626] text-xs font-medium text-[#a3a3a3] hover:text-white hover:bg-[#1f1f1f] hover:border-[#404040] transition-all active:scale-[0.98] cursor-pointer"
             >
-              <Calendar className="w-3.5 h-3.5 text-zinc-500" />
+              <Calendar className="w-3.5 h-3.5 text-[#737373]" />
               <span>{timeframe}</span>
-              <ChevronDown className="w-3.5 h-3.5 text-zinc-500" />
+              <ChevronDown className="w-3.5 h-3.5 text-[#737373]" />
             </button>
 
             {isTimeframeOpen && (
-              <div className="absolute right-0 mt-1.5 w-44 rounded-xl bg-[#0f1011] border border-zinc-800 shadow-2xl py-1 z-50 text-xs">
+              <div className="absolute right-0 mt-1.5 w-44 rounded-2xl bg-[#171717] border border-[#262626] shadow-2xl py-1 z-50 text-xs">
                 {['Last 30 days', 'Last 3 months', 'Last 6 months', 'Last 1 year'].map((tf) => (
                   <button
                     key={tf}
@@ -396,9 +392,8 @@ export default function CompetitorsView() {
                       setTimeframe(tf);
                       setIsTimeframeOpen(false);
                     }}
-                    className={`w-full text-left px-3 py-2 hover:bg-zinc-800/60 transition-colors ${
-                      timeframe === tf ? 'text-[#828cf0] font-semibold bg-[#5e6ad2]/20' : 'text-zinc-300'
-                    }`}
+                    className={`w-full text-left px-3.5 py-2 hover:bg-[#1f1f1f] transition-colors cursor-pointer ${timeframe === tf ? 'text-[#4ade80] font-semibold bg-[#4ade80]/15' : 'text-zinc-300'
+                      }`}
                   >
                     {tf}
                   </button>
@@ -411,18 +406,18 @@ export default function CompetitorsView() {
 
       <div className="px-4 sm:px-6 lg:px-8 pt-5 space-y-5">
         {/* 2. MINIMAL COMMAND HUD DECK */}
-        <div className="p-2 sm:p-2.5 bg-[#0b0c10] rounded-2xl border border-zinc-800/80 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)] flex flex-wrap items-center justify-between gap-2.5">
-          <div className="flex flex-wrap items-center gap-2">
+        <div className="p-2.5 bg-[#171717] rounded-2xl border border-[#262626] shadow-sm flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-2.5">
             {/* Active Business GPS Location Pill */}
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-zinc-950/80 border border-zinc-800/80 text-xs font-medium text-zinc-200 shadow-sm">
+            <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#1f1f1f] border border-[#262626] text-xs font-medium text-white shadow-sm">
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#5e6ad2] opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#5e6ad2]"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#4ade80] opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#4ade80]"></span>
               </span>
               <span className="truncate max-w-[180px]" title={resolvedLocation?.address || activeBusiness?.location || activeBusiness?.name || 'Locating...'}>
                 {isResolvingLocation ? (
-                  <span className="flex items-center gap-1.5 text-zinc-400 font-mono text-[11px]">
-                    <Loader2 className="w-3 h-3 animate-spin text-[#5e6ad2]" />
+                  <span className="flex items-center gap-1.5 text-[#a3a3a3] font-mono text-[11px]">
+                    <Loader2 className="w-3 h-3 animate-spin text-[#4ade80]" />
                     Locating GPS...
                   </span>
                 ) : (
@@ -433,19 +428,18 @@ export default function CompetitorsView() {
               </span>
             </div>
 
-            {/* Segmented Radius Selector Pills (Instant 1-Click) */}
-            <div className="flex items-center p-0.5 bg-zinc-950/80 rounded-xl border border-zinc-800/80 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
+            {/* Segmented Radius Selector Pills */}
+            <div className="flex items-center p-0.5 bg-[#141414] rounded-full border border-[#262626]">
               {RADIUS_OPTIONS.map((opt) => {
                 const isSelected = selectedRadius === opt.value;
                 return (
                   <button
                     key={opt.value}
                     onClick={() => setSelectedRadius(opt.value)}
-                    className={`px-2.5 py-1 text-xs font-mono font-medium rounded-lg transition-all duration-150 active:scale-95 ${
-                      isSelected
-                        ? 'bg-zinc-800 text-white font-semibold shadow-sm border border-white/10'
-                        : 'text-zinc-400 hover:text-zinc-200'
-                    }`}
+                    className={`px-3 py-1 text-xs font-mono font-medium rounded-full transition-all duration-150 cursor-pointer ${isSelected
+                      ? 'bg-white text-[#0a0a0a] font-semibold shadow-sm'
+                      : 'text-[#a3a3a3] hover:text-white'
+                      }`}
                   >
                     {opt.label}
                   </button>
@@ -457,15 +451,15 @@ export default function CompetitorsView() {
             <div className="relative">
               <button
                 onClick={() => setIsCategoryOpen(!isCategoryOpen)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-950/80 hover:bg-zinc-900 border border-zinc-800/80 text-xs font-medium text-zinc-300 transition-all shadow-sm active:scale-95"
+                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#1f1f1f] hover:bg-[#262626] border border-[#262626] text-xs font-medium text-zinc-300 transition-all shadow-sm cursor-pointer"
               >
-                <SlidersHorizontal className="w-3.5 h-3.5 text-zinc-400" />
+                <SlidersHorizontal className="w-3.5 h-3.5 text-[#4ade80]" />
                 <span>{selectedCategoryLabel}</span>
-                <ChevronDown className="w-3 h-3 text-zinc-500" />
+                <ChevronDown className="w-3 h-3 text-[#737373]" />
               </button>
 
               {isCategoryOpen && (
-                <div className="absolute left-0 mt-1.5 w-52 rounded-xl bg-[#0f1011] border border-zinc-800 shadow-2xl py-1 z-50 text-xs">
+                <div className="absolute left-0 mt-1.5 w-52 rounded-2xl bg-[#171717] border border-[#262626] shadow-2xl py-1 z-50 text-xs">
                   {CATEGORY_OPTIONS.map((opt) => (
                     <button
                       key={opt.value}
@@ -473,9 +467,8 @@ export default function CompetitorsView() {
                         setSelectedCategory(opt.value);
                         setIsCategoryOpen(false);
                       }}
-                      className={`w-full text-left px-3 py-2 hover:bg-zinc-800/60 transition-colors ${
-                        selectedCategory === opt.value ? 'text-[#828cf0] font-semibold bg-[#5e6ad2]/20' : 'text-zinc-300'
-                      }`}
+                      className={`w-full text-left px-3.5 py-2 hover:bg-[#1f1f1f] transition-colors cursor-pointer ${selectedCategory === opt.value ? 'text-[#4ade80] font-semibold bg-[#4ade80]/15' : 'text-zinc-300'
+                        }`}
                     >
                       {opt.label}
                     </button>
@@ -489,18 +482,18 @@ export default function CompetitorsView() {
           <div className="flex items-center gap-2 w-full sm:w-auto">
             {/* Minimal Search Input */}
             <div className="relative flex-1 sm:w-48">
-              <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none" />
+              <Search className="w-3.5 h-3.5 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#737373] pointer-events-none" />
               <input
                 type="text"
                 placeholder="Filter rivals..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-8 pr-6 py-1.5 rounded-xl bg-zinc-950/80 border border-zinc-800/80 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-[#5e6ad2] transition-all font-mono"
+                className="w-full pl-9 pr-6 py-1.5 rounded-full bg-[#1f1f1f] border border-[#262626] text-xs text-white placeholder-[#737373] focus:outline-none focus:border-[#4ade80] transition-all font-mono"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 text-xs"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#737373] hover:text-white text-xs cursor-pointer"
                 >
                   ✕
                 </button>
@@ -512,7 +505,7 @@ export default function CompetitorsView() {
               onClick={() => discoverCompetitors()}
               disabled={isLoading || isResolvingLocation}
               title="Rescan Area"
-              className="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-[#5e6ad2]/15 border border-[#5e6ad2]/35 text-[#828cf0] hover:bg-[#5e6ad2]/25 text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm active:scale-95"
+              className="p-2 sm:px-3.5 sm:py-1.5 rounded-full bg-[#4ade80]/15 border border-[#4ade80]/30 text-[#4ade80] hover:bg-[#4ade80]/25 text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm cursor-pointer"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${isLoading || isResolvingLocation ? 'animate-spin' : ''}`} />
               <span className="hidden sm:inline">Rescan</span>
@@ -522,7 +515,7 @@ export default function CompetitorsView() {
             <button
               onClick={() => setIsCinemaMode(!isCinemaMode)}
               title={isCinemaMode ? 'Switch to Split View' : 'Switch to Cinema Radar'}
-              className="hidden lg:flex p-2 rounded-xl bg-zinc-950/80 border border-zinc-800/80 text-zinc-400 hover:text-white hover:bg-zinc-900 transition-all active:scale-95"
+              className="hidden lg:flex p-2 rounded-full bg-[#1f1f1f] border border-[#262626] text-[#a3a3a3] hover:text-white hover:bg-[#262626] transition-all cursor-pointer"
             >
               {isCinemaMode ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
             </button>
@@ -531,12 +524,12 @@ export default function CompetitorsView() {
 
         {/* Error Notification if any */}
         {errorMsg && (
-          <div className="p-3.5 rounded-xl bg-rose-950/30 border border-rose-900/50 text-rose-300 text-xs flex items-center justify-between">
+          <div className="p-3.5 rounded-2xl bg-rose-950/30 border border-rose-900/50 text-rose-300 text-xs flex items-center justify-between">
             <div className="flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
               <span>{errorMsg}</span>
             </div>
-            <button onClick={() => setErrorMsg(null)} className="text-zinc-500 hover:text-zinc-300">
+            <button onClick={() => setErrorMsg(null)} className="text-[#737373] hover:text-white cursor-pointer">
               ✕
             </button>
           </div>
@@ -544,18 +537,17 @@ export default function CompetitorsView() {
 
         {/* 3. MIDDLE SECTION: GOOGLE MAP + NEARBY RIVALS (CINEMA or SPLIT) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
-          {/* Google Map Canvas (Takes 12 columns in cinema mode, or 7/8 in split mode) */}
+          {/* Google Map Canvas */}
           <div
-            className={`transition-all duration-300 ${
-              isCinemaMode
-                ? 'lg:col-span-12 h-[580px]'
-                : 'lg:col-span-7 xl:col-span-8 h-[520px] lg:h-[560px]'
-            }`}
+            className={`transition-all duration-300 ${isCinemaMode
+              ? 'lg:col-span-12 h-[580px]'
+              : 'lg:col-span-7 xl:col-span-8 h-[520px] lg:h-[560px]'
+              }`}
           >
             {businessLocation ? (
               <GoogleCompetitorMap
                 businessLocation={businessLocation}
-                businessName={activeBusiness?.name || "Sowmya's Skin Laser Clinic"}
+                businessName={activeBusiness?.name || "Business"}
                 competitors={filteredAndSortedCompetitors}
                 selectedCompetitor={selectedCompetitor}
                 onSelectCompetitor={(comp) => setSelectedCompetitor(comp)}
@@ -564,11 +556,11 @@ export default function CompetitorsView() {
                 onToggleCinemaMode={() => setIsCinemaMode(!isCinemaMode)}
               />
             ) : (
-              <div className="h-full bg-[#0b0c10] rounded-2xl border border-zinc-800/80 flex flex-col items-center justify-center p-6 text-center space-y-3">
-                <Loader2 className="w-8 h-8 text-[#5e6ad2] animate-spin" />
+              <div className="h-full bg-[#171717] rounded-2xl border border-[#262626] flex flex-col items-center justify-center p-6 text-center space-y-3">
+                <Loader2 className="w-8 h-8 text-[#4ade80] animate-spin" />
                 <div className="space-y-1">
-                  <h4 className="text-sm font-semibold text-zinc-200">Resolving Radar Coordinates</h4>
-                  <p className="text-xs text-zinc-500 font-mono">
+                  <h4 className="font-serif font-light text-base text-white">Resolving Radar Coordinates</h4>
+                  <p className="text-xs text-[#a3a3a3] font-mono">
                     Querying Google Places API for "{activeBusiness?.name}"...
                   </p>
                 </div>
@@ -578,19 +570,18 @@ export default function CompetitorsView() {
 
           {/* Right / Underneath: Nearby Competitors List Card */}
           <div
-            className={`bg-[#0b0c10] rounded-2xl border border-zinc-800/80 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)] flex flex-col overflow-hidden transition-all duration-300 ${
-              isCinemaMode
-                ? 'lg:col-span-12 h-[340px]'
-                : 'lg:col-span-5 xl:col-span-4 h-[520px] lg:h-[560px]'
-            }`}
+            className={`bg-[#171717] rounded-2xl border border-[#262626] shadow-sm flex flex-col overflow-hidden transition-all duration-300 ${isCinemaMode
+              ? 'lg:col-span-12 h-[340px]'
+              : 'lg:col-span-5 xl:col-span-4 h-[520px] lg:h-[560px]'
+              }`}
           >
             {/* Header: Nearby Rivals Counter & Sort Dropdown */}
-            <div className="px-4 py-3 border-b border-zinc-800/80 flex items-center justify-between shrink-0 bg-[#090a0d]/60">
+            <div className="px-4 py-3 border-b border-[#262626] flex items-center justify-between shrink-0 bg-[#141414]">
               <div className="flex items-center gap-2">
-                <span className="text-xs font-mono uppercase tracking-wider text-zinc-300 font-medium">
+                <span className="text-xs font-mono uppercase tracking-wider text-zinc-200 font-medium">
                   Nearby Rivals
                 </span>
-                <span className="text-xs text-zinc-400 font-mono tabular-nums px-2 py-0.5 rounded-full bg-zinc-900 border border-zinc-800">
+                <span className="text-xs text-[#a3a3a3] font-mono tabular-nums px-2.5 py-0.5 rounded-full bg-[#1f1f1f] border border-[#262626]">
                   {filteredAndSortedCompetitors.length}
                 </span>
               </div>
@@ -599,15 +590,15 @@ export default function CompetitorsView() {
               <div className="relative">
                 <button
                   onClick={() => setIsSortOpen(!isSortOpen)}
-                  className="flex items-center gap-1.5 text-xs text-zinc-400 hover:text-zinc-200 font-mono transition-colors active:scale-95"
+                  className="flex items-center gap-1.5 text-xs text-[#a3a3a3] hover:text-white font-mono transition-colors cursor-pointer"
                 >
-                  <ArrowUpDown className="w-3 h-3 text-zinc-500" />
+                  <ArrowUpDown className="w-3 h-3 text-[#737373]" />
                   <span>{selectedSortLabel}</span>
-                  <ChevronDown className="w-3 h-3 text-zinc-500" />
+                  <ChevronDown className="w-3 h-3 text-[#737373]" />
                 </button>
 
                 {isSortOpen && (
-                  <div className="absolute right-0 mt-1.5 w-36 rounded-xl bg-[#0f1011] border border-zinc-800 shadow-2xl py-1 z-50 text-xs">
+                  <div className="absolute right-0 mt-1.5 w-36 rounded-2xl bg-[#171717] border border-[#262626] shadow-2xl py-1 z-50 text-xs">
                     {SORT_OPTIONS.map((opt) => (
                       <button
                         key={opt.value}
@@ -615,9 +606,8 @@ export default function CompetitorsView() {
                           setSelectedSort(opt.value);
                           setIsSortOpen(false);
                         }}
-                        className={`w-full text-left px-3 py-2 font-mono hover:bg-zinc-800/60 transition-colors ${
-                          selectedSort === opt.value ? 'text-[#828cf0] font-semibold bg-[#5e6ad2]/20' : 'text-zinc-300'
-                        }`}
+                        className={`w-full text-left px-3.5 py-2 font-mono hover:bg-[#1f1f1f] transition-colors cursor-pointer ${selectedSort === opt.value ? 'text-[#4ade80] font-semibold bg-[#4ade80]/15' : 'text-zinc-300'
+                          }`}
                       >
                         {opt.label}
                       </button>
@@ -631,13 +621,13 @@ export default function CompetitorsView() {
             <div className="flex-1 overflow-y-auto p-3 space-y-2">
               {isResolvingLocation && filteredAndSortedCompetitors.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-20 space-y-3">
-                  <Loader2 className="w-7 h-7 text-[#5e6ad2] animate-spin" />
-                  <span className="text-xs text-zinc-500 font-mono">Resolving business location via Google Places...</span>
+                  <Loader2 className="w-7 h-7 text-[#4ade80] animate-spin" />
+                  <span className="text-xs text-[#a3a3a3] font-mono">Resolving business location via Google Places...</span>
                 </div>
               ) : isLoading && filteredAndSortedCompetitors.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-20 space-y-3">
-                  <Loader2 className="w-7 h-7 text-[#5e6ad2] animate-spin" />
-                  <span className="text-xs text-zinc-500 font-mono">Discovering nearby competitors...</span>
+                  <Loader2 className="w-7 h-7 text-[#4ade80] animate-spin" />
+                  <span className="text-xs text-[#a3a3a3] font-mono">Discovering nearby competitors...</span>
                 </div>
               ) : filteredAndSortedCompetitors.length > 0 ? (
                 filteredAndSortedCompetitors.map((comp) => (
@@ -650,9 +640,9 @@ export default function CompetitorsView() {
                 ))
               ) : (
                 <div className="py-20 text-center space-y-2">
-                  <Building2 className="w-8 h-8 text-zinc-700 mx-auto" />
+                  <Building2 className="w-8 h-8 text-[#737373] mx-auto" />
                   <h4 className="text-xs font-semibold text-zinc-300">No competitors found</h4>
-                  <p className="text-[11px] text-zinc-500 max-w-xs mx-auto">
+                  <p className="text-[11px] text-[#737373] max-w-xs mx-auto">
                     Try expanding the search radius or selecting a different category.
                   </p>
                 </div>
@@ -666,7 +656,7 @@ export default function CompetitorsView() {
           <div className="w-full pt-2">
             <CompetitorDetailPanel
               businessId={activeBusiness!.id}
-              businessName={activeBusiness?.name || "Sowmya's Skin Laser Clinic"}
+              businessName={activeBusiness?.name || "Business"}
               businessLocation={businessLocation}
               competitor={selectedCompetitor}
               trackedCompetitors={trackedCompetitors}

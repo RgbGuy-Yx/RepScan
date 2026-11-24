@@ -56,17 +56,17 @@ export default function AuthView({
   };
 
   return (
-    <div className="min-h-screen bg-[#040405] text-[#f7f8f8] flex flex-col justify-between selection:bg-[#5e6ad2] selection:text-white relative overflow-hidden">
-      {/* Subtle Ambient Glow */}
+    <div className="min-h-screen bg-[#0a0a0a] text-zinc-100 flex flex-col justify-between selection:bg-[#4ade80]/30 selection:text-white relative overflow-hidden font-sans">
+      {/* Subtle Warm Ambient Glow */}
       <div
-        className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-[700px] h-[400px] rounded-full opacity-20 blur-[120px]"
+        className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-[700px] h-[400px] rounded-full opacity-15 blur-[140px]"
         style={{
-          background: 'radial-gradient(circle, #5e6ad2 0%, rgba(94, 106, 210, 0) 70%)',
+          background: 'radial-gradient(circle, #4ade80 0%, rgba(74, 222, 128, 0) 70%)',
         }}
       />
 
       {/* Top Simple Bar */}
-      <header className="h-16 px-6 sm:px-10 flex items-center justify-between z-10">
+      <header className="h-16 px-6 sm:px-10 flex items-center justify-between z-10 border-b border-[#262626]/50">
         <button
           type="button"
           onClick={() => {
@@ -76,20 +76,20 @@ export default function AuthView({
               navigate('/');
             }
           }}
-          className="inline-flex items-center gap-1.5 text-xs font-medium text-[#8a8f98] hover:text-[#f7f8f8] transition-colors cursor-pointer group"
+          className="inline-flex items-center gap-1.5 text-xs font-medium text-[#a3a3a3] hover:text-white transition-colors cursor-pointer group"
         >
           <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
           <span>Home</span>
         </button>
 
         <Link to="/" className="flex items-center gap-2 group">
-          <span className="w-6 h-6 rounded-md bg-[#5e6ad2] flex items-center justify-center text-white font-bold text-xs shadow-[0_1px_4px_rgba(94,106,210,0.4)]">
+          <span className="w-6 h-6 rounded-full bg-white flex items-center justify-center text-[#0a0a0a] font-bold text-xs shadow-sm">
             <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <path d="M4 6h16M4 12h10M4 18h14" strokeLinecap="round" />
             </svg>
           </span>
-          <span className="font-semibold text-sm tracking-tight text-[#f7f8f8]">
-            Rep<span className="text-[#8a8f98] font-normal">Scan</span>
+          <span className="font-serif font-light text-base tracking-tight text-white">
+            Rep<span className="text-[#a3a3a3]">Scan</span>
           </span>
         </Link>
 
@@ -101,25 +101,25 @@ export default function AuthView({
         <div className="w-full max-w-[420px] space-y-6">
           {/* Header Typography */}
           <div className="text-center space-y-2">
-            <h1 className="text-2xl font-semibold tracking-tight text-[#f7f8f8]">
+            <h1 className="font-serif font-light text-3xl sm:text-4xl tracking-[-0.02em] text-white">
               {mode === 'sign-in' ? 'Welcome back' : 'Create an account'}
             </h1>
-            <p className="text-xs text-[#8a8f98]">
+            <p className="text-xs text-[#a3a3a3]">
               {mode === 'sign-in'
-                ? 'Sign in to access your reputation dashboard'
-                : 'Start monitoring and managing customer reviews'}
+                ? 'Sign in to access your reputation intelligence workspace'
+                : 'Start monitoring customer reviews and competitive radar'}
             </p>
           </div>
 
           {/* Segmented Toggle */}
-          <div className="p-0.5 bg-[#0f1012] border border-[#1f2127] rounded-lg flex items-center">
+          <div className="p-1 bg-[#141414] border border-[#262626] rounded-full flex items-center">
             <button
               type="button"
               onClick={() => handleModeChange('sign-in')}
-              className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-all cursor-pointer ${
+              className={`flex-1 py-1.5 text-xs font-medium rounded-full transition-all cursor-pointer ${
                 mode === 'sign-in'
-                  ? 'bg-[#1b1c22] text-[#f7f8f8] shadow-sm'
-                  : 'text-[#8a8f98] hover:text-[#d0d6e0]'
+                  ? 'bg-white text-[#0a0a0a] font-semibold shadow-sm'
+                  : 'text-[#a3a3a3] hover:text-white'
               }`}
             >
               Sign In
@@ -127,10 +127,10 @@ export default function AuthView({
             <button
               type="button"
               onClick={() => handleModeChange('sign-up')}
-              className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-all cursor-pointer ${
+              className={`flex-1 py-1.5 text-xs font-medium rounded-full transition-all cursor-pointer ${
                 mode === 'sign-up'
-                  ? 'bg-[#1b1c22] text-[#f7f8f8] shadow-sm'
-                  : 'text-[#8a8f98] hover:text-[#d0d6e0]'
+                  ? 'bg-white text-[#0a0a0a] font-semibold shadow-sm'
+                  : 'text-[#a3a3a3] hover:text-white'
               }`}
             >
               Sign Up
@@ -138,7 +138,7 @@ export default function AuthView({
           </div>
 
           {/* Main Form Container */}
-          <div className="bg-[#0b0c0e] border border-[#1e2025] rounded-xl p-6 sm:p-8 shadow-[0_12px_40px_rgba(0,0,0,0.6)]">
+          <div className="bg-[#171717] border border-[#262626] rounded-2xl p-6 sm:p-8 shadow-sm">
             {hasClerkKey ? (
               /* Production Clerk Authentication */
               <div className="clerk-container w-full flex justify-center">
@@ -150,25 +150,25 @@ export default function AuthView({
                     appearance={{
                       baseTheme: dark,
                       variables: {
-                        colorPrimary: '#5e6ad2',
+                        colorPrimary: '#4ade80',
                         colorBackground: 'transparent',
-                        colorInputBackground: '#131418',
-                        colorInputText: '#f7f8f8',
-                        colorText: '#f7f8f8',
-                        colorTextSecondary: '#8a8f98',
-                        borderRadius: '0.5rem',
+                        colorInputBackground: '#1f1f1f',
+                        colorInputText: '#ffffff',
+                        colorText: '#ffffff',
+                        colorTextSecondary: '#a3a3a3',
+                        borderRadius: '9999px',
                       },
                       elements: {
                         card: 'bg-transparent shadow-none border-0 p-0',
                         headerTitle: 'hidden',
                         headerSubtitle: 'hidden',
                         socialButtonsBlockButton:
-                          'border border-[#23252a] bg-[#121316] hover:bg-[#18191e] text-[#f7f8f8] text-xs h-9 transition-colors',
+                          'border border-[#262626] bg-[#1f1f1f] hover:bg-[#262626] text-white text-xs h-9 rounded-full transition-colors',
                         formButtonPrimary:
-                          'bg-[#5e6ad2] hover:bg-[#6875e5] text-white text-xs font-medium h-9 shadow-[0_1px_4px_rgba(94,106,210,0.3)] transition-colors',
+                          'bg-white hover:bg-zinc-200 text-[#0a0a0a] text-xs font-semibold h-9 rounded-full shadow-sm transition-colors',
                         formFieldInput:
-                          'bg-[#131418] border border-[#23252a] focus:border-[#5e6ad2] text-xs h-9 text-[#f7f8f8]',
-                        footerActionLink: 'text-[#828fff] hover:text-white transition-colors',
+                          'bg-[#1f1f1f] border border-[#262626] focus:border-[#4ade80] text-xs h-9 text-white rounded-full',
+                        footerActionLink: 'text-[#4ade80] hover:text-white transition-colors',
                       },
                     }}
                   />
@@ -180,25 +180,25 @@ export default function AuthView({
                     appearance={{
                       baseTheme: dark,
                       variables: {
-                        colorPrimary: '#5e6ad2',
+                        colorPrimary: '#4ade80',
                         colorBackground: 'transparent',
-                        colorInputBackground: '#131418',
-                        colorInputText: '#f7f8f8',
-                        colorText: '#f7f8f8',
-                        colorTextSecondary: '#8a8f98',
-                        borderRadius: '0.5rem',
+                        colorInputBackground: '#1f1f1f',
+                        colorInputText: '#ffffff',
+                        colorText: '#ffffff',
+                        colorTextSecondary: '#a3a3a3',
+                        borderRadius: '9999px',
                       },
                       elements: {
                         card: 'bg-transparent shadow-none border-0 p-0',
                         headerTitle: 'hidden',
                         headerSubtitle: 'hidden',
                         socialButtonsBlockButton:
-                          'border border-[#23252a] bg-[#121316] hover:bg-[#18191e] text-[#f7f8f8] text-xs h-9 transition-colors',
+                          'border border-[#262626] bg-[#1f1f1f] hover:bg-[#262626] text-white text-xs h-9 rounded-full transition-colors',
                         formButtonPrimary:
-                          'bg-[#5e6ad2] hover:bg-[#6875e5] text-white text-xs font-medium h-9 shadow-[0_1px_4px_rgba(94,106,210,0.3)] transition-colors',
+                          'bg-white hover:bg-zinc-200 text-[#0a0a0a] text-xs font-semibold h-9 rounded-full shadow-sm transition-colors',
                         formFieldInput:
-                          'bg-[#131418] border border-[#23252a] focus:border-[#5e6ad2] text-xs h-9 text-[#f7f8f8]',
-                        footerActionLink: 'text-[#828fff] hover:text-white transition-colors',
+                          'bg-[#1f1f1f] border border-[#262626] focus:border-[#4ade80] text-xs h-9 text-white rounded-full',
+                        footerActionLink: 'text-[#4ade80] hover:text-white transition-colors',
                       },
                     }}
                   />
@@ -210,7 +210,7 @@ export default function AuthView({
                 <div className="space-y-1.5">
                   <label
                     htmlFor="auth-email"
-                    className="block text-xs font-medium text-[#d0d6e0]"
+                    className="block text-xs font-medium text-zinc-300 font-mono"
                   >
                     Email address
                   </label>
@@ -222,9 +222,9 @@ export default function AuthView({
                       placeholder="name@company.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full h-9 pl-9 pr-3 rounded-lg bg-[#131418] border border-[#23252a] text-xs text-[#f7f8f8] placeholder-[#555861] focus:outline-none focus:border-[#5e6ad2] focus:ring-1 focus:ring-[#5e6ad2]/30 transition-all"
+                      className="w-full h-10 pl-10 pr-4 rounded-full bg-[#1f1f1f] border border-[#262626] text-xs text-white placeholder-[#737373] focus:outline-none focus:border-[#4ade80] transition-all font-mono"
                     />
-                    <Mail className="w-3.5 h-3.5 text-[#62666d] absolute left-3 top-2.5" />
+                    <Mail className="w-3.5 h-3.5 text-[#737373] absolute left-3.5 top-3" />
                   </div>
                 </div>
 
@@ -232,12 +232,12 @@ export default function AuthView({
                   <div className="flex items-center justify-between">
                     <label
                       htmlFor="auth-password"
-                      className="block text-xs font-medium text-[#d0d6e0]"
+                      className="block text-xs font-medium text-zinc-300 font-mono"
                     >
                       Password
                     </label>
                     {mode === 'sign-in' && (
-                      <span className="text-[11px] text-[#8a8f98] hover:text-[#d0d6e0] transition-colors cursor-pointer">
+                      <span className="text-[11px] text-[#a3a3a3] hover:text-white transition-colors cursor-pointer">
                         Forgot password?
                       </span>
                     )}
@@ -250,13 +250,13 @@ export default function AuthView({
                       placeholder="••••••••••••"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="w-full h-9 pl-9 pr-9 rounded-lg bg-[#131418] border border-[#23252a] text-xs text-[#f7f8f8] placeholder-[#555861] focus:outline-none focus:border-[#5e6ad2] focus:ring-1 focus:ring-[#5e6ad2]/30 transition-all"
+                      className="w-full h-10 pl-10 pr-10 rounded-full bg-[#1f1f1f] border border-[#262626] text-xs text-white placeholder-[#737373] focus:outline-none focus:border-[#4ade80] transition-all font-mono"
                     />
-                    <Lock className="w-3.5 h-3.5 text-[#62666d] absolute left-3 top-2.5" />
+                    <Lock className="w-3.5 h-3.5 text-[#737373] absolute left-3.5 top-3" />
                     <button
                       type="button"
                       onClick={() => setShowPassword((prev) => !prev)}
-                      className="absolute right-3 top-2.5 text-[#62666d] hover:text-[#d0d6e0] transition-colors"
+                      className="absolute right-3.5 top-3 text-[#737373] hover:text-white transition-colors"
                       tabIndex={-1}
                     >
                       {showPassword ? (
@@ -271,7 +271,7 @@ export default function AuthView({
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full h-9 rounded-lg bg-[#5e6ad2] hover:bg-[#6875e5] text-white text-xs font-medium transition-colors shadow-[0_1px_4px_rgba(94,106,210,0.3)] flex items-center justify-center gap-1.5 mt-5 cursor-pointer disabled:opacity-50"
+                  className="w-full h-10 rounded-full bg-white hover:bg-zinc-200 text-[#0a0a0a] text-xs font-semibold transition-all shadow-sm flex items-center justify-center gap-1.5 mt-5 cursor-pointer disabled:opacity-50 active:scale-[0.98]"
                 >
                   {isSubmitting ? (
                     <span>Signing in...</span>
@@ -287,7 +287,7 @@ export default function AuthView({
           </div>
 
           {/* Minimal Mode Switcher Prompt */}
-          <div className="text-center text-xs text-[#8a8f98]">
+          <div className="text-center text-xs text-[#a3a3a3]">
             <span>
               {mode === 'sign-in'
                 ? "Don't have an account yet?"
@@ -296,7 +296,7 @@ export default function AuthView({
             <button
               type="button"
               onClick={() => handleModeChange(mode === 'sign-in' ? 'sign-up' : 'sign-in')}
-              className="ml-1.5 text-[#828fff] hover:text-white font-medium transition-colors cursor-pointer"
+              className="ml-1.5 text-[#4ade80] hover:underline font-medium transition-colors cursor-pointer"
             >
               {mode === 'sign-in' ? 'Sign up' : 'Sign in'}
             </button>
@@ -305,7 +305,7 @@ export default function AuthView({
       </main>
 
       {/* Bottom Footer Notice */}
-      <footer className="py-6 text-center text-[11px] text-[#555861] z-10">
+      <footer className="py-6 text-center text-[11px] text-[#737373] z-10 font-mono">
         <span>Protected with secure authentication. RepScan © {new Date().getFullYear()}</span>
       </footer>
     </div>

@@ -57,36 +57,36 @@ export default function Sidebar() {
   }, [activeBusiness?.id]);
 
   return (
-    <aside className="w-64 bg-zinc-950 border-r border-zinc-800/80 flex flex-col justify-between h-screen sticky top-0 select-none z-30 shrink-0">
+    <aside className="w-64 bg-[#0a0a0a] border-r border-[#262626] flex flex-col justify-between h-screen sticky top-0 select-none z-30 shrink-0 font-sans">
       {/* Top Header / Logo */}
       <div>
-        <div className="h-16 px-5 flex items-center justify-between border-b border-zinc-800/80">
+        <div className="h-16 px-5 flex items-center justify-between border-b border-[#262626]">
           <Link to="/" className="flex items-center gap-2.5 group">
-            <span className="w-6 h-6 rounded-md bg-zinc-100 flex items-center justify-center text-zinc-950 font-bold text-xs tracking-tight group-hover:bg-white transition-colors">
+            <span className="w-6 h-6 rounded-full bg-white flex items-center justify-center text-[#0a0a0a] font-bold text-xs tracking-tight group-hover:bg-neutral-200 transition-colors">
               <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <path d="M4 6h16M4 12h10M4 18h14" strokeLinecap="round" />
               </svg>
             </span>
             <div className="flex items-baseline gap-1">
-              <span className="font-semibold text-sm tracking-tight text-zinc-100">
-                Rep<span className="text-zinc-400 font-normal">Scan</span>
+              <span className="font-medium text-sm tracking-tight text-white">
+                Rep<span className="text-[#a3a3a3] font-light">Scan</span>
               </span>
-              <span className="text-[10px] text-zinc-500 font-mono ml-0.5">v2.4</span>
+              <span className="text-[10px] text-[#737373] font-mono ml-0.5">v2.4</span>
             </div>
           </Link>
 
           <Link
             to="/"
             title="Return to Website"
-            className="text-[11px] font-medium text-zinc-400 hover:text-zinc-100 flex items-center gap-1 transition-colors px-2 py-1 rounded-md hover:bg-zinc-900"
+            className="text-xs font-medium text-[#a3a3a3] hover:text-white flex items-center gap-1 transition-colors px-2.5 py-1 rounded-full hover:bg-[#171717]"
           >
             <ArrowLeft className="w-3 h-3" />
             <span className="hidden sm:inline">Home</span>
           </Link>
         </div>
 
-        {/* Navigation List */}
-        <nav className="p-3 space-y-0.5" aria-label="Main Navigation">
+        {/* Navigation List — Pill Shape (Design.md) */}
+        <nav className="p-3 space-y-1" aria-label="Main Navigation">
           {NAV_ITEMS.map((item) => {
             const Icon = item.icon;
             const isActive = item.end
@@ -97,18 +97,18 @@ export default function Sidebar() {
               <NavLink
                 key={item.path}
                 to={item.path}
-                className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-xs font-medium transition-colors ${
+                className={`w-full flex items-center justify-between px-3.5 py-2 rounded-full text-xs font-medium transition-colors ${
                   isActive
-                    ? 'bg-zinc-900 text-zinc-100 border border-zinc-800 shadow-sm'
-                    : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/60 border border-transparent'
+                    ? 'bg-[#1f1f1f] text-white border border-[#262626]'
+                    : 'text-[#a3a3a3] hover:text-white hover:bg-[#171717] border border-transparent'
                 }`}
               >
                 <div className="flex items-center gap-2.5">
-                  <Icon className={`w-3.5 h-3.5 transition-colors ${isActive ? 'text-zinc-100' : 'text-zinc-400'}`} />
+                  <Icon className={`w-3.5 h-3.5 transition-colors ${isActive ? 'text-white' : 'text-[#a3a3a3]'}`} />
                   <span>{item.label}</span>
                 </div>
                 {item.badge && (
-                  <span className="text-[9px] px-1.5 py-0.5 rounded font-mono font-medium uppercase bg-zinc-800 text-zinc-300 border border-zinc-700/80">
+                  <span className="badge-action-green text-[9px] px-1.5 py-0.2">
                     {item.badge}
                   </span>
                 )}
@@ -119,58 +119,55 @@ export default function Sidebar() {
       </div>
 
       {/* Bottom Business & Platform Section */}
-      <div className="p-3.5 border-t border-zinc-800/80 space-y-3 bg-zinc-950">
-        {/* Active Business Summary */}
-        <div className="space-y-1">
-          <div className="flex items-center justify-between px-0.5">
-            <span className="text-[10px] font-medium text-zinc-500 uppercase tracking-wider font-mono flex items-center gap-1">
-              <Building className="w-3 h-3 text-zinc-500" />
+      <div className="p-4 border-t border-[#262626] space-y-3 bg-[#0a0a0a]">
+        {/* Active Business Summary Card */}
+        <div className="p-3 rounded-2xl bg-[#171717] border border-[#262626] space-y-1.5">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-medium text-[#737373] uppercase tracking-wider font-mono flex items-center gap-1">
+              <Building className="w-3 h-3 text-[#737373]" />
               Active Entity
             </span>
-            <span className="text-[10px] text-emerald-400 font-mono">LIVE</span>
+            <span className="badge-success text-[9px] py-0 px-1.5">LIVE</span>
           </div>
-          <div className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-md bg-zinc-900 border border-zinc-800 text-xs font-medium text-zinc-200">
-            <span className="truncate">{activeBusiness?.name || 'No business selected'}</span>
+          <div className="text-xs font-medium text-white truncate">
+            {activeBusiness?.name || 'No business selected'}
           </div>
         </div>
 
-        {/* Connected Channels list */}
+        {/* Connected Channels List */}
         <div className="space-y-1 text-xs">
-          <div className="px-0.5 pb-0.5">
-            <span className="text-[10px] font-medium text-zinc-500 uppercase tracking-wider font-mono block">
+          <div className="px-1 pb-0.5">
+            <span className="text-[10px] font-medium text-[#737373] uppercase tracking-wider font-mono block">
               Channels
             </span>
           </div>
-          <div className="flex items-center justify-between py-1 px-2 rounded-md text-zinc-400 hover:bg-zinc-900/60 transition-colors">
+          <div className="flex items-center justify-between py-1.5 px-2.5 rounded-xl bg-[#171717] border border-[#262626] text-xs">
             <div className="flex items-center gap-2">
-              <span className="w-4 h-4 rounded bg-zinc-900 text-zinc-300 font-mono font-bold text-[9px] flex items-center justify-center border border-zinc-800">
+              <span className="w-4 h-4 rounded-full bg-[#1f1f1f] text-white font-mono font-bold text-[9px] flex items-center justify-center border border-[#262626]">
                 G
               </span>
-              <span className="text-zinc-300">Google Maps</span>
+              <span className="text-white">Google Maps</span>
             </div>
-            <span className="text-[10px] text-emerald-400 font-mono">LIVE</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e]" />
           </div>
 
-          <div className="flex items-center justify-between py-1 px-2 rounded-md text-zinc-400 hover:bg-zinc-900/60 transition-colors">
+          <div className="flex items-center justify-between py-1.5 px-2.5 rounded-xl bg-[#171717] border border-[#262626] text-xs">
             <div className="flex items-center gap-2">
-              <span className="w-4 h-4 rounded bg-zinc-900 text-zinc-400 font-mono font-bold text-[9px] flex items-center justify-center border border-zinc-800">
+              <span className="w-4 h-4 rounded-full bg-[#1f1f1f] text-white font-mono font-bold text-[9px] flex items-center justify-center border border-[#262626]">
                 IG
               </span>
-              <span className={hasInstagram ? "text-zinc-200" : "text-zinc-400"}>Instagram</span>
+              <span className={hasInstagram ? "text-white" : "text-[#737373]"}>Instagram</span>
             </div>
-            <span className={`text-[10px] font-mono ${hasInstagram ? "text-emerald-400 font-semibold" : "text-zinc-500"}`}>
-              {hasInstagram ? "LIVE" : "OFF"}
-            </span>
+            <span className={`w-1.5 h-1.5 rounded-full ${hasInstagram ? "bg-[#22c55e]" : "bg-[#737373]"}`} />
           </div>
-
         </div>
 
         {/* Add Platform Action */}
         <NavLink
           to="/dashboard/settings"
-          className="w-full py-1.5 px-2.5 rounded-md border border-dashed border-zinc-800 hover:border-zinc-700 text-zinc-400 hover:text-zinc-200 text-xs font-medium flex items-center justify-center gap-1.5 transition-colors bg-zinc-900/40 cursor-pointer active:scale-[0.98]"
+          className="btn-pill-secondary w-full text-xs justify-center py-2"
         >
-          <Plus className="w-3.5 h-3.5 text-zinc-400" />
+          <Plus className="w-3.5 h-3.5 text-[#a3a3a3]" />
           <span>Platform Settings</span>
         </NavLink>
       </div>

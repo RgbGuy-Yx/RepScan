@@ -47,7 +47,7 @@ function StarRating({ rating, max = 5 }: { rating: number | string | null | unde
         return (
           <svg
             key={i}
-            className={`w-3 h-3 ${fill ? 'text-amber-400 fill-amber-400' : 'text-zinc-700 fill-transparent'}`}
+            className={`w-3 h-3 ${fill ? 'text-amber-400 fill-amber-400' : 'text-neutral-700 fill-transparent'}`}
             viewBox="0 0 20 20"
             stroke="currentColor"
             strokeWidth={fill ? 0 : 1.5}
@@ -277,55 +277,55 @@ export default function ThemesView({ onOpenProof }: ThemesViewProps) {
 
   if (!activeBusiness) {
     return (
-      <div className="p-16 max-w-lg mx-auto text-center space-y-3">
-        <div className="w-10 h-10 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center mx-auto text-zinc-500">
+      <div className="p-16 max-w-lg mx-auto text-center space-y-4">
+        <div className="w-12 h-12 rounded-full bg-[#171717] border border-[#262626] flex items-center justify-center mx-auto text-[#a3a3a3]">
           <Tag className="w-5 h-5" />
         </div>
-        <h3 className="text-sm font-semibold text-zinc-100">No Business Selected</h3>
-        <p className="text-xs text-zinc-400 font-mono">
-          Select an active business profile to review semantic themes and customer citations.
+        <h3 className="font-serif font-light text-xl text-white tracking-[-0.01em]">No Business Selected</h3>
+        <p className="text-xs text-[#a3a3a3] font-mono leading-relaxed">
+          Select an active business profile from the header to review semantic clusters and customer citations.
         </p>
       </div>
     );
   }
 
   return (
-    <div className="p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
+    <div className="p-6 lg:p-8 max-w-7xl mx-auto space-y-7 animate-in fade-in duration-300">
       {/* ─────────────────────────────────────────────────────────────
           SECTION 1: TOP HEADER & TELEMETRY SUMMARY
           ───────────────────────────────────────────────────────────── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-800/80 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#262626] pb-5">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <span className="text-[11px] font-mono uppercase tracking-wider text-zinc-400">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-[#a3a3a3]">
               Semantic Intelligence
             </span>
-            <span className="text-zinc-600 font-mono text-xs">/</span>
-            <span className="text-xs font-mono text-zinc-400">{activeBusiness.name}</span>
+            <span className="text-[#404040] font-mono text-xs">/</span>
+            <span className="text-xs font-mono text-zinc-300">{activeBusiness.name}</span>
           </div>
-          <h1 className="text-xl sm:text-2xl font-semibold text-zinc-100 tracking-tight">
+          <h1 className="font-serif font-light text-2xl sm:text-3xl text-white tracking-[-0.02em]">
             Thematic Clusters & Sentiment Matrix
           </h1>
-          <p className="text-xs text-zinc-400">
+          <p className="text-xs text-[#a3a3a3]">
             Interactive breakdown of recurring topics and customer sentiment extracted from verified feedback.
           </p>
         </div>
 
         {/* Telemetry Stat Badges */}
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-          <div className="px-3 py-2 rounded-lg bg-zinc-900/60 border border-zinc-800/80 text-left">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500 block">Topics</span>
-            <span className="text-sm font-bold font-mono text-zinc-100 tabular-nums">
+          <div className="px-3.5 py-2 rounded-2xl bg-[#171717] border border-[#262626] text-left">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-[#737373] block">Topics</span>
+            <span className="text-sm font-bold font-mono text-white tabular-nums">
               {allThemes.length}
             </span>
           </div>
-          <div className="px-3 py-2 rounded-lg bg-emerald-950/20 border border-emerald-900/40 text-left">
+          <div className="px-3.5 py-2 rounded-2xl bg-emerald-950/20 border border-emerald-900/40 text-left">
             <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-400 block">Praise</span>
             <span className="text-sm font-bold font-mono text-emerald-300 tabular-nums">
               {praiseThemesCount}
             </span>
           </div>
-          <div className="px-3 py-2 rounded-lg bg-rose-950/20 border border-rose-900/40 text-left">
+          <div className="px-3.5 py-2 rounded-2xl bg-rose-950/20 border border-rose-900/40 text-left">
             <span className="text-[10px] font-mono uppercase tracking-wider text-rose-400 block">Concerns</span>
             <span className="text-sm font-bold font-mono text-rose-300 tabular-nums">
               {criticalThemesCount}
@@ -338,11 +338,11 @@ export default function ThemesView({ onOpenProof }: ThemesViewProps) {
           SECTION 2: INTERACTIVE THEMES COMPARISON BAR GRAPH
           ───────────────────────────────────────────────────────────── */}
       {allThemes.length > 0 && (
-        <div className="rounded-xl border border-zinc-800/80 bg-zinc-950/70 p-5 sm:p-6 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)] space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-zinc-800/60">
-            <div className="flex items-center gap-2">
-              <BarChart3 className="w-4 h-4 text-zinc-400" />
-              <h2 className="text-xs font-mono uppercase tracking-wider text-zinc-300">
+        <div className="rounded-2xl border border-[#262626] bg-[#171717] p-5 sm:p-6 shadow-sm space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-[#262626]">
+            <div className="flex items-center gap-2.5">
+              <BarChart3 className="w-4 h-4 text-[#4ade80]" />
+              <h2 className="text-xs font-mono uppercase tracking-wider text-zinc-200">
                 Top Thematic Volumes & Sentiment Distribution
               </h2>
             </div>
@@ -351,22 +351,22 @@ export default function ThemesView({ onOpenProof }: ThemesViewProps) {
               <div className="hidden sm:flex items-center gap-3">
                 <div className="flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                  <span className="text-[11px] text-zinc-400">Positive</span>
+                  <span className="text-[11px] text-[#a3a3a3]">Positive</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-zinc-500" />
-                  <span className="text-[11px] text-zinc-400">Neutral</span>
+                  <span className="text-[11px] text-[#a3a3a3]">Neutral</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-rose-400" />
-                  <span className="text-[11px] text-zinc-400">Negative</span>
+                  <span className="text-[11px] text-[#a3a3a3]">Negative</span>
                 </div>
               </div>
 
               <button
                 type="button"
                 onClick={() => setShowOverviewGraph(!showOverviewGraph)}
-                className="text-[11px] text-zinc-400 hover:text-zinc-200 cursor-pointer underline transition-colors"
+                className="text-[11px] text-[#a3a3a3] hover:text-white cursor-pointer underline transition-colors"
               >
                 {showOverviewGraph ? 'Collapse' : 'Expand'}
               </button>
@@ -375,7 +375,7 @@ export default function ThemesView({ onOpenProof }: ThemesViewProps) {
 
           {showOverviewGraph && (
             <div className="space-y-3 pt-1">
-              <p className="text-[11px] text-zinc-500 font-mono">
+              <p className="text-[11px] text-[#737373] font-mono">
                 Click any bar below to inspect customer citations and sentiment details:
               </p>
               <div className="grid gap-2.5">
@@ -390,9 +390,9 @@ export default function ThemesView({ onOpenProof }: ThemesViewProps) {
                         setSelectedTheme(theme.name);
                         setSentimentFilter('all');
                       }}
-                      className={`group p-2 rounded-lg border transition-all cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 ${isSelected
-                          ? 'bg-zinc-900/90 border-zinc-500 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]'
-                          : 'bg-zinc-900/30 border-zinc-800/80 hover:border-zinc-700 hover:bg-zinc-900/60'
+                      className={`group p-2.5 rounded-xl border transition-all cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${isSelected
+                        ? 'bg-[#1f1f1f] border-[#4ade80] shadow-sm'
+                        : 'bg-[#141414] border-[#262626] hover:border-[#404040] hover:bg-[#1c1c1c]'
                         }`}
                     >
                       {/* Theme Name & Rating */}
@@ -401,17 +401,17 @@ export default function ThemesView({ onOpenProof }: ThemesViewProps) {
                           {theme.name}
                         </span>
                         {theme.averageRating !== null && theme.averageRating !== undefined ? (
-                          <span className="text-[11px] font-mono text-zinc-500 flex items-center gap-1">
+                          <span className="text-[11px] font-mono text-[#a3a3a3] flex items-center gap-1">
                             {theme.averageRating.toFixed(1)}
                             <Star className="w-2.5 h-2.5 text-amber-400 fill-amber-400" />
                           </span>
                         ) : (
-                          <span className="text-[10px] font-mono text-zinc-600">Unrated</span>
+                          <span className="text-[10px] font-mono text-[#737373]">Unrated</span>
                         )}
                       </div>
 
                       {/* Interactive Horizontal Bar Graph */}
-                      <div className="flex-1 h-3 rounded bg-zinc-900 border border-zinc-800/80 overflow-hidden flex relative">
+                      <div className="flex-1 h-3 rounded-full bg-[#0a0a0a] border border-[#262626] overflow-hidden flex relative">
                         <div
                           className="h-full flex transition-all duration-500"
                           style={{ width: `${barWidthPercent}%` }}
@@ -442,10 +442,10 @@ export default function ThemesView({ onOpenProof }: ThemesViewProps) {
 
                       {/* Mentions & Proportions */}
                       <div className="w-28 text-right shrink-0 flex items-center justify-end gap-2 font-mono text-[11px]">
-                        <span className="text-zinc-200 font-semibold tabular-nums">{theme.count}</span>
-                        <span className="text-zinc-500 text-[10px]">mentions</span>
+                        <span className="text-zinc-100 font-semibold tabular-nums">{theme.count}</span>
+                        <span className="text-[#737373] text-[10px]">mentions</span>
                         {isSelected && (
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#4ade80] shrink-0" />
                         )}
                       </div>
                     </div>
@@ -462,41 +462,41 @@ export default function ThemesView({ onOpenProof }: ThemesViewProps) {
           ───────────────────────────────────────────────────────────── */}
       {isLoading ? (
         <div className="p-20 flex flex-col items-center justify-center text-center space-y-3">
-          <Loader2 className="w-6 h-6 text-zinc-400 animate-spin" />
-          <p className="text-xs font-mono text-zinc-400">Synthesizing thematic clusters across reviews...</p>
+          <Loader2 className="w-6 h-6 text-[#4ade80] animate-spin" />
+          <p className="text-xs font-mono text-[#a3a3a3]">Synthesizing thematic clusters across reviews...</p>
         </div>
       ) : allThemes.length === 0 ? (
-        <div className="p-16 rounded-xl bg-zinc-950/70 border border-zinc-800/80 text-center space-y-3 font-mono">
-          <Tag className="w-6 h-6 text-zinc-600 mx-auto" />
-          <h3 className="text-sm font-semibold text-zinc-100">No Semantic Themes Extracted</h3>
-          <p className="text-xs text-zinc-500 max-w-md mx-auto">
+        <div className="p-16 rounded-2xl bg-[#171717] border border-[#262626] text-center space-y-3 font-mono">
+          <Tag className="w-6 h-6 text-[#737373] mx-auto" />
+          <h3 className="font-serif font-light text-lg text-white">No Semantic Themes Extracted</h3>
+          <p className="text-xs text-[#737373] max-w-md mx-auto">
             Ingest and analyze customer reviews in Settings to extract topic clusters.
           </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           {/* ─── LEFT COLUMN: THEME SELECTOR & FILTERS (5 cols) ─── */}
-          <div className="lg:col-span-5 rounded-xl border border-zinc-800/80 bg-zinc-950/70 p-4 sm:p-5 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)] space-y-4">
+          <div className="lg:col-span-5 rounded-2xl border border-[#262626] bg-[#171717] p-4 sm:p-5 shadow-sm space-y-4">
             {/* Search Input */}
             <div className="relative">
-              <Search className="w-3.5 h-3.5 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <Search className="w-3.5 h-3.5 text-[#737373] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
                 value={themeSearch}
                 onChange={(e) => setThemeSearch(e.target.value)}
                 placeholder="Search topics (e.g., treatment, wait times)..."
-                className="w-full bg-zinc-900/70 border border-zinc-800 rounded-md pl-9 pr-3 py-1.5 text-xs text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-zinc-600 transition-colors font-sans"
+                className="w-full bg-[#1f1f1f] border border-[#262626] rounded-full pl-9 pr-3.5 py-1.5 text-xs text-white placeholder:text-[#737373] focus:outline-none focus:border-[#4ade80] transition-colors font-sans"
               />
             </div>
 
             {/* Quick Filter Segment Buttons */}
-            <div className="flex items-center gap-1.5 p-1 bg-zinc-900/60 rounded-md border border-zinc-800 text-[11px] font-mono">
+            <div className="flex items-center gap-1.5 p-1 bg-[#141414] rounded-full border border-[#262626] text-[11px] font-mono">
               <button
                 type="button"
                 onClick={() => setThemeFilterMode('all')}
-                className={`flex-1 py-1 px-2 rounded transition-colors text-center cursor-pointer ${themeFilterMode === 'all'
-                    ? 'bg-zinc-800 text-zinc-100 font-medium'
-                    : 'text-zinc-400 hover:text-zinc-200'
+                className={`flex-1 py-1 px-2.5 rounded-full transition-colors text-center cursor-pointer ${themeFilterMode === 'all'
+                  ? 'bg-[#1f1f1f] text-white font-medium border border-[#333333]'
+                  : 'text-[#a3a3a3] hover:text-white'
                   }`}
               >
                 All ({allThemes.length})
@@ -504,9 +504,9 @@ export default function ThemesView({ onOpenProof }: ThemesViewProps) {
               <button
                 type="button"
                 onClick={() => setThemeFilterMode('critical')}
-                className={`flex-1 py-1 px-2 rounded transition-colors text-center cursor-pointer flex items-center justify-center gap-1 ${themeFilterMode === 'critical'
-                    ? 'bg-rose-950/50 text-rose-300 font-medium border border-rose-900/40'
-                    : 'text-zinc-400 hover:text-zinc-200'
+                className={`flex-1 py-1 px-2.5 rounded-full transition-colors text-center cursor-pointer flex items-center justify-center gap-1.5 ${themeFilterMode === 'critical'
+                  ? 'bg-rose-950/50 text-rose-300 font-medium border border-rose-900/40'
+                  : 'text-[#a3a3a3] hover:text-white'
                   }`}
               >
                 <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
@@ -515,9 +515,9 @@ export default function ThemesView({ onOpenProof }: ThemesViewProps) {
               <button
                 type="button"
                 onClick={() => setThemeFilterMode('praise')}
-                className={`flex-1 py-1 px-2 rounded transition-colors text-center cursor-pointer flex items-center justify-center gap-1 ${themeFilterMode === 'praise'
-                    ? 'bg-emerald-950/50 text-emerald-300 font-medium border border-emerald-900/40'
-                    : 'text-zinc-400 hover:text-zinc-200'
+                className={`flex-1 py-1 px-2.5 rounded-full transition-colors text-center cursor-pointer flex items-center justify-center gap-1.5 ${themeFilterMode === 'praise'
+                  ? 'bg-emerald-950/50 text-emerald-300 font-medium border border-emerald-900/40'
+                  : 'text-[#a3a3a3] hover:text-white'
                   }`}
               >
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
@@ -526,7 +526,7 @@ export default function ThemesView({ onOpenProof }: ThemesViewProps) {
             </div>
 
             {/* Sort Dropdown */}
-            <div className="flex items-center justify-between text-[11px] font-mono text-zinc-400 px-1 pt-0.5">
+            <div className="flex items-center justify-between text-[11px] font-mono text-[#a3a3a3] px-1 pt-0.5">
               <span>Sort topics:</span>
               <Select<'mentions' | 'critical' | 'rating'>
                 value={themeSort}
@@ -546,7 +546,7 @@ export default function ThemesView({ onOpenProof }: ThemesViewProps) {
             {/* Scrollable Theme Items List */}
             <div className="space-y-2 max-h-[560px] overflow-y-auto pr-1">
               {displayedThemes.length === 0 ? (
-                <div className="py-12 text-center text-xs font-mono text-zinc-500">
+                <div className="py-12 text-center text-xs font-mono text-[#737373]">
                   No themes match current search filter.
                 </div>
               ) : (
@@ -559,21 +559,21 @@ export default function ThemesView({ onOpenProof }: ThemesViewProps) {
                         setSelectedTheme(theme.name);
                         setSentimentFilter('all');
                       }}
-                      className={`p-3 rounded-lg border transition-all cursor-pointer space-y-2 ${isSelected
-                          ? 'bg-zinc-900 border-zinc-500 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]'
-                          : 'bg-zinc-900/40 border-zinc-800/80 hover:border-zinc-700 hover:bg-zinc-900/70'
+                      className={`p-3 rounded-xl border transition-all cursor-pointer space-y-2 ${isSelected
+                        ? 'bg-[#1f1f1f] border-[#4ade80] shadow-sm'
+                        : 'bg-[#141414] border-[#262626] hover:border-[#404040] hover:bg-[#1a1a1a]'
                         }`}
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <Tag className={`w-3.5 h-3.5 ${isSelected ? 'text-emerald-400' : 'text-zinc-500'}`} />
-                          <h4 className="text-xs font-medium text-zinc-100 capitalize">
+                          <Tag className={`w-3.5 h-3.5 ${isSelected ? 'text-[#4ade80]' : 'text-[#737373]'}`} />
+                          <h4 className="text-xs font-medium text-white capitalize">
                             {theme.name}
                           </h4>
                         </div>
                         <div className="flex items-center gap-2 font-mono text-[11px]">
-                          <span className="text-zinc-400">{theme.count} mentions</span>
-                          <span className="text-zinc-600 font-mono">/</span>
+                          <span className="text-[#a3a3a3]">{theme.count} mentions</span>
+                          <span className="text-[#404040] font-mono">/</span>
                           <span className="text-amber-400 flex items-center gap-0.5">
                             {theme.averageRating != null ? theme.averageRating.toFixed(1) : '—'}
                             <Star className="w-2.5 h-2.5 fill-amber-400" />
@@ -582,7 +582,7 @@ export default function ThemesView({ onOpenProof }: ThemesViewProps) {
                       </div>
 
                       {/* Segmented Mini Bar */}
-                      <div className="h-1.5 rounded-[2px] bg-zinc-900 overflow-hidden flex">
+                      <div className="h-1.5 rounded-full bg-[#0a0a0a] overflow-hidden flex">
                         <div
                           style={{ width: `${theme.sentimentRatio.positive}%` }}
                           className="bg-emerald-500/80 h-full"
@@ -609,19 +609,19 @@ export default function ThemesView({ onOpenProof }: ThemesViewProps) {
           {/* ─── RIGHT COLUMN: SELECTED THEME DEEP DIVE (7 cols) ─── */}
           <div className="lg:col-span-7 space-y-5">
             {currentThemeData ? (
-              <div className="rounded-xl border border-zinc-800/80 bg-zinc-950/70 p-5 sm:p-6 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)] space-y-5">
+              <div className="rounded-2xl border border-[#262626] bg-[#171717] p-5 sm:p-6 shadow-sm space-y-5">
                 {/* Theme Header Card */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-zinc-800/60">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#262626]">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <span className="px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-[10px] font-mono text-zinc-400 uppercase tracking-wider">
+                      <span className="px-2.5 py-0.5 rounded-full bg-[#1f1f1f] border border-[#262626] text-[10px] font-mono text-[#a3a3a3] uppercase tracking-wider">
                         Topic Detail
                       </span>
-                      <span className="text-xs font-mono text-zinc-500">
+                      <span className="text-xs font-mono text-[#737373]">
                         {currentThemeData.prevalence}% of feedback corpus
                       </span>
                     </div>
-                    <h2 className="text-lg font-semibold text-zinc-100 capitalize">
+                    <h2 className="font-serif font-light text-2xl text-white capitalize tracking-[-0.01em]">
                       {currentThemeData.name}
                     </h2>
                   </div>
@@ -631,16 +631,16 @@ export default function ThemesView({ onOpenProof }: ThemesViewProps) {
                       {currentThemeData.averageRating !== null && currentThemeData.averageRating !== undefined ? (
                         <div className="flex items-center gap-1 justify-end text-amber-400">
                           <StarRating rating={currentThemeData.averageRating} />
-                          <span className="font-mono text-xs font-bold text-zinc-200 ml-1">
+                          <span className="font-mono text-xs font-bold text-white ml-1">
                             {currentThemeData.averageRating.toFixed(2)}
                           </span>
                         </div>
                       ) : (
-                        <span className="text-[11px] font-mono text-zinc-500">
+                        <span className="text-[11px] font-mono text-[#737373]">
                           Unrated (Social sentiment only)
                         </span>
                       )}
-                      <span className="text-[10px] font-mono text-zinc-500 block mt-0.5">
+                      <span className="text-[10px] font-mono text-[#737373] block mt-0.5">
                         {currentThemeData.count} total mentions
                       </span>
                     </div>
@@ -649,7 +649,7 @@ export default function ThemesView({ onOpenProof }: ThemesViewProps) {
 
                 {/* ─── INTERACTIVE SENTIMENT BAR BREAKDOWN ─── */}
                 <div className="space-y-2.5">
-                  <span className="text-[11px] font-mono uppercase tracking-wider text-zinc-400 block">
+                  <span className="text-[11px] font-mono uppercase tracking-wider text-[#a3a3a3] block">
                     Sentiment Breakdown (Click bar to filter citations)
                   </span>
 
@@ -657,9 +657,9 @@ export default function ThemesView({ onOpenProof }: ThemesViewProps) {
                     {/* Positive Bar Box */}
                     <div
                       onClick={() => setSentimentFilter('positive')}
-                      className={`p-3 rounded-lg border transition-all cursor-pointer ${sentimentFilter === 'positive'
-                          ? 'bg-emerald-950/40 border-emerald-500 shadow-[inset_0_1px_0_0_rgba(16,185,129,0.2)]'
-                          : 'bg-zinc-900/40 border-zinc-800/80 hover:border-emerald-900/60'
+                      className={`p-3.5 rounded-xl border transition-all cursor-pointer ${sentimentFilter === 'positive'
+                        ? 'bg-emerald-950/40 border-emerald-500 shadow-sm'
+                        : 'bg-[#141414] border-[#262626] hover:border-emerald-900/60'
                         }`}
                     >
                       <div className="flex items-center justify-between text-xs">
@@ -667,14 +667,14 @@ export default function ThemesView({ onOpenProof }: ThemesViewProps) {
                           <ThumbsUp className="w-3 h-3" />
                           Positive
                         </span>
-                        <span className="font-mono text-zinc-400 text-[11px]">
+                        <span className="font-mono text-[#a3a3a3] text-[11px]">
                           {currentThemeData.sentimentRatio.positive}%
                         </span>
                       </div>
-                      <div className="mt-2 text-lg font-bold font-mono text-zinc-100">
+                      <div className="mt-2 text-lg font-bold font-mono text-white">
                         {currentThemeData.positiveCount}
                       </div>
-                      <div className="mt-2 h-1.5 rounded-full bg-zinc-800 overflow-hidden">
+                      <div className="mt-2 h-1.5 rounded-full bg-[#0a0a0a] overflow-hidden">
                         <div
                           style={{ width: `${currentThemeData.sentimentRatio.positive}%` }}
                           className="bg-emerald-500 h-full"
@@ -685,24 +685,24 @@ export default function ThemesView({ onOpenProof }: ThemesViewProps) {
                     {/* Neutral Bar Box */}
                     <div
                       onClick={() => setSentimentFilter('neutral')}
-                      className={`p-3 rounded-lg border transition-all cursor-pointer ${sentimentFilter === 'neutral'
-                          ? 'bg-zinc-900 border-zinc-400 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1)]'
-                          : 'bg-zinc-900/40 border-zinc-800/80 hover:border-zinc-700'
+                      className={`p-3.5 rounded-xl border transition-all cursor-pointer ${sentimentFilter === 'neutral'
+                        ? 'bg-[#1f1f1f] border-zinc-400 shadow-sm'
+                        : 'bg-[#141414] border-[#262626] hover:border-[#404040]'
                         }`}
                     >
                       <div className="flex items-center justify-between text-xs">
-                        <span className="flex items-center gap-1.5 font-mono text-zinc-400">
+                        <span className="flex items-center gap-1.5 font-mono text-[#a3a3a3]">
                           <Minus className="w-3 h-3" />
                           Neutral
                         </span>
-                        <span className="font-mono text-zinc-400 text-[11px]">
+                        <span className="font-mono text-[#a3a3a3] text-[11px]">
                           {currentThemeData.sentimentRatio.neutral}%
                         </span>
                       </div>
-                      <div className="mt-2 text-lg font-bold font-mono text-zinc-100">
+                      <div className="mt-2 text-lg font-bold font-mono text-white">
                         {currentThemeData.neutralCount}
                       </div>
-                      <div className="mt-2 h-1.5 rounded-full bg-zinc-800 overflow-hidden">
+                      <div className="mt-2 h-1.5 rounded-full bg-[#0a0a0a] overflow-hidden">
                         <div
                           style={{ width: `${currentThemeData.sentimentRatio.neutral}%` }}
                           className="bg-zinc-500 h-full"
@@ -713,9 +713,9 @@ export default function ThemesView({ onOpenProof }: ThemesViewProps) {
                     {/* Negative Bar Box */}
                     <div
                       onClick={() => setSentimentFilter('negative')}
-                      className={`p-3 rounded-lg border transition-all cursor-pointer ${sentimentFilter === 'negative'
-                          ? 'bg-rose-950/40 border-rose-500 shadow-[inset_0_1px_0_0_rgba(244,63,94,0.2)]'
-                          : 'bg-zinc-900/40 border-zinc-800/80 hover:border-rose-900/60'
+                      className={`p-3.5 rounded-xl border transition-all cursor-pointer ${sentimentFilter === 'negative'
+                        ? 'bg-rose-950/40 border-rose-500 shadow-sm'
+                        : 'bg-[#141414] border-[#262626] hover:border-rose-900/60'
                         }`}
                     >
                       <div className="flex items-center justify-between text-xs">
@@ -723,14 +723,14 @@ export default function ThemesView({ onOpenProof }: ThemesViewProps) {
                           <ThumbsDown className="w-3 h-3" />
                           Critical
                         </span>
-                        <span className="font-mono text-zinc-400 text-[11px]">
+                        <span className="font-mono text-[#a3a3a3] text-[11px]">
                           {currentThemeData.sentimentRatio.negative}%
                         </span>
                       </div>
-                      <div className="mt-2 text-lg font-bold font-mono text-zinc-100">
+                      <div className="mt-2 text-lg font-bold font-mono text-white">
                         {currentThemeData.negativeCount}
                       </div>
-                      <div className="mt-2 h-1.5 rounded-full bg-zinc-800 overflow-hidden">
+                      <div className="mt-2 h-1.5 rounded-full bg-[#0a0a0a] overflow-hidden">
                         <div
                           style={{ width: `${currentThemeData.sentimentRatio.negative}%` }}
                           className="bg-rose-500 h-full"
@@ -740,17 +740,17 @@ export default function ThemesView({ onOpenProof }: ThemesViewProps) {
                   </div>
                 </div>
 
-                {/* ─── REVIEW SWITCHER TABS (CORE USER REQUIREMENT) ─── */}
+                {/* ─── REVIEW SWITCHER TABS ─── */}
                 <div className="space-y-3 pt-2">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-zinc-800/60 pb-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#262626] pb-3">
                     {/* The 4 Sentiment Switch Tabs */}
-                    <div className="flex items-center gap-1 p-1 bg-zinc-900/70 rounded-md border border-zinc-800 text-xs font-mono">
+                    <div className="flex items-center gap-1 p-1 bg-[#141414] rounded-full border border-[#262626] text-xs font-mono">
                       <button
                         type="button"
                         onClick={() => setSentimentFilter('all')}
-                        className={`px-3 py-1.5 rounded transition-colors cursor-pointer ${sentimentFilter === 'all'
-                            ? 'bg-zinc-800 text-zinc-100 font-medium shadow-sm'
-                            : 'text-zinc-400 hover:text-zinc-200'
+                        className={`px-3 py-1.5 rounded-full transition-colors cursor-pointer ${sentimentFilter === 'all'
+                          ? 'bg-[#1f1f1f] text-white font-medium border border-[#333333]'
+                          : 'text-[#a3a3a3] hover:text-white'
                           }`}
                       >
                         All ({themeReviews.length})
@@ -758,9 +758,9 @@ export default function ThemesView({ onOpenProof }: ThemesViewProps) {
                       <button
                         type="button"
                         onClick={() => setSentimentFilter('positive')}
-                        className={`px-3 py-1.5 rounded transition-colors cursor-pointer flex items-center gap-1.5 ${sentimentFilter === 'positive'
-                            ? 'bg-emerald-950/60 text-emerald-300 font-medium border border-emerald-900/60 shadow-sm'
-                            : 'text-zinc-400 hover:text-zinc-200'
+                        className={`px-3 py-1.5 rounded-full transition-colors cursor-pointer flex items-center gap-1.5 ${sentimentFilter === 'positive'
+                          ? 'bg-emerald-950/60 text-emerald-300 font-medium border border-emerald-900/60'
+                          : 'text-[#a3a3a3] hover:text-white'
                           }`}
                       >
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
@@ -769,9 +769,9 @@ export default function ThemesView({ onOpenProof }: ThemesViewProps) {
                       <button
                         type="button"
                         onClick={() => setSentimentFilter('neutral')}
-                        className={`px-3 py-1.5 rounded transition-colors cursor-pointer flex items-center gap-1.5 ${sentimentFilter === 'neutral'
-                            ? 'bg-zinc-800 text-zinc-200 font-medium border border-zinc-700/60 shadow-sm'
-                            : 'text-zinc-400 hover:text-zinc-200'
+                        className={`px-3 py-1.5 rounded-full transition-colors cursor-pointer flex items-center gap-1.5 ${sentimentFilter === 'neutral'
+                          ? 'bg-[#1f1f1f] text-zinc-200 font-medium border border-zinc-700/60'
+                          : 'text-[#a3a3a3] hover:text-white'
                           }`}
                       >
                         <span className="w-1.5 h-1.5 rounded-full bg-zinc-400" />
@@ -780,9 +780,9 @@ export default function ThemesView({ onOpenProof }: ThemesViewProps) {
                       <button
                         type="button"
                         onClick={() => setSentimentFilter('negative')}
-                        className={`px-3 py-1.5 rounded transition-colors cursor-pointer flex items-center gap-1.5 ${sentimentFilter === 'negative'
-                            ? 'bg-rose-950/60 text-rose-300 font-medium border border-rose-900/60 shadow-sm'
-                            : 'text-zinc-400 hover:text-zinc-200'
+                        className={`px-3 py-1.5 rounded-full transition-colors cursor-pointer flex items-center gap-1.5 ${sentimentFilter === 'negative'
+                          ? 'bg-rose-950/60 text-rose-300 font-medium border border-rose-900/60'
+                          : 'text-[#a3a3a3] hover:text-white'
                           }`}
                       >
                         <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
@@ -792,26 +792,26 @@ export default function ThemesView({ onOpenProof }: ThemesViewProps) {
 
                     {/* Inline Citation Text Search */}
                     <div className="relative w-full sm:w-44">
-                      <Search className="w-3 h-3 text-zinc-500 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                      <Search className="w-3 h-3 text-[#737373] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                       <input
                         type="text"
                         value={citationSearch}
                         onChange={(e) => setCitationSearch(e.target.value)}
                         placeholder="Search quote..."
-                        className="w-full bg-zinc-900/60 border border-zinc-800 rounded pl-7 pr-2.5 py-1 text-[11px] text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-zinc-700 font-sans"
+                        className="w-full bg-[#1f1f1f] border border-[#262626] rounded-full pl-8 pr-3 py-1 text-[11px] text-white placeholder:text-[#737373] focus:outline-none focus:border-[#4ade80] font-sans"
                       />
                     </div>
                   </div>
 
                   {/* ─── REVIEW CITATIONS LIST ─── */}
-                  <div className="divide-y divide-zinc-800/60 max-h-[460px] overflow-y-auto pr-1">
+                  <div className="divide-y divide-[#262626] max-h-[460px] overflow-y-auto pr-1">
                     {filteredThemeReviews.length === 0 ? (
                       <div className="py-12 text-center space-y-1.5 font-mono">
-                        <CheckCircle2 className="w-5 h-5 text-zinc-600 mx-auto" />
-                        <p className="text-xs text-zinc-400 font-medium">
+                        <CheckCircle2 className="w-5 h-5 text-[#737373] mx-auto" />
+                        <p className="text-xs text-[#a3a3a3] font-medium">
                           No {sentimentFilter !== 'all' ? sentimentFilter : ''} reviews found for this topic.
                         </p>
-                        <p className="text-[11px] text-zinc-600">
+                        <p className="text-[11px] text-[#737373]">
                           {sentimentFilter === 'negative'
                             ? '100% of reviews for this theme were favorable or neutral.'
                             : 'Adjust your sentiment switch filter or search terms above.'}
@@ -825,32 +825,32 @@ export default function ThemesView({ onOpenProof }: ThemesViewProps) {
                         >
                           <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
                             <div className="flex items-center gap-2">
-                              <span className="font-medium text-zinc-200">{rev.author}</span>
-                              <span className="text-zinc-600 font-mono">/</span>
+                              <span className="font-medium text-white">{rev.author}</span>
+                              <span className="text-[#404040] font-mono">/</span>
                               {String(rev.platform).toLowerCase().includes('google') ? (
                                 rev.rating !== null && rev.rating !== undefined ? (
                                   <>
                                     <StarRating rating={rev.rating} />
-                                    <span className="text-[11px] font-mono text-zinc-400">
+                                    <span className="text-[11px] font-mono text-[#a3a3a3]">
                                       {Number(rev.rating).toFixed(1)} ★
                                     </span>
-                                    <span className="text-zinc-600 font-mono">/</span>
+                                    <span className="text-[#404040] font-mono">/</span>
                                   </>
                                 ) : (
                                   <>
-                                    <span className="text-[11px] font-mono text-zinc-500">Google (Unrated)</span>
-                                    <span className="text-zinc-600 font-mono">/</span>
+                                    <span className="text-[11px] font-mono text-[#737373]">Google (Unrated)</span>
+                                    <span className="text-[#404040] font-mono">/</span>
                                   </>
                                 )
                               ) : (
                                 <>
-                                  <span className="text-[11px] font-mono text-zinc-500">Instagram Comment</span>
-                                  <span className="text-zinc-600 font-mono">/</span>
+                                  <span className="text-[11px] font-mono text-[#737373]">Instagram Comment</span>
+                                  <span className="text-[#404040] font-mono">/</span>
                                 </>
                               )}
-                              <span className="text-[11px] font-mono text-zinc-500">{rev.date}</span>
-                              <span className="text-zinc-600 font-mono">/</span>
-                              <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-300 px-1.5 py-0.5 rounded border border-zinc-800 bg-zinc-900/60 inline-flex items-center gap-1.5">
+                              <span className="text-[11px] font-mono text-[#737373]">{rev.date}</span>
+                              <span className="text-[#404040] font-mono">/</span>
+                              <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-300 px-2 py-0.5 rounded-full border border-[#262626] bg-[#1f1f1f] inline-flex items-center gap-1.5">
                                 {String(rev.platform).toLowerCase().includes('google') ? (
                                   <span>Google Review</span>
                                 ) : (
@@ -864,19 +864,19 @@ export default function ThemesView({ onOpenProof }: ThemesViewProps) {
 
                             <div className="flex items-center gap-2">
                               <span
-                                className={`inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded border ${rev.sentiment === 'positive'
-                                    ? 'bg-emerald-950/30 text-emerald-300 border-emerald-900/40'
-                                    : rev.sentiment === 'negative'
-                                      ? 'bg-rose-950/30 text-rose-300 border-rose-900/40'
-                                      : 'bg-zinc-900 text-zinc-400 border-zinc-800'
+                                className={`inline-flex items-center gap-1 text-[10px] font-mono px-2.5 py-0.5 rounded-full border ${rev.sentiment === 'positive'
+                                  ? 'bg-emerald-950/30 text-emerald-300 border-emerald-900/40'
+                                  : rev.sentiment === 'negative'
+                                    ? 'bg-rose-950/30 text-rose-300 border-rose-900/40'
+                                    : 'bg-[#1f1f1f] text-[#a3a3a3] border-[#262626]'
                                   }`}
                               >
                                 <span
                                   className={`w-1.5 h-1.5 rounded-full ${rev.sentiment === 'positive'
-                                      ? 'bg-emerald-400'
-                                      : rev.sentiment === 'negative'
-                                        ? 'bg-rose-400'
-                                        : 'bg-zinc-500'
+                                    ? 'bg-emerald-400'
+                                    : rev.sentiment === 'negative'
+                                      ? 'bg-rose-400'
+                                      : 'bg-zinc-500'
                                     }`}
                                 />
                                 <span className="capitalize">{rev.sentiment}</span>
@@ -885,15 +885,15 @@ export default function ThemesView({ onOpenProof }: ThemesViewProps) {
                               <button
                                 type="button"
                                 onClick={() => onOpenProof(rev)}
-                                className="text-[11px] font-mono text-zinc-500 hover:text-zinc-200 transition-colors inline-flex items-center gap-1 cursor-pointer"
+                                className="text-[11px] font-mono text-[#a3a3a3] hover:text-white transition-colors inline-flex items-center gap-1 cursor-pointer"
                               >
                                 <span>Evidence</span>
-                                <ExternalLink className="w-3 h-3" />
+                                <ExternalLink className="w-3 h-3 text-[#4ade80]" />
                               </button>
                             </div>
                           </div>
 
-                          <p className="text-xs text-zinc-300 leading-relaxed font-sans pl-2 border-l-2 border-zinc-800 group-hover:border-zinc-600 transition-colors">
+                          <p className="text-xs text-zinc-300 leading-relaxed font-sans pl-2.5 border-l-2 border-[#262626] group-hover:border-[#4ade80] transition-colors">
                             “{rev.content}”
                           </p>
                         </div>
@@ -903,7 +903,7 @@ export default function ThemesView({ onOpenProof }: ThemesViewProps) {
                 </div>
               </div>
             ) : (
-              <div className="p-16 rounded-xl border border-zinc-800/80 bg-zinc-950/70 text-center font-mono text-xs text-zinc-500">
+              <div className="p-16 rounded-2xl border border-[#262626] bg-[#171717] text-center font-mono text-xs text-[#737373]">
                 Select a topic from the left to view customer citations.
               </div>
             )}

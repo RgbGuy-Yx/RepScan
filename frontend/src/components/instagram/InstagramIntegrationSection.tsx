@@ -150,21 +150,21 @@ export default function InstagramIntegrationSection({
   };
 
   return (
-    <div className="bg-zinc-900/60 rounded-xl border border-zinc-800/80 p-5 lg:p-6 space-y-5 text-zinc-100">
+    <div className="bg-[#171717] rounded-2xl border border-[#262626] p-5 lg:p-6 space-y-5 text-zinc-100 shadow-sm">
       {/* Top Header */}
-      <div className="flex flex-wrap items-center justify-between pb-4 border-b border-zinc-800/80 gap-3">
+      <div className="flex flex-wrap items-center justify-between pb-4 border-b border-[#262626] gap-3">
         <div>
           <div className="flex items-center gap-2">
             <div className="w-5 h-5 rounded-md bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 flex items-center justify-center p-[1px]">
-              <div className="w-full h-full bg-zinc-950 rounded-[5px] flex items-center justify-center">
+              <div className="w-full h-full bg-[#0a0a0a] rounded-[5px] flex items-center justify-center">
                 <span className="text-[10px] font-bold text-white">IG</span>
               </div>
             </div>
-            <h3 className="text-xs font-semibold text-zinc-100">
+            <h3 className="text-xs font-semibold text-white">
               Instagram Social Telemetry & Scraper Ingestion
             </h3>
           </div>
-          <p className="text-[11px] text-zinc-400 mt-1">
+          <p className="text-[11px] text-[#a3a3a3] mt-1">
             Track public Instagram business & competitor profiles, posts, public comments, and grounded sentiment via Apify.
           </p>
         </div>
@@ -172,18 +172,18 @@ export default function InstagramIntegrationSection({
         <button
           type="button"
           onClick={() => setShowAddModal(!showAddModal)}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-zinc-100 hover:bg-white text-zinc-950 transition-colors active:scale-[0.98] cursor-pointer"
+          className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold bg-white hover:bg-zinc-200 text-[#0a0a0a] transition-all active:scale-[0.98] cursor-pointer shadow-sm"
         >
-          <Plus className="w-3.5 h-3.5" />
+          <Plus className="w-3.5 h-3.5 text-[#0a0a0a]" />
           <span>Track Instagram Profile</span>
         </button>
       </div>
 
       {/* Sync Banner if active */}
       {syncStatusBanner && (
-        <div className="p-3 rounded-lg bg-zinc-950 border border-zinc-800 text-xs text-zinc-300 flex items-center gap-2">
-          <RefreshCw className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
-          <span className="font-mono text-[11px]">{syncStatusBanner}</span>
+        <div className="p-3.5 rounded-xl bg-[#141414] border border-[#262626] text-xs text-zinc-300 flex items-center gap-2 font-mono">
+          <RefreshCw className="w-3.5 h-3.5 text-[#4ade80] shrink-0" />
+          <span className="text-[11px]">{syncStatusBanner}</span>
         </div>
       )}
 
@@ -191,24 +191,24 @@ export default function InstagramIntegrationSection({
       {showAddModal && (
         <form
           onSubmit={handleAddAccount}
-          className="p-4 rounded-xl bg-zinc-950 border border-zinc-800/80 space-y-3 animate-in fade-in duration-150"
+          className="p-5 rounded-2xl bg-[#141414] border border-[#262626] space-y-3.5 animate-in fade-in duration-150"
         >
           <div className="flex items-center justify-between">
-            <h4 className="text-xs font-semibold text-zinc-200">
+            <h4 className="font-serif font-light text-sm text-white">
               Add Public Instagram Profile for {businessName}
             </h4>
-            <span className="text-[10px] font-mono text-zinc-500">APIFY INSTAGRAM ACTOR</span>
+            <span className="text-[10px] font-mono text-[#737373]">APIFY INSTAGRAM ACTOR</span>
           </div>
 
           {submitError && (
-            <div className="p-2.5 rounded-md bg-rose-950/30 border border-rose-900/40 text-xs text-rose-300 flex items-center gap-2 font-mono">
+            <div className="p-3 rounded-xl bg-rose-950/30 border border-rose-900/40 text-xs text-rose-300 flex items-center gap-2 font-mono">
               <AlertCircle className="w-3.5 h-3.5 shrink-0 text-rose-400" />
               <span>{submitError}</span>
             </div>
           )}
 
           <div>
-            <label className="block text-[11px] text-zinc-400 mb-1">
+            <label className="block text-[11px] text-[#a3a3a3] mb-1.5 font-mono">
               Public Profile URL or Instagram Handle
             </label>
             <input
@@ -217,9 +217,9 @@ export default function InstagramIntegrationSection({
               value={urlOrHandle}
               onChange={(e) => setUrlOrHandle(e.target.value)}
               placeholder="e.g. https://instagram.com/luminarykitchen or @luminarykitchen"
-              className="w-full bg-zinc-900 border border-zinc-800 rounded-md px-3 py-2 text-xs text-zinc-100 placeholder-zinc-600 focus:border-zinc-500 focus:outline-none font-mono"
+              className="w-full bg-[#1f1f1f] border border-[#262626] rounded-full px-4 py-2 text-xs text-white placeholder-[#737373] focus:border-[#4ade80] focus:outline-none font-mono"
             />
-            <p className="text-[10px] text-zinc-500 mt-1">
+            <p className="text-[10px] text-[#737373] mt-1.5">
               Supports public profiles only. Ingests up to 50 latest posts & reels with public comments.
             </p>
           </div>
@@ -228,16 +228,16 @@ export default function InstagramIntegrationSection({
             <button
               type="button"
               onClick={() => setShowAddModal(false)}
-              className="px-3 py-1.5 text-xs text-zinc-400 hover:text-zinc-200 transition-colors"
+              className="px-3.5 py-1.5 text-xs text-[#a3a3a3] hover:text-white transition-colors cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting || !urlOrHandle.trim()}
-              className="px-3.5 py-1.5 rounded-md text-xs font-medium bg-zinc-100 hover:bg-white text-zinc-950 transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+              className="px-4 py-1.5 rounded-full text-xs font-semibold bg-white hover:bg-zinc-200 text-[#0a0a0a] transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50 active:scale-[0.98] shadow-sm"
             >
-              {isSubmitting ? <Loader2 className="w-3 h-3 animate-spin" /> : null}
+              {isSubmitting ? <Loader2 className="w-3 h-3 animate-spin text-[#0a0a0a]" /> : null}
               <span>Save & Connect Profile</span>
             </button>
           </div>
@@ -246,8 +246,8 @@ export default function InstagramIntegrationSection({
 
       {/* Account List */}
       {isLoading ? (
-        <div className="p-8 flex items-center justify-center gap-2 text-xs text-zinc-500">
-          <Loader2 className="w-4 h-4 text-zinc-400 animate-spin" />
+        <div className="p-8 flex items-center justify-center gap-2 text-xs text-[#a3a3a3]">
+          <Loader2 className="w-4 h-4 text-[#4ade80] animate-spin" />
           <span className="font-mono">Loading connected Instagram profiles...</span>
         </div>
       ) : error ? (
@@ -256,16 +256,16 @@ export default function InstagramIntegrationSection({
           <span>{error}</span>
         </div>
       ) : accounts.length === 0 ? (
-        <div className="p-8 rounded-xl bg-zinc-950/40 border border-dashed border-zinc-800 text-center space-y-2">
-          <p className="text-xs text-zinc-500 font-mono">
+        <div className="p-8 rounded-2xl bg-[#141414] border border-dashed border-[#262626] text-center space-y-3">
+          <p className="text-xs text-[#737373] font-mono">
             No Instagram accounts connected yet for {businessName}.
           </p>
           <button
             type="button"
             onClick={() => setShowAddModal(true)}
-            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700/80 transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold bg-[#1f1f1f] hover:bg-[#262626] text-white border border-[#333333] transition-colors cursor-pointer"
           >
-            <Plus className="w-3 h-3" />
+            <Plus className="w-3 h-3 text-[#4ade80]" />
             <span>Connect First Instagram Profile</span>
           </button>
         </div>
@@ -278,12 +278,12 @@ export default function InstagramIntegrationSection({
             return (
               <div
                 key={acc.id}
-                className="p-4 rounded-xl border border-zinc-800/80 bg-zinc-950/50 hover:bg-zinc-900/40 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-4"
+                className="p-4 rounded-2xl border border-[#262626] bg-[#141414] hover:bg-[#1f1f1f]/50 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-4"
               >
                 {/* Account Details */}
                 <div className="flex items-center gap-3.5 min-w-0">
                   <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 p-[2px] shrink-0">
-                    <div className="w-full h-full rounded-full bg-zinc-950 flex items-center justify-center overflow-hidden">
+                    <div className="w-full h-full rounded-full bg-[#0a0a0a] flex items-center justify-center overflow-hidden">
                       {acc.profile_pic_url ? (
                         <img
                           src={acc.profile_pic_url}
@@ -300,43 +300,43 @@ export default function InstagramIntegrationSection({
 
                   <div className="min-w-0 space-y-0.5">
                     <div className="flex items-center gap-2">
-                      <h4 className="text-xs font-bold text-zinc-100 truncate">
+                      <h4 className="text-xs font-bold text-white truncate">
                         @{acc.username}
                       </h4>
                       {acc.is_verified && (
-                        <span className="text-[9px] px-1.5 py-0.2 rounded font-mono uppercase bg-indigo-950/40 text-indigo-400 border border-indigo-800/40">
+                        <span className="text-[9px] px-2 py-0.5 rounded-full font-mono uppercase bg-indigo-950/40 text-indigo-400 border border-indigo-800/40">
                           VERIFIED
                         </span>
                       )}
                       <span
-                        className={`text-[9px] px-1.5 py-0.2 rounded font-mono uppercase border ${
+                        className={`text-[9px] px-2.5 py-0.5 rounded-full font-mono uppercase border font-semibold ${
                           status === 'running'
                             ? 'bg-amber-950/40 text-amber-400 border-amber-800/40 animate-pulse'
                             : status === 'completed'
                             ? 'bg-emerald-950/40 text-emerald-400 border-emerald-800/40'
                             : status === 'failed'
                             ? 'bg-rose-950/40 text-rose-400 border-rose-800/40'
-                            : 'bg-zinc-800 text-zinc-400 border-zinc-700'
+                            : 'bg-[#1f1f1f] text-[#a3a3a3] border-[#262626]'
                         }`}
                       >
                         {status}
                       </span>
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-2 text-[11px] text-zinc-400 font-mono">
+                    <div className="flex flex-wrap items-center gap-2 text-[11px] text-[#a3a3a3] font-mono">
                       {acc.followers_count != null && (
                         <span>{acc.followers_count.toLocaleString()} followers</span>
                       )}
                       {acc.posts_count != null && (
                         <>
-                          <span className="text-zinc-600">•</span>
+                          <span className="text-[#404040]">•</span>
                           <span>{acc.posts_count.toLocaleString()} posts</span>
                         </>
                       )}
                       {acc.last_synced_at && (
                         <>
-                          <span className="text-zinc-600">•</span>
-                          <span className="text-zinc-500">
+                          <span className="text-[#404040]">•</span>
+                          <span className="text-[#737373]">
                             Synced {new Date(acc.last_synced_at).toLocaleDateString()}
                           </span>
                         </>
@@ -352,28 +352,28 @@ export default function InstagramIntegrationSection({
                     type="button"
                     onClick={() => handleTriggerSync(acc.id)}
                     disabled={isSyncing}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 transition-colors disabled:opacity-50 cursor-pointer active:scale-[0.98]"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[#1f1f1f] hover:bg-[#262626] text-white border border-[#262626] transition-colors disabled:opacity-50 cursor-pointer active:scale-[0.98]"
                   >
-                    <RefreshCw className={`w-3.5 h-3.5 text-zinc-400 ${isSyncing ? 'animate-spin text-[#5e6ad2]' : ''}`} />
+                    <RefreshCw className={`w-3.5 h-3.5 text-[#4ade80] ${isSyncing ? 'animate-spin' : ''}`} />
                     <span>{isSyncing ? 'Syncing...' : 'Sync Now'}</span>
                   </button>
 
                   {/* Delete / Unlink */}
                   {confirmDeleteId === acc.id ? (
-                    <div className="flex items-center gap-1 bg-zinc-950 border border-rose-900/60 rounded-md p-1">
-                      <span className="text-[10px] font-mono text-rose-300 px-1">Delete?</span>
+                    <div className="flex items-center gap-1 bg-[#1f1f1f] border border-rose-900/60 rounded-full p-1">
+                      <span className="text-[10px] font-mono text-rose-300 px-2">Delete?</span>
                       <button
                         type="button"
                         onClick={() => handleDeleteAccount(acc.id)}
                         disabled={isDeleting === acc.id}
-                        className="px-2 py-0.5 rounded bg-rose-600 hover:bg-rose-500 text-white text-[10px] font-medium transition-colors disabled:opacity-50"
+                        className="px-2.5 py-0.5 rounded-full bg-rose-600 hover:bg-rose-500 text-white text-[10px] font-medium transition-colors disabled:opacity-50 cursor-pointer"
                       >
                         {isDeleting === acc.id ? '...' : 'Yes'}
                       </button>
                       <button
                         type="button"
                         onClick={() => setConfirmDeleteId(null)}
-                        className="px-1.5 py-0.5 rounded text-zinc-400 hover:text-zinc-200 text-[10px] transition-colors"
+                        className="px-2 py-0.5 rounded-full text-[#a3a3a3] hover:text-white text-[10px] transition-colors cursor-pointer"
                       >
                         No
                       </button>
@@ -383,7 +383,7 @@ export default function InstagramIntegrationSection({
                       type="button"
                       onClick={() => setConfirmDeleteId(acc.id)}
                       title="Disconnect Instagram account"
-                      className="w-7 h-7 rounded-md border border-zinc-800 bg-zinc-900 text-zinc-500 hover:text-rose-400 hover:border-rose-900/40 flex items-center justify-center transition-colors cursor-pointer"
+                      className="w-8 h-8 rounded-full border border-[#262626] bg-[#1f1f1f] text-[#737373] hover:text-rose-400 hover:border-rose-900/40 flex items-center justify-center transition-colors cursor-pointer"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>

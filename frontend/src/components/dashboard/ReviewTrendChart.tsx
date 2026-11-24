@@ -241,41 +241,41 @@ export default function ReviewTrendChart({ reviews, className = '' }: ReviewTren
   return (
     <div
       ref={containerRef}
-      className={`rounded-xl border border-zinc-800/80 bg-zinc-950/70 p-5 sm:p-6 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)] flex flex-col justify-between ${className}`}
+      className={`rounded-2xl border border-[#262626] bg-[#171717] p-5 sm:p-6 flex flex-col justify-between font-sans ${className}`}
     >
       {/* Chart Top Header & Controls */}
-      <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-zinc-800/60">
+      <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[#262626]">
         <div className="space-y-0.5">
-          <h3 className="text-sm font-semibold text-zinc-100 tracking-tight">Review Trend</h3>
-          <p className="text-[11px] font-mono text-zinc-500">Sentiment trajectory over evaluation window</p>
+          <h3 className="font-serif font-light text-lg text-white tracking-tight">Review Trend</h3>
+          <p className="text-xs text-[#a3a3a3]">Sentiment trajectory over evaluation window</p>
         </div>
 
         <div className="flex items-center gap-4">
           {/* Legend */}
           <div className="flex items-center gap-3 text-xs font-mono">
             <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-400" />
-              <span className="text-zinc-300 text-[11px]">Positive</span>
+              <span className="w-2 h-2 rounded-full bg-[#22c55e]" />
+              <span className="text-[#a3a3a3] text-[11px]">Positive</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-indigo-400" />
-              <span className="text-zinc-400 text-[11px]">Neutral</span>
+              <span className="w-2 h-2 rounded-full bg-[#4ade80]" />
+              <span className="text-[#a3a3a3] text-[11px]">Action</span>
             </div>
             <div className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-rose-400" />
-              <span className="text-zinc-400 text-[11px]">Negative</span>
+              <span className="text-[#a3a3a3] text-[11px]">Negative</span>
             </div>
           </div>
 
-          {/* Time Filter Selector */}
+          {/* Time Filter Selector Pill */}
           <div className="relative">
             <button
               type="button"
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-xs font-mono text-zinc-200 transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#1f1f1f] border border-[#262626] hover:border-[#404040] text-xs font-mono text-white transition-colors cursor-pointer"
             >
               <span>{rangeLabels[timeRange]}</span>
-              <ChevronDown className={`w-3.5 h-3.5 text-zinc-400 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+              <ChevronDown className={`w-3.5 h-3.5 text-[#737373] transition-transform ${isDropdownOpen ? 'rotate-180 text-white' : ''}`} />
             </button>
 
             {isDropdownOpen && (
@@ -284,7 +284,7 @@ export default function ReviewTrendChart({ reviews, className = '' }: ReviewTren
                   className="fixed inset-0 z-20"
                   onClick={() => setIsDropdownOpen(false)}
                 />
-                <div className="absolute right-0 top-full mt-1.5 w-36 rounded-md bg-zinc-900 border border-zinc-800 shadow-xl py-1 z-30 font-mono text-xs divide-y divide-zinc-800/60">
+                <div className="absolute right-0 top-full mt-2 w-36 rounded-2xl bg-[#171717] border border-[#262626] shadow-2xl py-1.5 z-30 font-mono text-xs">
                   {(Object.keys(rangeLabels) as TimeRange[]).map((key) => (
                     <button
                       key={key}
@@ -293,12 +293,12 @@ export default function ReviewTrendChart({ reviews, className = '' }: ReviewTren
                         setTimeRange(key);
                         setIsDropdownOpen(false);
                       }}
-                      className={`w-full text-left px-3 py-1.5 hover:bg-zinc-800/80 transition-colors flex items-center justify-between cursor-pointer ${
-                        timeRange === key ? 'text-zinc-100 font-medium bg-zinc-800/40' : 'text-zinc-400'
+                      className={`w-full text-left px-3 py-1.5 rounded-xl hover:bg-[#1f1f1f] transition-colors flex items-center justify-between cursor-pointer ${
+                        timeRange === key ? 'text-white font-medium bg-[#1f1f1f]' : 'text-[#a3a3a3]'
                       }`}
                     >
                       <span>{rangeLabels[key]}</span>
-                      {timeRange === key && <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />}
+                      {timeRange === key && <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e]" />}
                     </button>
                   ))}
                 </div>

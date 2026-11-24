@@ -3,21 +3,21 @@ import Skeleton from '../ui/Skeleton';
 export default function DashboardSkeleton() {
   return (
     <div
-      className="p-6 lg:p-8 space-y-6 max-w-7xl mx-auto"
+      className="p-6 lg:p-8 space-y-6 max-w-7xl mx-auto font-sans"
       aria-busy="true"
       aria-label="Loading dashboard telemetry"
     >
       {/* ─────────────────────────────────────────────────────────────
           SECTION 1: TELEMETRY GRID SKELETON (4 METRICS)
           ───────────────────────────────────────────────────────────── */}
-      <div className="border border-zinc-800/80 rounded-xl bg-zinc-950/70 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)] grid grid-cols-2 lg:grid-cols-4 divide-y lg:divide-y-0 lg:divide-x divide-zinc-800/80">
+      <div className="border border-[#262626] rounded-2xl bg-[#171717] grid grid-cols-2 lg:grid-cols-4 divide-y lg:divide-y-0 lg:divide-x divide-[#262626]">
         {/* Metric 1: Average Rating */}
-        <div className="p-5 sm:p-6 space-y-3">
+        <div className="p-6 space-y-3">
           <div className="flex items-center justify-between">
             <Skeleton className="h-3 w-24" />
             <div className="flex items-center gap-1">
               {[...Array(5)].map((_, i) => (
-                <Skeleton key={i} className="w-2.5 h-2.5 rounded-sm" />
+                <Skeleton key={i} className="w-2.5 h-2.5 rounded-full" />
               ))}
             </div>
           </div>
@@ -31,10 +31,10 @@ export default function DashboardSkeleton() {
         </div>
 
         {/* Metric 2: Total Feedback */}
-        <div className="p-5 sm:p-6 space-y-3">
+        <div className="p-6 space-y-3">
           <div className="flex items-center justify-between">
             <Skeleton className="h-3 w-24" />
-            <Skeleton className="w-3.5 h-3.5 rounded" />
+            <Skeleton className="w-3.5 h-3.5 rounded-full" />
           </div>
           <div className="flex items-baseline gap-2">
             <Skeleton className="h-8 w-24" />
@@ -46,10 +46,10 @@ export default function DashboardSkeleton() {
         </div>
 
         {/* Metric 3: Positive Sentiment */}
-        <div className="p-5 sm:p-6 space-y-3">
+        <div className="p-6 space-y-3">
           <div className="flex items-center justify-between">
             <Skeleton className="h-3 w-28" />
-            <div className="w-2 h-2 rounded-full bg-emerald-500/30 animate-pulse" />
+            <div className="w-2 h-2 rounded-full bg-[#22c55e]/30 animate-pulse" />
           </div>
           <div className="flex items-baseline gap-2">
             <Skeleton className="h-8 w-16" />
@@ -61,7 +61,7 @@ export default function DashboardSkeleton() {
         </div>
 
         {/* Metric 4: Critical Feedback */}
-        <div className="p-5 sm:p-6 space-y-3">
+        <div className="p-6 space-y-3">
           <div className="flex items-center justify-between">
             <Skeleton className="h-3 w-26" />
             <div className="w-2 h-2 rounded-full bg-rose-500/30 animate-pulse" />
@@ -79,20 +79,20 @@ export default function DashboardSkeleton() {
       {/* ─────────────────────────────────────────────────────────────
           SECTION 2: COMMAND QUERY STRIP SKELETON
           ───────────────────────────────────────────────────────────── */}
-      <div className="rounded-xl border border-zinc-800/80 bg-zinc-950/70 p-4 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)] space-y-3">
+      <div className="rounded-2xl border border-[#262626] bg-[#171717] p-5 space-y-3">
         <div className="flex items-center gap-3">
-          <div className="relative flex-1 h-9 bg-zinc-900/60 border border-zinc-800 rounded-md flex items-center px-3.5 gap-2.5">
-            <Skeleton className="w-4 h-4 rounded shrink-0" />
+          <div className="relative flex-1 h-9 bg-[#1f1f1f] border border-[#262626] rounded-full flex items-center px-4 gap-2.5">
+            <Skeleton className="w-4 h-4 rounded-full shrink-0" />
             <Skeleton className="h-3 w-2/5" />
           </div>
-          <Skeleton className="h-9 w-28 rounded-md shrink-0" />
+          <Skeleton className="h-9 w-28 rounded-full shrink-0" />
         </div>
 
         <div className="flex items-center gap-2 overflow-hidden pt-0.5">
           <Skeleton className="h-3 w-20 shrink-0" />
-          <Skeleton className="h-6 w-48 rounded shrink-0" />
-          <Skeleton className="h-6 w-56 rounded shrink-0" />
-          <Skeleton className="h-6 w-52 rounded shrink-0" />
+          <Skeleton className="h-6 w-48 rounded-full shrink-0" />
+          <Skeleton className="h-6 w-56 rounded-full shrink-0" />
+          <Skeleton className="h-6 w-52 rounded-full shrink-0" />
         </div>
       </div>
 
@@ -101,9 +101,9 @@ export default function DashboardSkeleton() {
           ───────────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left: Review Trend Chart Skeleton */}
-        <div className="lg:col-span-7 xl:col-span-8 rounded-xl border border-zinc-800/80 bg-zinc-950/70 p-5 sm:p-6 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)] flex flex-col justify-between space-y-6">
+        <div className="lg:col-span-7 xl:col-span-8 rounded-2xl border border-[#262626] bg-[#171717] p-6 flex flex-col justify-between space-y-6">
           {/* Header */}
-          <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-zinc-800/60">
+          <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[#262626]">
             <div className="space-y-1.5">
               <Skeleton className="h-4 w-28" />
               <Skeleton className="h-2.5 w-56" />
@@ -112,11 +112,11 @@ export default function DashboardSkeleton() {
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500/30 animate-pulse" />
+                  <span className="w-2 h-2 rounded-full bg-[#22c55e]/30 animate-pulse" />
                   <Skeleton className="h-2.5 w-12" />
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-indigo-500/30 animate-pulse" />
+                  <span className="w-2 h-2 rounded-full bg-[#4ade80]/30 animate-pulse" />
                   <Skeleton className="h-2.5 w-12" />
                 </div>
                 <div className="flex items-center gap-1.5">
@@ -124,7 +124,7 @@ export default function DashboardSkeleton() {
                   <Skeleton className="h-2.5 w-12" />
                 </div>
               </div>
-              <Skeleton className="h-7 w-28 rounded-md" />
+              <Skeleton className="h-7 w-28 rounded-full" />
             </div>
           </div>
 
@@ -135,7 +135,7 @@ export default function DashboardSkeleton() {
               {[...Array(4)].map((_, i) => (
                 <div key={i} className="flex items-center gap-3 w-full">
                   <Skeleton className="h-2 w-6 shrink-0" />
-                  <div className="h-[1px] w-full border-b border-zinc-800/60 border-dashed" />
+                  <div className="h-[1px] w-full border-b border-[#262626] border-dashed" />
                 </div>
               ))}
             </div>
@@ -146,7 +146,7 @@ export default function DashboardSkeleton() {
                 <div key={idx} className="flex flex-col items-center gap-2 flex-1 max-w-[40px] px-1">
                   <div className="w-full flex items-end justify-center h-32">
                     <div
-                      className="w-full bg-gradient-to-t from-zinc-800/30 to-zinc-750/70 rounded-t-sm skeleton-shimmer animate-pulse"
+                      className="w-full bg-[#1f1f1f] rounded-t-sm skeleton-shimmer animate-pulse"
                       style={{
                         height: `${heightPct}%`,
                         animationDelay: `${idx * 120}ms`,
@@ -161,9 +161,9 @@ export default function DashboardSkeleton() {
         </div>
 
         {/* Right: Rating Distribution Chart Skeleton */}
-        <div className="lg:col-span-5 xl:col-span-4 rounded-xl border border-zinc-800/80 bg-zinc-950/70 p-5 sm:p-6 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)] flex flex-col justify-between space-y-6">
+        <div className="lg:col-span-5 xl:col-span-4 rounded-2xl border border-[#262626] bg-[#171717] p-6 flex flex-col justify-between space-y-6">
           {/* Header */}
-          <div className="flex items-center justify-between pb-4 border-b border-zinc-800/60">
+          <div className="flex items-center justify-between pb-4 border-b border-[#262626]">
             <div className="space-y-1.5">
               <Skeleton className="h-4 w-36" />
               <Skeleton className="h-2.5 w-44" />
@@ -175,7 +175,7 @@ export default function DashboardSkeleton() {
           <div className="flex flex-col sm:flex-row items-center gap-6 py-2">
             {/* Donut Placeholder */}
             <div className="relative w-32 h-32 shrink-0 flex items-center justify-center">
-              <div className="w-28 h-28 rounded-full border-8 border-zinc-800/70 skeleton-shimmer animate-pulse flex flex-col items-center justify-center">
+              <div className="w-28 h-28 rounded-full border-8 border-[#262626] skeleton-shimmer animate-pulse flex flex-col items-center justify-center">
                 <Skeleton className="h-5 w-12 mb-1" />
                 <Skeleton className="h-2 w-10" />
               </div>
@@ -195,9 +195,9 @@ export default function DashboardSkeleton() {
                     <Skeleton className="w-2 h-2 rounded-full" />
                     <Skeleton className="w-4 h-3" />
                   </div>
-                  <div className="flex-1 h-2 rounded-full bg-zinc-900/90 border border-zinc-800/80 overflow-hidden relative">
+                  <div className="flex-1 h-2 rounded-full bg-[#1f1f1f] border border-[#262626] overflow-hidden relative">
                     <div
-                      className="h-full rounded-full bg-zinc-700/60 skeleton-shimmer animate-pulse"
+                      className="h-full rounded-full bg-[#404040] skeleton-shimmer animate-pulse"
                       style={{ width: row.width }}
                     />
                   </div>
@@ -208,7 +208,7 @@ export default function DashboardSkeleton() {
           </div>
 
           {/* Footer Skeleton */}
-          <div className="pt-3.5 border-t border-zinc-800/60 flex items-center justify-between">
+          <div className="pt-3.5 border-t border-[#262626] flex items-center justify-between">
             <Skeleton className="h-3 w-28" />
             <Skeleton className="h-3 w-16" />
           </div>
@@ -220,8 +220,8 @@ export default function DashboardSkeleton() {
           ───────────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left: Topic Clusters Skeleton */}
-        <div className="rounded-xl border border-zinc-800/80 bg-zinc-950/70 p-5 sm:p-6 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)] space-y-4">
-          <div className="flex items-center justify-between border-b border-zinc-800/60 pb-3">
+        <div className="rounded-2xl border border-[#262626] bg-[#171717] p-6 space-y-4">
+          <div className="flex items-center justify-between border-b border-[#262626] pb-3">
             <div className="space-y-1.5">
               <Skeleton className="h-3.5 w-32" />
               <Skeleton className="h-2.5 w-52" />
@@ -236,10 +236,10 @@ export default function DashboardSkeleton() {
                   <Skeleton className="h-3.5 w-28" />
                   <Skeleton className="h-3 w-16" />
                 </div>
-                <div className="h-1.5 w-full bg-zinc-900 rounded-[2px] overflow-hidden flex">
-                  <div className="w-3/5 bg-zinc-800/70 skeleton-shimmer animate-pulse h-full" />
-                  <div className="w-1/5 bg-zinc-850 h-full" />
-                  <div className="w-1/5 bg-zinc-800/40 h-full" />
+                <div className="h-1.5 w-full bg-[#1f1f1f] rounded-full overflow-hidden flex border border-[#262626]">
+                  <div className="w-3/5 bg-[#22c55e]/40 skeleton-shimmer animate-pulse h-full" />
+                  <div className="w-1/5 bg-[#404040] h-full" />
+                  <div className="w-1/5 bg-rose-500/40 h-full" />
                 </div>
               </div>
             ))}
@@ -247,8 +247,8 @@ export default function DashboardSkeleton() {
         </div>
 
         {/* Right: Telemetry Shifts Skeleton */}
-        <div className="rounded-xl border border-zinc-800/80 bg-zinc-950/70 p-5 sm:p-6 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)] space-y-4">
-          <div className="flex items-center justify-between border-b border-zinc-800/60 pb-3">
+        <div className="rounded-2xl border border-[#262626] bg-[#171717] p-6 space-y-4">
+          <div className="flex items-center justify-between border-b border-[#262626] pb-3">
             <div className="space-y-1.5">
               <Skeleton className="h-3.5 w-28" />
               <Skeleton className="h-2.5 w-56" />
@@ -260,13 +260,13 @@ export default function DashboardSkeleton() {
             {[...Array(3)].map((_, i) => (
               <div
                 key={i}
-                className="p-3.5 rounded-lg bg-zinc-900/40 border border-zinc-800/80 flex items-start justify-between gap-3"
+                className="p-3.5 rounded-xl bg-[#1f1f1f] border border-[#262626] flex items-start justify-between gap-3"
               >
                 <div className="space-y-2 flex-1">
                   <Skeleton className="h-3.5 w-40" />
                   <Skeleton className="h-2.5 w-56" />
                 </div>
-                <Skeleton className="w-7 h-7 rounded shrink-0" />
+                <Skeleton className="w-7 h-7 rounded-full shrink-0" />
               </div>
             ))}
           </div>
@@ -276,8 +276,8 @@ export default function DashboardSkeleton() {
       {/* ─────────────────────────────────────────────────────────────
           SECTION 4: INGESTED FEEDBACK STREAM SKELETON
           ───────────────────────────────────────────────────────────── */}
-      <div className="rounded-xl border border-zinc-800/80 bg-zinc-950/70 p-5 sm:p-6 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)] space-y-4">
-        <div className="flex items-center justify-between border-b border-zinc-800/60 pb-3">
+      <div className="rounded-2xl border border-[#262626] bg-[#171717] p-6 space-y-4">
+        <div className="flex items-center justify-between border-b border-[#262626] pb-3">
           <div className="space-y-1.5">
             <Skeleton className="h-3.5 w-44" />
             <Skeleton className="h-2.5 w-56" />
@@ -285,26 +285,26 @@ export default function DashboardSkeleton() {
           <Skeleton className="h-3 w-20" />
         </div>
 
-        <div className="divide-y divide-zinc-800/60">
+        <div className="divide-y divide-[#262626]">
           {[...Array(5)].map((_, i) => (
             <div key={i} className="py-4 flex flex-col sm:flex-row sm:items-start justify-between gap-3">
               <div className="space-y-2 flex-1 min-w-0 pr-4">
                 <div className="flex flex-wrap items-center gap-2">
                   <Skeleton className="h-3.5 w-28" />
-                  <span className="text-zinc-700">/</span>
+                  <span className="text-[#404040]">/</span>
                   <div className="flex items-center gap-0.5">
                     {[...Array(5)].map((_, starIdx) => (
-                      <Skeleton key={starIdx} className="w-2.5 h-2.5 rounded-sm" />
+                      <Skeleton key={starIdx} className="w-2.5 h-2.5 rounded-full" />
                     ))}
                   </div>
-                  <span className="text-zinc-700">/</span>
+                  <span className="text-[#404040]">/</span>
                   <Skeleton className="h-3 w-20" />
-                  <Skeleton className="h-4 w-16 rounded" />
+                  <Skeleton className="h-4 w-16 rounded-full" />
                 </div>
                 <Skeleton className="h-3 w-full" />
                 <Skeleton className="h-3 w-4/5" />
               </div>
-              <Skeleton className="h-6 w-20 rounded shrink-0 self-start" />
+              <Skeleton className="h-6 w-20 rounded-full shrink-0 self-start" />
             </div>
           ))}
         </div>
