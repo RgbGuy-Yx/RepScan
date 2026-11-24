@@ -44,7 +44,12 @@ export const config = {
   ),
   databasePoolMax: parseInt(process.env.DATABASE_POOL_MAX || "10", 10),
   databaseConnectionTimeoutMs: parseInt(process.env.DATABASE_CONNECTION_TIMEOUT_MS || "10000", 10),
-  aiServiceUrl: process.env.AI_SERVICE_URL || "http://localhost:8000",
+  aiServiceUrl: (
+    process.env.AI_SERVICE_URL ||
+    (process.env.NODE_ENV === "production"
+      ? "https://repscan-ai-service.onrender.com"
+      : "http://localhost:8000")
+  ).replace(/\/+$/, ""),
   corsOrigins: process.env.CORS_ORIGINS?.split(",") || ["http://localhost:5173"],
   apifyToken: process.env.APIFY_API_TOKEN || "",
   googleReviewsActorId: process.env.APIFY_GOOGLE_REVIEWS_ACTOR_ID || "",
